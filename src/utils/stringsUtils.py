@@ -1,0 +1,1 @@
+special_characters = ["\u200f", "\u200e"]
