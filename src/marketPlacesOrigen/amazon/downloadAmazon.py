@@ -1,3 +1,4 @@
+import time
 from playwright.sync_api import sync_playwright
 import json
 import requests
@@ -12,22 +13,21 @@ def load_products():
         reader = csv.reader(f)
         return [item[0] for item in list(reader)]
 def get_overView(pw_page):
-    overView=pw_page.query_selector_all("div#productOverview_feature_div tr")
-    overVies=[]
+    overView=pw_page.query_selector_all("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small']>div")
+    overVies={}
     for view in overView:
-        overVies.append({
-            view.query_selector("td:nth-child(1) span").inner_text():view.query_selector("td:nth-child(2) span").inner_text().replace("\u200e","")
-        })
+        try:
+            overVies[view.query_selector("span:nth-child(1)").inner_text()]=view.query_selector("span:nth-child(2)").inner_text().replace("\u200e","")
+        except:
+            pass
     return overVies
 
 def get_technicalDetails(pw_page):
     technicalDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr")
-    technicalDetailsList=[]
+    technicalDetailsDict={}
     for technicalDetail in technicalDetails:
-        technicalDetailsList.append({
-            technicalDetail.query_selector("th:nth-child(1)").inner_text():technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
-        })
-    return technicalDetailsList
+        technicalDetailsDict[technicalDetail.query_selector("th:nth-child(1)").inner_text()]=technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
+    return technicalDetailsDict
 
 def get_abaoutProduct(pw_page):
     abaoutProduct=pw_page.query_selector_all("div#feature-bullets li span")
@@ -38,29 +38,25 @@ def get_abaoutProduct(pw_page):
 
 def get_otherDetails(pw_page):
     otherDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_2 tr")
-    otherDetailsList=[]
+    otherDetailsDict={}
     for otherDetail in otherDetails:
-        otherDetailsList.append({
-            otherDetail.query_selector("th:nth-child(1)").inner_text():otherDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
-        })
-    return otherDetailsList
+        otherDetailsDict[otherDetail.query_selector("th:nth-child(1)").inner_text()]=otherDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
+    return otherDetailsDict
 
 def get_aditionalInfo(pw_page):
     aditionalInfo=pw_page.query_selector_all("div#productDetails_db_sections tr")
-    aditionalInfoList=[]
+    aditionalInfoDict={}
     for aditionalInfo in aditionalInfo:
-        aditionalInfoList.append({
-            aditionalInfo.query_selector("th:nth-child(1)").inner_text():aditionalInfo.query_selector("td:nth-child(2)").inner_text()
-        })
-    return aditionalInfoList
+        aditionalInfoDict={}
+        aditionalInfoDict[aditionalInfo.query_selector("th:nth-child(1)").inner_text()]=aditionalInfo.query_selector("td:nth-child(2)").inner_text()
+
+    return aditionalInfoDict
 def get_bulletDetails(pw_page):
     bulletInfo=pw_page.query_selector_all("div#detailBullets_feature_div li")
-    bulletInfoList=[]
+    bulletInfoDict={}
     for bullet in bulletInfo:
-        bulletInfoList.append({
-            bullet.query_selector("span span").inner_text():bullet.query_selector("span:nth-child(2)").inner_text()
-        })
-    return bulletInfoList
+        bulletInfoDict[bullet.query_selector("span span").inner_text()]=bullet.query_selector("span:nth-child(2)").inner_text()
+    return bulletInfoDict
 
 def get_urls(pw_page):
     minipics=pw_page.query_selector_all("li[data-csa-c-action=image-block-alt-image-hover]")
@@ -92,9 +88,15 @@ def img_down(links,skuImageFolder):
 def download_sku(pw_page,sku,urlProducto,skuFolder):
     pw_page.goto(urlProducto)
     print("\nPagina cargada en el producto "+sku)
+    pw_page.wait_for_selector("div#wayfinding-breadcrumbs_feature_div li span[class=a-list-item]")
     classificaction=pw_page.locator("div#wayfinding-breadcrumbs_feature_div li span[class=a-list-item]").all_inner_texts()
-    title=pw_page.query_selector("span#productTitle").inner_text()
-    price=pw_page.query_selector("div#corePrice_feature_div span.a-offscreen").inner_text()
+    title=pw_page.query_selector("span[id='productTitle']").inner_text()
+    
+    try:
+        price=pw_page.query_selector("div[id='corePrice_feature_div'] span[class='a-offscreen']").inner_text()
+    except:
+        price="no especifico"
+    #price=pw_page.query_selector("div[id='corePriceDisplay_desktop_feature_div']>div>span>span[class='a-offscreen']").inner_text()
     try:
         descriptions=pw_page.query_selector("div#productDescription span").inner_text()
     except:
@@ -122,6 +124,7 @@ def download_sku(pw_page,sku,urlProducto,skuFolder):
     os.makedirs(skuImageFolder)
     img_down(urls,skuImageFolder)
     data={
+        "sku":sku,
         "url":urlProducto,
         "classificaction":classificaction,
         "title":title,
@@ -147,10 +150,14 @@ def remove_all_sku_folder():
     for sku in os.listdir(skuFolder):
         skuPath=os.path.join(skuFolder,sku)
         os.remove(skuPath)
+def save_screenshot(pw_page,skuFolder):
+    #create folder
+    os.makedirs(skuFolder)
+    pw_page.screenshot(path=f"{skuFolder}/screenshot.png")
 def download_info():
     products=load_products()
     pw = sync_playwright().start()
-    browser = pw.chromium.launch()
+    browser = pw.chromium.launch(headless=False)
     context=browser.new_context(storage_state="state.json")
     pw_page = context.new_page()
     for sku in tqdm(products):
@@ -158,7 +165,10 @@ def download_info():
         currentFolder = os.path.dirname(os.path.abspath(__file__))
         skuFolder=currentFolder+"/skus_Amazon/"+sku
         if not os.path.exists(skuFolder):
-            download_sku(pw_page,sku,urlProducto,skuFolder)
+            try:
+                download_sku(pw_page,sku,urlProducto,skuFolder)
+            except:
+                save_screenshot(pw_page,skuFolder)
         else:
             print("el producto ya existe")
     context.close()
