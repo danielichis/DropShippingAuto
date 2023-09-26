@@ -56,6 +56,7 @@ def load_base_price():
 
 def load_special_price():
     special_price=infoAmazon['data']['precioEspecial']  
+    special_price=str(round(float(re.findall(r"(\d+\.\d+)",special_price)[0]),2))
     page_DIN.locator("div").filter(has_text=re.compile(r"^Precio Especial$")).get_by_role("spinbutton").fill(special_price)
 
 def load_price_factors():
@@ -115,6 +116,7 @@ load_upc()
 load_dimensions()
 
 page_DIN.pause()
-print("hola mochi")
+print("trabajo de daniel")
+print("trabajo de daniel2")
 
     
