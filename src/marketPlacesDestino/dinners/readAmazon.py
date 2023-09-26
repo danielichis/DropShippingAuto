@@ -1,13 +1,11 @@
 import json
 import csv
 from src.utils.managePaths import src_path
+from src.utils.manageProducts import load_products
 import os
 import re
 #read csv file
-def load_products():
-    with open(r"products.csv", newline="") as f:
-        reader = csv.reader(f)
-        return [item[0] for item in list(reader)]
+
 def sku_folder(sku):
     return os.path.join(src_path,"marketPlacesOrigen\\amazon\\skus_Amazon",sku)
 
@@ -19,7 +17,7 @@ def load_json(product):
     vendedor="UNALUKA INTERNACIONAL"
     categoria=dataAmazon["classificaction"]
     marca=dataAmazon["overView"]["Marca:"]
-    codigoInterno=dataAmazon["sku"]
+    sku=dataAmazon["sku"]
     nombreProducto=dataAmazon["title"]
     descripcionStyleds=[]
     for description in dataAmazon["abaooutProduct"]:
@@ -50,7 +48,7 @@ def load_json(product):
         "vendedor":vendedor,
         "categoria":categoria,
         "marca":marca,
-        "upc":codigoInterno,
+        "sku":sku,
         "nombreProducto":nombreProducto,
         "descripcion":descripcion,
         "precioBase":precioBase,

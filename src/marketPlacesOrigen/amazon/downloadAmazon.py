@@ -5,13 +5,10 @@ import requests
 import io
 from tqdm import tqdm
 import os
+from src.utils.manageProducts import load_products
 from PIL import Image
 import csv
 
-def load_products():
-    with open(r"products.csv", newline="") as f:
-        reader = csv.reader(f)
-        return [item[0] for item in list(reader)]
 def get_overView(pw_page):
     overView=pw_page.query_selector_all("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small']>div")
     overVies={}

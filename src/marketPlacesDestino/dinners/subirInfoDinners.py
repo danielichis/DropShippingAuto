@@ -1,5 +1,6 @@
 from playwright.sync_api import sync_playwright
 from src.utils.dinamySelections import search_best_option
+from src.otrasWeb.scrapUpc import get_upc
 from src.marketPlacesDestino.dinners.readAmazon import infoAmazon
 import time
 homeDinners="https://admin.quickcomm.co/catalog/products"
@@ -18,6 +19,7 @@ def load_seller():
 def load_brand():
     marca_a_buscar=infoAmazon['data']['marca']
     page_DIN.locator("//span[text()='Marca']//parent::div//input").type(marca_a_buscar,delay=100)
+    time.sleep(0.5)
     page_DIN.wait_for_selector("//span[text()='Marca']/parent::div//a[@class='ng-star-inserted']")
     lista_marcas=page_DIN.locator("//span[text()='Marca']/parent::div//a[@class='ng-star-inserted']").all_inner_texts()
     best_option=search_best_option(marca_a_buscar,lista_marcas,"-")
@@ -36,9 +38,10 @@ def load_category():
         else:
             page_DIN.locator("//span[text()='Categoría']//parent::div//input").fill("")
 
-def load_UPC():
-    upc=infoAmazon['data']['upc']
+def load_upc():
+    upc=get_upc(infoAmazon['data']['sku'])
     page_DIN.locator("div").filter(has_text=re.compile(r"^Código InternoIdentificador unico \(Opcional\)$")).get_by_role("textbox").fill(upc)
+    page_DIN.query_selector("input[formcontrolname='barCode']").fill(upc)
 
 def load_name_product():
     name_product=infoAmazon['data']['nombreProducto']
@@ -47,7 +50,6 @@ def load_name_product():
 def load_description():
     description=infoAmazon['data']['descripcion']
     page_DIN.locator("//div[@class='ngx-editor-textarea']").fill(description)
-    print("hola")
 
 def load_base_price():
     base_price=infoAmazon['data']['precioBase'] 
@@ -55,7 +57,7 @@ def load_base_price():
     page_DIN.locator("div").filter(has_text=re.compile(r"^Precio Base$")).get_by_role("spinbutton").fill(base_price)
 
 def load_special_price():
-    special_price=infoAmazon['data']['precioEspecial']  
+    special_price=infoAmazon['data']['precioBase']
     special_price=str(round(float(re.findall(r"(\d+\.\d+)",special_price)[0]),2))
     page_DIN.locator("div").filter(has_text=re.compile(r"^Precio Especial$")).get_by_role("spinbutton").fill(special_price)
 
@@ -76,13 +78,7 @@ def load_stock():
     stock="1"
     page_DIN.locator("div").filter(has_text=re.compile(r"^Stock$")).get_by_role("spinbutton").fill(stock)
 
-def load_upc():
-    page_upc=browser.new_page()
-    page_upc.goto("https://www.upcitemdb.com/")
-    page_upc.query_selector("input[id='searchinput']").fill(infoAmazon['upc'])
-    page_upc.query_selector("button[type='submit']").click()
-    upc=page_upc.query_selector("div[class='rImage']").inner_text()
-    page_DIN.locator("div").filter(has_text=re.compile(r"^Código de barras \(ISBN, UPC, GTIN, etc\.\)$")).get_by_role("textbox").fill(upc)
+
 
 
 def load_dimensions():
@@ -116,7 +112,6 @@ load_upc()
 load_dimensions()
 
 page_DIN.pause()
-print("trabajo de daniel")
-print("trabajo de daniel2")
+
 
     
