@@ -81,7 +81,8 @@ def img_down(links,skuImageFolder):
         imagePath=skuImageFolder+"/"+link.split('/')[-1]
         with open(imagePath , "wb") as f:
             image.save(f , "JPEG")
-
+def comparitions(pw_page,sku,urlProducto,skuFolder):
+    pw_page.query_selector_all("table[id='HLCXComparisonTable'] tr:nth-child(17) td span").all_inner_texts()
 def download_sku(pw_page,sku,urlProducto,skuFolder):
     pw_page.goto(urlProducto)
     print("\nPagina cargada en el producto "+sku)

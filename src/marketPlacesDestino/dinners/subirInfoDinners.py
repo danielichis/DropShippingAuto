@@ -83,9 +83,9 @@ def load_stock():
 
 def load_dimensions():
     dimensions=infoAmazon['data']['dimensions_cm']
-    page_DIN.get_by_placeholder("Largo cm").fill(dimensions["Largo cm"])
-    page_DIN.get_by_placeholder("Ancho cm").fill(dimensions["Ancho cm"])
-    page_DIN.get_by_placeholder("Altura cm").fill(dimensions["Altura cm"])
+    page_DIN.get_by_placeholder("Largo cm").fill(str(dimensions["Largo cm"]))
+    page_DIN.get_by_placeholder("Ancho cm").fill(str(dimensions["Ancho cm"]))
+    page_DIN.get_by_placeholder("Altura cm").fill(str(dimensions["Altura cm"]))
     page_DIN.get_by_placeholder("Peso").fill(dimensions["Peso"])
 
 def load_images():
