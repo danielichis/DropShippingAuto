@@ -82,7 +82,12 @@ def img_down(links,skuImageFolder):
         with open(imagePath , "wb") as f:
             image.save(f , "JPEG")
 def comparitions(pw_page,sku,urlProducto,skuFolder):
-    pw_page.query_selector_all("table[id='HLCXComparisonTable'] tr:nth-child(17) td span").all_inner_texts()
+    rows=pw_page.query_selector_all("table[id='HLCXComparisonTable'] tr")
+    comparisonDict={}
+    for row in rows:
+        comparisonDict[row.query_selector("th span[class='a-size-base a-color-base']").inner_text()]=row.query_selector("td:nth-child(2)").inner_text()
+        
+
 def download_sku(pw_page,sku,urlProducto,skuFolder):
     pw_page.goto(urlProducto)
     print("\nPagina cargada en el producto "+sku)
