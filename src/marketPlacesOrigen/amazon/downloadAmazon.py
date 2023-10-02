@@ -189,32 +189,44 @@ def download_sku(pw_page,sku,urlProducto,skuFolder):
     # data to txt file
     dataTxtPath=skuFolder+"/data.txt"
     with open(dataTxtPath, "w",encoding="utf-8") as f:
-        f.write(f"sku:{sku}\n")
-        f.write(f"url:{urlProducto}\n")
-        f.write(f"title:{title}\n")
-        f.write(f"price:{price}\n")
-        f.write(f"garanty:{garanty}\n")
-        f.write(f"note:{note}\n")
-        f.write(f"classificaction:{classificaction}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"descriptions:{descriptions}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"overView:{overView}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"technicalDetails:{technicalDetails}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"abaooutProduct:{abaooutProduct}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"otherDetails:{otherDetails}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"bulletDetails:{bulletDetails}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"comparitions:{comparitions}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"importantInfo:{importantInfo}\n")
-        f.write("---------------------------------------\n")
-        f.write(f"aditionalInfo:{aditionalInfo}\n")
-
+        f.write(f"-SKU:{sku}\n")
+        f.write(f"-URL:{urlProducto}\n")
+        f.write(f"-TITULO:{title}\n")
+        f.write(f"-PRECIO AMAZON:{price}\n")
+        f.write(f"-GARANTIA:{garanty}\n")
+        f.write(f"-CLASIFICACION:{classificaction}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-DESCRIPCIONES:\n")
+        for key,value in descriptions.items():
+            f.write(f"{key}:{value}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-OVERVIEW:\n")
+        for key,value in overView.items():
+            f.write(f"{key}:{value}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-DETALLES TECNICOS:\n")
+        for key,value in technicalDetails.items():
+            f.write(f"{key}:{value}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-ACERCA DEL PRODUCTO:\n")
+        for key,value in abaooutProduct.items():
+            f.write(f"{key}:{value}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-OTROS DETALLES:\n")
+        for key,value in otherDetails.items():
+            f.write(f"{key}:{value}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-CAJA VIENE CON:\n")
+        for key,value in bulletDetails.items():
+            f.write(f"{key}:{value}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-DETALLE COMPARATIVO:\n")
+        for key,value in comparitions.items():
+            f.write(f"{key}:{value}\n")
+        f.write("---------------------------------------\n\n")
+        f.write(f"-INFORMACION ADICIONAL:\n")
+        for key,value in aditionalInfo.items():
+            f.write(f"{key}:{value}\n")
 
 def remove_all_sku_folder():
     currentFolder = os.path.dirname(os.path.abspath(__file__))
