@@ -1,15 +1,21 @@
 import os
 from pathlib import Path
 import sys
-def get_current_path():
-    config_name = 'myapp.cfg'
-    # determine if application is a script file or frozen exe
-    if getattr(sys, 'frozen', False):
-        application_path = os.path.dirname(sys.executable)
-    elif __file__:
-        application_path = os.path.dirname(__file__)
-    application_path2 = Path(application_path)
-    application_path3 = application_path2.parent
-    return application_path3
-
-src_path=get_current_path()
+class managePaths:
+    def __init__(self):
+        pass
+    def get_current_path(self,up_tree=0):
+        # determine if application is a script file or frozen exe
+        if getattr(sys, 'frozen', False):
+            application_path = os.path.dirname(sys.executable)
+        elif __file__:
+            application_path = os.path.dirname(__file__)    
+        new_parent=Path(application_path)
+        for i in range(up_tree):
+            new_parent=new_parent.parent
+        return new_parent
+    def get_root_path(self):
+        root_path = os.getcwd()
+        return root_path
+    
+pathsManager=managePaths()

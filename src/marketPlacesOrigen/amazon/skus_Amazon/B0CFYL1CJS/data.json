@@ -10,7 +10,25 @@
     ],
     "title": "ASUS VivoBook delgado y ligero, 14 HD pantalla táctil portátil 2 en 1, 4 GB de RAM, 64 GB SSD+64 GB MSD, procesador Intel Celeron, tipo C, HDMI, Microsoft 365 Personal 1 año, Windows 11 S",
     "price": "US$286.54",
-    "descriptions": "Procesador: Procesador Intel Celeron N4500 1,1 GHz (caché de 4M, hasta 2,8 GHz, 2 núcleos)\n\nGráficos: gráficos Intel UHD\n\nSistema operativo: Windows 11 Home 64-bit\n\nMemoria: 4GB DDR4 SDRAM\n\nDisco duro: 64GB PCIe NVMe M.2 unidad de estado sólido +64GB MSD\n\nUnidad óptica: No\n\nPantalla: 14\" HD (1366 x 768) 16:9, 250 nits, 45% NTSC, brillante, pantalla táctil\n\nPuertos: 1 x USB 3.2 Tipo-C (Gen1) 1 x USB 3.2 Tipo-A (Gen1) 1 x USB 2.0 1 x lector de tarjetas Micro SD 1 x HDMI 1.4b 1 x conector combinado de auriculares/micrófono (0.138 in)\n\nConectividad: Wi-Fi 5 (802.11ac) + Bluetooth 4.2\n\nAudio: Altavoces estéreo, 1.5W x2, Dolby Audio\n\nTeclado: Teclado estándar, tamaño completo, inglés de EE. UU.\n\nCámara web HD incorporada: HD 720p\n\nUnidad multimedia: lector de tarjetas SD multiformato\n\nBatería: hasta 9,5 horas; adaptador de 65 W con punta redonda (3 pines)\n\nColor: azul\n\nDimensiones (largo x ancho x alto): 12.63 x 8.54 x 0.67\n\nPeso: 3.31 lbs\n\n",
+    "descriptions": {
+        "Procesador": " Procesador Intel Celeron N4500 1,1 GHz (caché de 4M, hasta 2,8 GHz, 2 núcleos)",
+        "Gráficos": " gráficos Intel UHD",
+        "Sistema operativo": " Windows 11 Home 64-bit",
+        "Memoria": " 4GB DDR4 SDRAM",
+        "Disco duro": " 64GB PCIe NVMe M.2 unidad de estado sólido +64GB MSD",
+        "Unidad óptica": " No",
+        "Pantalla": " 14\" HD (1366 x 768) 16",
+        "Puertos": " 1 x USB 3.2 Tipo-C (Gen1) 1 x USB 3.2 Tipo-A (Gen1) 1 x USB 2.0 1 x lector de tarjetas Micro SD 1 x HDMI 1.4b 1 x conector combinado de auriculares/micrófono (0.138 in)",
+        "Conectividad": " Wi-Fi 5 (802.11ac) + Bluetooth 4.2",
+        "Audio": " Altavoces estéreo, 1.5W x2, Dolby Audio",
+        "Teclado": " Teclado estándar, tamaño completo, inglés de EE. UU.",
+        "Cámara web HD incorporada": " HD 720p",
+        "Unidad multimedia": " lector de tarjetas SD multiformato",
+        "Batería": " hasta 9,5 horas; adaptador de 65 W con punta redonda (3 pines)",
+        "Color": " azul",
+        "Dimensiones (largo x ancho x alto)": " 12.63 x 8.54 x 0.67",
+        "Peso": " 3.31 lbs"
+    },
     "overView": {
         "Marca:": "ASUS",
         "Nombre del modelo:": "VivoBook",
@@ -23,7 +41,6 @@
         "Descripción de la tarjeta gráfica:": "Integrated",
         "Coprocesador de gráficos:": "Intel UHD Graphics"
     },
-    "note": "Los productos con enchufes eléctricos están diseñados para usarse en EE. UU. Las tomas de corriente y la tensión difieren a nivel internacional. Es posible que este producto requiera un adaptador o conversor para poder usarse en su destino. Comprueba la compatibilidad antes de comprar.",
     "technicalDetails": {
         "Tamaño del área de visualización de la pantalla con pie": "14 Pulgadas",
         "Resolución de la pantalla": "1366 x 768 píxeles",
@@ -35,13 +52,12 @@
         "Marca Chipset": "Intel",
         "Descripción de la tarjeta": "Integrated"
     },
-    "abaooutProduct": [
-        "Memoria y almacenamiento: 4 GB de RAM de alto ancho de banda para ejecutar sin problemas múltiples aplicaciones y pestañas del navegador a la vez. El disco duro es de 64 GB eMMC + 64 GB MSD Starup Disk que permite un arranque rápido y transferencia de datos.",
-        "Procesador: procesador Intel Celeron N4500 de 1.1 GHz (caché de 4M, hasta 2.8 GHz, 2 núcleos) para un rendimiento rápido y rápido.",
-        "Pantalla: pantalla táctil antirreflejo HD de 14 pulgadas (1366 x 768), retroiluminación LED de bajo consumo que te da más área de visualización y menos desorden, en una pantalla HD cristalina.",
-        "Sistema operativo: Windows 11 Home en modelo S. Puedes cambiar el modo Win 11 S al modo Regular Win 11.",
-        "【Office 365 durante un año】Obtén acceso completo a Microsoft Excel, Word, PowerPoint, OneNote, Access y 1 TB de almacenamiento en una unidad durante 1 año."
-    ],
+    "abaooutProduct": {
+        "Memoria y almacenamiento": " 4 GB de RAM de alto ancho de banda para ejecutar sin problemas múltiples aplicaciones y pestañas del navegador a la vez. El disco duro es de 64 GB eMMC + 64 GB MSD Starup Disk que permite un arranque rápido y transferencia de datos.",
+        "Procesador": " procesador Intel Celeron N4500 de 1.1 GHz (caché de 4M, hasta 2.8 GHz, 2 núcleos) para un rendimiento rápido y rápido.",
+        "Pantalla": " pantalla táctil antirreflejo HD de 14 pulgadas (1366 x 768), retroiluminación LED de bajo consumo que te da más área de visualización y menos desorden, en una pantalla HD cristalina.",
+        "Sistema operativo": " Windows 11 Home en modelo S. Puedes cambiar el modo Win 11 S al modo Regular Win 11."
+    },
     "otherDetails": {
         "Marca": "ASUS",
         "Series": "VivoBook",
@@ -58,11 +74,25 @@
         "Tipo de unidad óptica": "Sin unidad óptica"
     },
     "bulletDetails": {},
+    "comparitions": {
+        "Tamaño de la memoria de la computadora": "4",
+        "Fabricante de CPU": "Intel",
+        "Velocidad de la CPU": "2.10 GHz",
+        "Resolución Máxima de Pantalla": "1366 x 768 pixels",
+        "Tamaño de pantalla": "14 pulgadas",
+        "Tamaño del disco duro": "64 GB",
+        "Dimensiones del artículo LxWxH": "12.63 x 8.54 x 0.67 pulgadas",
+        "Peso Artículo": "3.31 libras",
+        "Sistema operativo": "Windows 11",
+        "Cantidad de procesadores": "1",
+        "Tipo de RAM": "DDR SDRAM"
+    },
     "importantInfo": [],
     "aditionalInfo": {
         "Producto en amazon.com desde": "Agosto 17, 2023"
     },
     "garanty": "Puedes devolver cualquier computadora nueva que hayas comprado en Amazon.com que recibas descompuesta o dañada, o que esté en una caja sin abrir, por un reembolso íntegro en un plazo de 30 días después de la compra. Amazon.com se reserva el derecho de probar las devoluciones de máquinas descompuestas e imponer al cliente una cuota igual al 15% del precio de venta si el cliente malinterpreta la condición del producto. Cualquier computadora devuelta que se encuentre dañada por mal uso del cliente, le falten piezas o esté en condición inaceptable debido a la manipulación del cliente tendrá como resultado un cargo al cliente por reposición con base en la condición del producto. Amazon.com no aceptará devoluciones de cualquier computadora de escritorio o computadora personal después de 30 días de que hayas recibido el envío. Los productos nuevos, usados y reacondicionados de los vendedores de Marketplace están sujetos a las políticas de devolución de cada vendedor.",
+    "note": null,
     "imageUrls": [
         "https://m.media-amazon.com/images/I/715UNRq9pNL._AC_SL1500_.jpg",
         "https://m.media-amazon.com/images/I/71qWRgImPVL._AC_SL1500_.jpg",

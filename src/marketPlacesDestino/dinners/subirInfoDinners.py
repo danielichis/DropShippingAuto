@@ -78,15 +78,12 @@ def load_stock():
     stock="1"
     page_DIN.locator("div").filter(has_text=re.compile(r"^Stock$")).get_by_role("spinbutton").fill(stock)
 
-
-
-
 def load_dimensions():
     dimensions=infoAmazon['data']['dimensions_cm']
     page_DIN.get_by_placeholder("Largo cm").fill(str(dimensions["Largo cm"]))
     page_DIN.get_by_placeholder("Ancho cm").fill(str(dimensions["Ancho cm"]))
     page_DIN.get_by_placeholder("Altura cm").fill(str(dimensions["Altura cm"]))
-    page_DIN.get_by_placeholder("Peso").fill(dimensions["Peso"])
+    page_DIN.get_by_placeholder("Peso").fill(dimensions["peso_kg"])
 
 def load_images():
     for imagePath in infoAmazon["imagesPath"]:
@@ -94,6 +91,12 @@ def load_images():
 
 def load_aditional_fields():
     lista_atributos_adicionales=page_DIN.locator("//div[@class='col-md-6 ng-star-inserted']//span[text()='*']/parent::span").all_inner_texts()
+    lista_obligatorios=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']")
+    lista_inputs=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div input")
+    lista_selects=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div select")
+    lista_opcionales=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div>span:not(:has(>span))")
+    
+
 p = sync_playwright().start()
 user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
 browser = p.chromium.launch_persistent_context(user_dir,headless=False)

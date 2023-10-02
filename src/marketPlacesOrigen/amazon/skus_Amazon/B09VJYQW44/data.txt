@@ -1,0 +1,25 @@
+sku:B09VJYQW44
+url:https://www.amazon.com/dp/B09VJYQW44
+title:ASUS Vivobook Laptop L210 - Laptop ultradelgada de 11.6 pulgadas, procesador Intel Celeron N4020, 4 GB de RAM, 128 GB de almacenamiento eMMC, Windows 11 Home en modo S con un año de Office 365 Personal, L210MA-DS04, negro estrella
+price:US$249.99
+garanty:Puedes devolver cualquier computadora nueva que hayas comprado en Amazon.com que recibas descompuesta o dañada, o que esté en una caja sin abrir, por un reembolso íntegro en un plazo de 30 días después de la compra. Amazon.com se reserva el derecho de probar las devoluciones de máquinas descompuestas e imponer al cliente una cuota igual al 15% del precio de venta si el cliente malinterpreta la condición del producto. Cualquier computadora devuelta que se encuentre dañada por mal uso del cliente, le falten piezas o esté en condición inaceptable debido a la manipulación del cliente tendrá como resultado un cargo al cliente por reposición con base en la condición del producto. Amazon.com no aceptará devoluciones de cualquier computadora de escritorio o computadora personal después de 30 días de que hayas recibido el envío. Los productos nuevos, usados y reacondicionados de los vendedores de Marketplace están sujetos a las políticas de devolución de cada vendedor.
+note:None
+classificaction:['Electrónica', 'Computadoras y Accesorios', 'Computadoras y Tablets', 'Laptops', 'Laptops Tradicionales']
+---------------------------------------
+descriptions:{}
+---------------------------------------
+overView:{'Marca:': 'ASUS', 'Nombre del modelo:': 'ASUS Vivobook Go 12', 'Tamaño de pantalla:': '11.6', 'Color:': 'Negro (Star Black)', 'Tamaño del disco duro:': '128 GB', 'Modelo de CPU:': 'Intel Celeron', 'Tamaño de la memoria RAM instalada:': '4 GB', 'Sistema operativo:': 'Windows 11 S', 'Características especiales:': 'Recubrimiento antidestellos', 'Descripción de la tarjeta gráfica:': 'Integrada'}
+---------------------------------------
+technicalDetails:{'Tamaño del área de visualización de la pantalla con pie': '11.6', 'Resolución de la pantalla': '1366 x 768 píxeles', 'Máxima resolución de pantalla': '1366 x 768 Píxeles', 'Procesador': '2.8 GHz celeron', 'RAM': '4 GB DDR4', 'Velocidad de memoria': '2,8 GHz', 'Disco Duro': '128 GB eMMC', 'Marca Chipset': 'Intel', 'Descripción de la tarjeta': 'Integrada', 'Tamaño de RAM de la tarjeta gráfica': '4 GB', 'Número de puertos USB 2.0': '1', 'Número de puertos USB 3.0': '1'}
+---------------------------------------
+abaooutProduct:{'Productividad potente': ' procesador Intel Celeron N4020 eficiente de 1,1 GHz (caché de 4 M, hasta 2,8 GHz) y gráficos Intel UHD ofrecen una velocidad e inteligencia inigualables, lo que permite una creación y productividad impresionantes. Voltaje', 'Visiblemente impresionante': ' experimente detalles nítidos y colores nítidos en la pantalla delgada HD de 11.6" (1366 x 768) con una relación de pantalla a cuerpo del 73%, relación de aspecto 16', 'Especificaciones internas': ' 128GB eMMC Flash Storage y 4GB DDR4 RAM para almacenar sus archivos', 'Sistema operativo seguro': ' Windows 11 Home en modo S viene con funciones de seguridad avanzadas incorporadas, como protecciones contra phishing y software malicioso para que no tenga que pensarlo dos veces al navegar a una nueva página web o descargar una aplicación', 'Puertos para todos sus accesorios': ' USB 3.2 Gen 1 Tipo-C, USB 3.2 Gen 1 Tipo-A, HDMI (la velocidad de transferencia USB puede variar. Más información en el sitio web de ASUS', 'Delgado y portátil': ' 0.7" delgado y pesa solo 2.31 libras (batería incluida)', 'Contenido de la caja': ' portátil ASUS Vivobook, adaptador de CA, cable de alimentación, manual de usuario (idioma español no garantizado)'}
+---------------------------------------
+otherDetails:{'Marca': 'ASUS', 'Series': 'ASUS Vivobook Go 12', 'Número de modelo del producto': 'L210MA-DS04', 'Sistema operativo': 'Windows 11 S', 'Dimensiones del producto': '10,98 x 7,52 x 0,67 pulgadas', 'Dimensiones del artículo Largo x Ancho x Altura': '10.98 x 7.52 x 0.67 pulgadas', 'Color': 'Negro (Star Black)', 'Marca del procesador': 'Intel', 'Número de procesadores': '2', 'Tamaño de memoria flash': '128 GB', 'Interfaz de la unidad de disco duro': 'USB', 'Tipo de unidad óptica': 'Sin unidad', 'Fuente de energía': 'Batería', 'Voltaje': '3,7 Voltios', 'Pilas': '1 Iones de litio necesaria(s), incluida(s)'}
+---------------------------------------
+bulletDetails:{}
+---------------------------------------
+comparitions:{'Tamaño de la memoria de la computadora': '4\xa0GB', 'Fabricante de CPU': 'Intel', 'Velocidad de la CPU': '2.8\xa0GHz', 'Resolución Máxima de Pantalla': '1366 x 768 pixels', 'Tamaño de pantalla': '11.6', 'Tecnología de pantalla': 'hd', 'Tamaño del disco duro': '128\xa0GB', 'Dimensiones del artículo LxWxH': '10.98 x 7.52 x 0.67 pulgadas', 'Peso Artículo': '2.31 libras', 'Sistema operativo': 'Windows 11 S', 'Cantidad de procesadores': '2'}
+---------------------------------------
+importantInfo:[]
+---------------------------------------
+aditionalInfo:{'Producto en amazon.com desde': 'Marzo 21, 2022'}

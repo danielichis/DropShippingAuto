@@ -9,8 +9,8 @@
         "Laptops Tradicionales"
     ],
     "title": "ASUS ZenBook Pro Duo 15 OLED UX582 portátil, pantalla táctil OLED 4K UHD de 15.6 pulgadas, Intel Core i7-10870H, 16GB RAM, 1TB SSD, GeForce RTX 3070, ScreenPad Plus, Windows 10 Pro, Celestial Blue, UX582LR-XS74T",
-    "price": "US$2,634.06",
-    "descriptions": null,
+    "price": "US$2,261.05",
+    "descriptions": {},
     "overView": {
         "Marca:": "ASUS",
         "Nombre del modelo:": "ZenBook Pro Duo 15",
@@ -23,7 +23,6 @@
         "Descripción de la tarjeta gráfica:": "RTX 3070",
         "Coprocesador de gráficos:": "NVIDIA GeForce RTX 3070"
     },
-    "note": "Los productos con enchufes eléctricos están diseñados para usarse en EE. UU. Las tomas de corriente y la tensión difieren a nivel internacional. Es posible que este producto requiera un adaptador o conversor para poder usarse en su destino. Comprueba la compatibilidad antes de comprar.",
     "technicalDetails": {
         "Tamaño del área de visualización de la pantalla con pie": "15,6 Pulgadas",
         "Resolución de la pantalla": "3840 x 2160 píxeles",
@@ -38,14 +37,13 @@
         "Tipo de conexión inalámbrica": "Bluetooth, 802.11ax",
         "Número de puertos USB 3.0": "3"
     },
-    "abaooutProduct": [
-        "Rendimiento de grado profesional: con un procesador Intel Core i7 de 10ª generación, 16 GB de RAM, 1 TB SSD y gráficos NVIDIA GeForce RTX 3070, ASUS Zenbook Pro Duo 15 OLED es una verdadera potencia",
-        "Imágenes increíbles: esta computadora portátil con pantalla táctil de 15\" tiene una pantalla 4K OLED HDR NanoEdge. Las computadoras portátiles OLED ASUS proporcionan imágenes ultrassuaves, colores de grado profesional y un mejor cuidado de los ojos",
-        "Durabilidad extrema: portátil duradero que cumple con los estándares militares ultra exigentes para mayor durabilidad, lo que le brinda protección y tranquilidad dondequiera que vaya",
-        "Productividad mejorada: el ScreenPad Plus inclinable, una pantalla táctil 4K secundaria de 14 pulgadas que se inclina automáticamente para una visualización cómoda, te ofrece infinitas formas de optimizar tu experiencia multitarea",
-        "Características ergonómicas: con el soporte ASUS ErgoLift, ScreenPad Plus, LED NumberPad, y el reposamanos desmontable incluido y el lápiz óptico activo ASUS (idioma español no garantizado), este portátil ASUS te dará una experiencia más ergonómica y estable",
-        "Suscripción gratuita de 3 meses a Adobe Creative Cloud con la compra. Obtén más información en el sitio web de ASUS para obtener más detalles"
-    ],
+    "abaooutProduct": {
+        "Rendimiento de grado profesional": " con un procesador Intel Core i7 de 10ª generación, 16 GB de RAM, 1 TB SSD y gráficos NVIDIA GeForce RTX 3070, ASUS Zenbook Pro Duo 15 OLED es una verdadera potencia",
+        "Imágenes increíbles": " esta computadora portátil con pantalla táctil de 15\" tiene una pantalla 4K OLED HDR NanoEdge. Las computadoras portátiles OLED ASUS proporcionan imágenes ultrassuaves, colores de grado profesional y un mejor cuidado de los ojos",
+        "Durabilidad extrema": " portátil duradero que cumple con los estándares militares ultra exigentes para mayor durabilidad, lo que le brinda protección y tranquilidad dondequiera que vaya",
+        "Productividad mejorada": " el ScreenPad Plus inclinable, una pantalla táctil 4K secundaria de 14 pulgadas que se inclina automáticamente para una visualización cómoda, te ofrece infinitas formas de optimizar tu experiencia multitarea",
+        "Características ergonómicas": " con el soporte ASUS ErgoLift, ScreenPad Plus, LED NumberPad, y el reposamanos desmontable incluido y el lápiz óptico activo ASUS (idioma español no garantizado), este portátil ASUS te dará una experiencia más ergonómica y estable"
+    },
     "otherDetails": {
         "Marca": "ASUS",
         "Series": "ZenBook Pro Duo 15",
@@ -65,15 +63,31 @@
         "Pilas": "1 Iones de litio necesaria(s), incluida(s)"
     },
     "bulletDetails": {},
+    "comparitions": {
+        "Tamaño de la memoria de la computadora": "16 GB",
+        "Fabricante de CPU": "Intel",
+        "Velocidad de la CPU": "5 GHz",
+        "Resolución Máxima de Pantalla": "3840 x 2160 pixels",
+        "Tamaño de pantalla": "15.6 pulgadas",
+        "Tecnología de pantalla": "oled",
+        "Tamaño del disco duro": "1 TB",
+        "Dimensiones del artículo LxWxH": "14.17 x 9.81 x 0.85 pulgadas",
+        "Peso Artículo": "5.16 libras",
+        "Sistema operativo": "32 ES",
+        "Cantidad de procesadores": "8",
+        "Tipo de RAM": "DDR4 SDRAM",
+        "Estándar de comunicación inalámbrica": "802.11ax, Bluetooth"
+    },
     "importantInfo": [
         {
             "Exclusión de garantías y responsabilidad": "1La actualización de Windows 11 se entregará a dispositivos que califiquen a finales de 2021 hasta 2022. El tiempo varía según el dispositivo. Ciertas características requieren hardware adicional (consulte aka.ms/windows11-spec)."
         }
     ],
     "aditionalInfo": {
-        "Producto en amazon.com desde": "Marzo 24, 2021"
+        "Producto en amazon.com desde": "Marzo 19, 2021"
     },
     "garanty": "Puedes devolver cualquier computadora nueva que hayas comprado en Amazon.com que recibas descompuesta o dañada, o que esté en una caja sin abrir, por un reembolso íntegro en un plazo de 30 días después de la compra. Amazon.com se reserva el derecho de probar las devoluciones de máquinas descompuestas e imponer al cliente una cuota igual al 15% del precio de venta si el cliente malinterpreta la condición del producto. Cualquier computadora devuelta que se encuentre dañada por mal uso del cliente, le falten piezas o esté en condición inaceptable debido a la manipulación del cliente tendrá como resultado un cargo al cliente por reposición con base en la condición del producto. Amazon.com no aceptará devoluciones de cualquier computadora de escritorio o computadora personal después de 30 días de que hayas recibido el envío. Los productos nuevos, usados y reacondicionados de los vendedores de Marketplace están sujetos a las políticas de devolución de cada vendedor.",
+    "note": null,
     "imageUrls": [
         "https://m.media-amazon.com/images/I/81Eub+aql9S._AC_SL1500_.jpg",
         "https://m.media-amazon.com/images/I/51K3JW9a9bL._AC_SL1500_.jpg",

@@ -19,12 +19,13 @@
         "marca": "ASUS",
         "sku": "B09VJYQW44",
         "nombreProducto": "ASUS Vivobook Laptop L210 - Laptop ultradelgada de 11.6 pulgadas, procesador Intel Celeron N4020, 4 GB de RAM, 128 GB de almacenamiento eMMC, Windows 11 Home en modo S con un año de Office 365 Personal, L210MA-DS04, negro estrella",
-        "descripcion": "<b>Productividad potente</b>: procesador Intel Celeron N4020 eficiente de 1,1 GHz (caché de 4 M, hasta 2,8 GHz) y gráficos Intel UHD ofrecen una velocidad e inteligencia inigualables, lo que permite una creación y productividad impresionantes. Voltaje\n\n<b>Visiblemente impresionante</b>: experimente detalles nítidos y colores nítidos en la pantalla delgada HD de 11.6\" (1366 x 768) con una relación de pantalla a cuerpo del 73%, relación de aspecto 16\n\n<b>Especificaciones internas</b>: 128GB eMMC Flash Storage y 4GB DDR4 RAM para almacenar sus archivos\n\n<b>Sistema operativo seguro</b>: Windows 11 Home en modo S viene con funciones de seguridad avanzadas incorporadas, como protecciones contra phishing y software malicioso para que no tenga que pensarlo dos veces al navegar a una nueva página web o descargar una aplicación\n\n<b>Puertos para todos sus accesorios</b>: USB 3.2 Gen 1 Tipo-C, USB 3.2 Gen 1 Tipo-A, HDMI (la velocidad de transferencia USB puede variar. Más información en el sitio web de ASUS\n\n<b>Delgado y portátil</b>: 0.7\" delgado y pesa solo 2.31 libras (batería incluida)\n\n<b>Contenido de la caja</b>: portátil ASUS Vivobook, adaptador de CA, cable de alimentación, manual de usuario (idioma español no garantizado)",
-        "precioBase": "US$233.93",
+        "descripcion": "Tamaño del área de visualización de la pantalla con pie:11.6\nResolución de la pantalla:1366 x 768 píxeles\nMáxima resolución de pantalla:1366 x 768 Píxeles\nProcesador:2.8 GHz celeron\nRAM:4 GB DDR4\nVelocidad de memoria:2,8 GHz\nDisco Duro:128 GB eMMC\nMarca Chipset:Intel\nDescripción de la tarjeta:Integrada\nTamaño de RAM de la tarjeta gráfica:4 GB\nNúmero de puertos USB 2.0:1\nNúmero de puertos USB 3.0:1",
+        "precioBase": "249.99",
         "dimensions_cm": {
-            "Largo cm": 27.89,
-            "Ancho cm": 19.1,
-            "Altura cm": 1.7
+            "Largo cm": "27.89",
+            "Ancho cm": "19.1",
+            "Altura cm": "1.7",
+            "peso_kg": "1.05"
         }
     }
 }
