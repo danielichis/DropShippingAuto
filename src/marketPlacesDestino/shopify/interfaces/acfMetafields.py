@@ -1,4 +1,7 @@
 from utils.selectores import localizador
+
+#Para llenar especificaciones adicionales en la app Metafields
+
 botonAplicaciones=localizador("para ingresar a buscar la App ACF Metafields","ul[class]>li[class='IypnU']:nth-child(2)>div>button>span>span","css")
 botonAppAcfMetafields=localizador("para acceder a esta app donde se agrega más especificaciones","//div[text()='ACF: Metafields Custom Fields']","xpath")
 botonProductosDeMetaFields=localizador("para ingresar, ubicar nuestro producto nuevo y agregar más especificaciones","button[id='products']>span[class]","css")
