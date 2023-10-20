@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 from src.utils.dinamySelections import search_best_option
 from src.otrasWeb.scrapUpc import get_upc
 from src.marketPlacesDestino.dinners.readAmazon import infoAmazon
+import json
 import time
 homeDinners="https://admin.quickcomm.co/catalog/products"
 import re
@@ -90,16 +91,44 @@ def load_images():
         page_DIN.locator(".uploaded-photos__item > input").first.set_input_files(imagePath)
 
 def load_aditional_fields():
+    page_DIN.wait_for_selector("div[class='col-md-6 ng-star-inserted']")
+    aditionalFields=page_DIN.query_selector_all("div[class='col-md-6 ng-star-inserted']")
     lista_atributos_adicionales=page_DIN.locator("//div[@class='col-md-6 ng-star-inserted']//span[text()='*']/parent::span").all_inner_texts()
     lista_obligatorios=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']")
     lista_inputs=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div input")
     lista_selects=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div select")
     lista_opcionales=page_DIN.query_selector("div[class='col-md-6 ng-star-inserted'] div>span:not(:has(>span))")
+    fieldsData=[]
+    for field in aditionalFields:
+        textField=field.query_selector("span").inner_text()
+        if "*" in textField:
+            mandatory=True
+        else:
+            mandatory=False
+        numOfSelects=len(field.query_selector_all("select"))
+        if numOfSelects>0:
+            select=field.query_selector("select")
+            options=options=[x.inner_text() for x in select.query_selector_all("option")]
+            type="select"
+        else:
+            options=[]
+            type="input"
+        fieldData={
+            "name":textField.replace("*","").strip(),
+            "mandatory":mandatory,
+            "options":options,
+            "type":type
+        }
+        fieldsData.append(fieldData)
     
+    with open("fieldsData.json", "w",encoding="utf-8") as f:
+        json.dump(fieldsData, f, indent=4, ensure_ascii=False)
+    print(fieldsData)
+
 
 p = sync_playwright().start()
 user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
-browser = p.chromium.launch_persistent_context(user_dir,headless=False)
+browser = p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir="videos")
 page_DIN=browser.new_page()
 go_to_create_product()
 load_images()
@@ -113,8 +142,8 @@ load_special_price()
 load_sku()
 load_upc()
 load_dimensions()
-
-page_DIN.pause()
+load_aditional_fields()
+#page_DIN.pause()
 
 
     

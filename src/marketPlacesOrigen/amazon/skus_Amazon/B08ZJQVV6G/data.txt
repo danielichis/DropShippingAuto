@@ -1,7 +1,7 @@
 -SKU:B08ZJQVV6G
 -URL:https://www.amazon.com/dp/B08ZJQVV6G
 -TITULO:ASUS ZenBook Pro Duo 15 OLED UX582 portátil, pantalla táctil OLED 4K UHD de 15.6 pulgadas, Intel Core i7-10870H, 16GB RAM, 1TB SSD, GeForce RTX 3070, ScreenPad Plus, Windows 10 Pro, Celestial Blue, UX582LR-XS74T
--PRECIO AMAZON:US$2,261.05
+-PRECIO AMAZON:US$2,262.73
 -GARANTIA:Puedes devolver cualquier computadora nueva que hayas comprado en Amazon.com que recibas descompuesta o dañada, o que esté en una caja sin abrir, por un reembolso íntegro en un plazo de 30 días después de la compra. Amazon.com se reserva el derecho de probar las devoluciones de máquinas descompuestas e imponer al cliente una cuota igual al 15% del precio de venta si el cliente malinterpreta la condición del producto. Cualquier computadora devuelta que se encuentre dañada por mal uso del cliente, le falten piezas o esté en condición inaceptable debido a la manipulación del cliente tendrá como resultado un cargo al cliente por reposición con base en la condición del producto. Amazon.com no aceptará devoluciones de cualquier computadora de escritorio o computadora personal después de 30 días de que hayas recibido el envío. Los productos nuevos, usados y reacondicionados de los vendedores de Marketplace están sujetos a las políticas de devolución de cada vendedor.
 -CLASIFICACION:['Electrónica', 'Computadoras y Accesorios', 'Computadoras y Tablets', 'Laptops', 'Laptops Tradicionales']
 ---------------------------------------

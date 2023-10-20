@@ -166,26 +166,42 @@ def download_sku(pw_page,sku,urlProducto,skuFolder):
     data={
         "sku":sku,
         "url":urlProducto,
-        "classificaction":classificaction,
-        "title":title,
-        "price":price,
-        "descriptions":descriptions,
-        "overView":overView,
-        "technicalDetails":technicalDetails,
-        "abaooutProduct":abaooutProduct,
-        "otherDetails":otherDetails,
-        "bulletDetails":bulletDetails,
-        "comparitions":comparitions,
-        "importantInfo":importantInfo,
-        "aditionalInfo":aditionalInfo,
-        "garanty":garanty,
-        "note":note,
-        "imageUrls":urls_images    
+        "clasificacion":classificaction,
+        "titulo":title,
+        "precio":price,
+        "descripciones":descriptions,
+        "Vista General":overView,
+        "Detalles Tecnicos":technicalDetails,
+        "Acerca del producto":abaooutProduct,
+        "Otros detalles":otherDetails,
+        "Contenido de la caja":bulletDetails,
+        "Mas detalles Tecnicos":comparitions,
+        "Informacion Importante":importantInfo,
+        "Informacion Adicional":aditionalInfo,
+        "Garantia":garanty,
+        "Nota":note,
+        "Links Imagenes":urls_images    
+    }
+    dataToEmbed={
+        "clasificacion":classificaction,
+        "titulo":title,
+        "descripciones":descriptions,
+        "Vista General":overView,
+        "Detalles Tecnicos":technicalDetails,
+        "Acerca del producto":abaooutProduct,
+        "Otros detalles":otherDetails,
+        "Contenido de la caja":bulletDetails,
+        "Mas detalles Tecnicos":comparitions,
+        "Informacion Importante":importantInfo,
+        "Informacion Adicional":aditionalInfo,
     }
     
     dataJsonPath=skuFolder+"/data.json"
+    dataJsonToEmbedPath=skuFolder+"/data_to_embed.json"
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
+    with open(dataJsonToEmbedPath, "w",encoding="utf-8") as f:
+        json.dump(dataToEmbed, f, indent=4, ensure_ascii=False)
     # data to txt file
     dataTxtPath=skuFolder+"/data.txt"
     with open(dataTxtPath, "w",encoding="utf-8") as f:

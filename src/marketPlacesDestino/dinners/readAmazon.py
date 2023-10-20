@@ -15,23 +15,23 @@ def load_json(product):
     with open(dataJsonPath, "r",encoding="utf-8") as f:
         dataAmazon= json.load(f)
     vendedor="UNALUKA INTERNACIONAL"
-    categoria=dataAmazon["classificaction"]
-    marca=dataAmazon["overView"]["Marca:"]
+    categoria=dataAmazon["clasificacion"]
+    marca=dataAmazon["Vista General"]["Marca:"]
     sku=dataAmazon["sku"]
-    nombreProducto=dataAmazon["title"]
+    nombreProducto=dataAmazon["titulo"]
     descripcionStyleds=[]
-    precioBase=dataAmazon["price"]
+    precioBase=dataAmazon["precio"]
     precioBase = re.search(r'\d{1,3}(?:,\d{3})*(?:\.\d+)?', precioBase)
     precioBase=str(round(float(precioBase.group(0).replace(",","")),2))
     descriptionString=""
-    peso_libras=dataAmazon["comparitions"]["Peso Artículo"]
+    peso_libras=dataAmazon["Mas detalles Tecnicos"]["Peso Artículo"]
     peso_libras=re.findall(r"(\d+\.\d+) libras",peso_libras)[0]
     peso_kg=str(round(float(peso_libras)*0.453592,2))
-    for key,value in dataAmazon["descriptions"].items():
+    for key,value in dataAmazon["descripciones"].items():
         descriptionString=f"{descriptionString}\n{key}:{value}"
-    dimensions=dataAmazon["otherDetails"]["Dimensiones del artículo Largo x Ancho x Altura"]
+    dimensions=dataAmazon["Otros detalles"]["Dimensiones del artículo Largo x Ancho x Altura"]
     if descriptionString=="":
-        for key,value in dataAmazon["technicalDetails"].items():
+        for key,value in dataAmazon["Detalles Tecnicos"].items():
             descriptionString=f"{descriptionString}\n{key}:{value}"
     largo=re.findall(r"(\d+\.\d+)",dimensions)[0]
     ancho=re.findall(r"(\d+\.\d+)",dimensions)[1]

@@ -1,6 +1,4 @@
 {
-    "sku": "B08ZJQVV6G",
-    "url": "https://www.amazon.com/dp/B08ZJQVV6G",
     "clasificacion": [
         "Electrónica",
         "Computadoras y Accesorios",
@@ -9,7 +7,6 @@
         "Laptops Tradicionales"
     ],
     "titulo": "ASUS ZenBook Pro Duo 15 OLED UX582 portátil, pantalla táctil OLED 4K UHD de 15.6 pulgadas, Intel Core i7-10870H, 16GB RAM, 1TB SSD, GeForce RTX 3070, ScreenPad Plus, Windows 10 Pro, Celestial Blue, UX582LR-XS74T",
-    "precio": "US$2,262.73",
     "descripciones": {},
     "Vista General": {
         "Marca:": "ASUS",
@@ -85,14 +82,5 @@
     ],
     "Informacion Adicional": {
         "Producto en amazon.com desde": "Marzo 19, 2021"
-    },
-    "Garantia": "Puedes devolver cualquier computadora nueva que hayas comprado en Amazon.com que recibas descompuesta o dañada, o que esté en una caja sin abrir, por un reembolso íntegro en un plazo de 30 días después de la compra. Amazon.com se reserva el derecho de probar las devoluciones de máquinas descompuestas e imponer al cliente una cuota igual al 15% del precio de venta si el cliente malinterpreta la condición del producto. Cualquier computadora devuelta que se encuentre dañada por mal uso del cliente, le falten piezas o esté en condición inaceptable debido a la manipulación del cliente tendrá como resultado un cargo al cliente por reposición con base en la condición del producto. Amazon.com no aceptará devoluciones de cualquier computadora de escritorio o computadora personal después de 30 días de que hayas recibido el envío. Los productos nuevos, usados y reacondicionados de los vendedores de Marketplace están sujetos a las políticas de devolución de cada vendedor.",
-    "Nota": null,
-    "Links Imagenes": [
-        "https://m.media-amazon.com/images/I/81Eub+aql9S._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/51K3JW9a9bL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/91mUBSXGpoL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/91aK+EQZN2L._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/91jS7HXZFTL._AC_SL1500_.jpg"
-    ]
+    }
 }
