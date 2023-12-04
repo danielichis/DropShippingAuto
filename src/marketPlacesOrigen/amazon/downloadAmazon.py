@@ -6,25 +6,33 @@ import io
 from tqdm import tqdm
 import os
 from src.utils.manageProducts import load_products
-from src.utils.managePaths import pathsManager
 from PIL import Image
+from src.utils.managePaths import mp
 import csv
 
 def get_overView(pw_page):
-    overView=pw_page.query_selector_all("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small']>div")
+    try:
+        pw_page.wait_for_selector("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr",timeout=3000)
+    except:
+        pass
+    overView=pw_page.query_selector_all("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr")
     overVies={}
     for view in overView:
         try:
-            overVies[view.query_selector("span:nth-child(1)").inner_text()]=view.query_selector("span:nth-child(2)").inner_text().replace("\u200e","")
+            overVies[view.query_selector("td:nth-child(1) span").inner_text()]=view.query_selector("td:nth-child(2) span").inner_text().replace("\u200e","")
         except:
             pass
     return overVies
 
 def get_technicalDetails(pw_page):
     technicalDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr")
+    child="th"
+    if len(technicalDetails)==0:
+        technicalDetails=pw_page.query_selector_all("div[id=poExpander] tbody tr")
+        child="td"
     technicalDetailsDict={}
     for technicalDetail in technicalDetails:
-        technicalDetailsDict[technicalDetail.query_selector("th:nth-child(1)").inner_text()]=technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
+        technicalDetailsDict[technicalDetail.query_selector(f"{child}:nth-child(1)").inner_text()]=technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
     return technicalDetailsDict
 
 def get_abaoutProduct(pw_page):
@@ -254,15 +262,20 @@ def save_screenshot(pw_page,skuFolder):
     #create folder
     os.makedirs(skuFolder)
     pw_page.screenshot(path=f"{skuFolder}/screenshot.png")
-def download_info():
-    products=load_products()
+def download_info(dataSheet=None):
+    
+    if dataSheet:
+        products=[item['SKU'].strip() for item in dataSheet]
+    else:
+        products=load_products()
     pw = sync_playwright().start()
     browser = pw.chromium.launch(headless=False)
     context=browser.new_context(storage_state="state.json")
     pw_page = context.new_page()
+    downloadsResponse=[]
     for sku in tqdm(products):
         urlProducto=f"https://www.amazon.com/dp/{sku}"
-        currentFolder =os.path.join(pathsManager.get_current_path(1),"marketPlacesOrigen","amazon")
+        currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
         skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
         if not os.path.exists(skuFolder):
             # try:
@@ -270,11 +283,20 @@ def download_info():
             # except Exception as e:
             #     print(e)
             #     save_screenshot(pw_page,skuFolder)
+            accion="descargado"            
         else:
+            flag_download=False
+            accion="no descargado, el producto ya existe en el directorio"
             print("el producto ya existe")
+        downloadsResponse.append({
+            "sku":sku,
+            "accion":accion
+        })
+    context.storage_state(path="state.json")
     context.close()
     browser.close()
     pw.stop()
+    return downloadsResponse
 if __name__ == "__main__":
     download_info()
     #print(os.path.join(pathsManager.get_current_path(1),"marketPlacesOrigen","amazon"))

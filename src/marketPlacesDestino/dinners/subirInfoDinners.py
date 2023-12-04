@@ -125,7 +125,6 @@ def load_aditional_fields():
         json.dump(fieldsData, f, indent=4, ensure_ascii=False)
     print(fieldsData)
 
-
 p = sync_playwright().start()
 user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
 browser = p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir="videos")
@@ -143,7 +142,7 @@ load_sku()
 load_upc()
 load_dimensions()
 load_aditional_fields()
-#page_DIN.pause()
+page_DIN.pause()
 
 
     

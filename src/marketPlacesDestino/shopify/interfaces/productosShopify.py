@@ -1,8 +1,9 @@
-from utils.selectores import localizador
+from src.utils.selectores import localizador
 botonDeProductos=localizador("boton para ir a Productos","ul[class]>li:nth-child(3)>div>div>a[aria-expanded] ","css")
 botonAgregarProducto=localizador("boton para agregar Producto Nuevo","a[href='/store/unaluka/products/new']","css") 
 #aquí dejo el anterior en xpath   //span[text()='Agregar producto']
 cajaNombreProducto=localizador("recuadro para llenar nombre del producto","input[placeholder='Camiseta de manga corta']","css")
+frameDescripcionProducto=localizador("frame para llenar la descripción del producto","iframe[id=\"product-description_ifr\"]","css")
 cajaDescripcionProducto=localizador("recuadro para llenar la Descripción del Producto","body[data-id='product-description']","css")
 botonAgregarImagenesProducto=localizador("boton para agregar las imágenes del producto","//span[text()='Subir nuevo']","xpath")
 cajaPrecioProducto=localizador("recuadro para agregar Precio Real del Producto","input[name='price']","css")
@@ -17,8 +18,9 @@ cajaCategoriaProducto=localizador("recuadro para escoger la categoría del produ
 cajaTipoDeProducto=localizador("recuadro para escoger el tipo de producto","input[id='ProductOrganizationCustomType']","css")
 cajaProveedor=localizador("recuadro para seleccionar al proveedor que es la marca del producto","input[id=':r4a9:']","css")
 cajaColecciones=localizador("recuadro para escoger y seleccionar una o varias colecciones a las que pertenece el producto","input[id='CollectionsAutocompleteField1']","css")
-cajaPrecioComparacion=localizador("recuadro para poner precio fantasma y denotar que hay oferta","input[id=':r47q:']","css")
+cajaPrecioComparacion=localizador("recuadro para poner precio fantasma y denotar que hay oferta","input[name='compareAtPrice']","css")
 cajaEtiquetas=localizador("recuadro para seleccionar una o varias palabras respecto del producto","input[id=':r4ad:']","css")
+
 
 
 

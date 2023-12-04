@@ -1,16 +1,27 @@
 [
     {
         "name": "Puerto ethernet",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
+        ],
+        "optionsWithEmbeds":[
+            {
+                "option":"Sí",
+                "embed":[0.45,0.46,0.47]
+            }
+            ,
+            {
+                "option":"No",
+                "embed":[0.45,0.46,0.47]
+            }
         ],
         "type": "select"
     },
     {
         "name": "Unidad óptica",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -19,13 +30,13 @@
     },
     {
         "name": "Tamaño de Pantalla (pulgadas \")",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Cámara Web",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -34,7 +45,7 @@
     },
     {
         "name": "Entradas HDMI",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "1",
             "2",
@@ -48,7 +59,7 @@
     },
     {
         "name": "Resolución video",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "VGA (640 x 480)",
             "SVGA (800 x 600)",
@@ -66,7 +77,7 @@
     },
     {
         "name": "Memoria Expandible",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -75,19 +86,19 @@
     },
     {
         "name": "Disco Duro Sólido",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Tipo de Batería",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Pantalla Touch",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -96,13 +107,13 @@
     },
     {
         "name": "Duración Batería (Hr)",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Tamaño de pantalla rango",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Menos de 4''",
             "Entre 4 a 4.4''",
@@ -128,66 +139,91 @@
         "type": "select"
     },
     {
+        "name": "Incluye mouse",
+        "mandatory": true,
+        "options": [
+            "Sí",
+            "Np",
+            "No"
+        ],
+        "type": "select"
+    },
+    {
+        "name": "Velocidad el Procesador",
+        "mandatory": false,
+        "options": [],
+        "type": "input"
+    },
+    {
+        "name": "Idioma del Teclado",
+        "mandatory": true,
+        "options": [
+            "Español",
+            "Inglés"
+        ],
+        "type": "select"
+    },
+    {
+        "name": "Teclado Iluminado",
+        "mandatory": false,
+        "options": [
+            "",
+            "Sí",
+            "No"
+        ],
+        "type": "select"
+    },
+    {
+        "name": "Entradas USB",
+        "mandatory": true,
+        "options": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8"
+        ],
+        "type": "select"
+    },
+    {
+        "name": "Tarjeta gráfica",
+        "mandatory": true,
+        "options": [],
+        "type": "input"
+    },
+    {
+        "name": "Bluetooth",
+        "mandatory": true,
+        "options": [
+            "Sí",
+            "No"
+        ],
+        "type": "select"
+    },
+    {
+        "name": "Características",
+        "mandatory": false,
+        "options": [],
+        "type": "input"
+    },
+    {
+        "name": "Resolución de Pantalla (MP)",
+        "mandatory": true,
+        "options": [],
+        "type": "input"
+    },
+    {
         "name": "Parlantes",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
-    },
-    {
-        "name": "Disco Duro Expandible",
-        "mandatory": false,
-        "options": [
-            "Sí",
-            "No"
-        ],
-        "type": "select"
-    },
-    {
-        "name": "Memoria RAM",
-        "mandatory": false,
-        "options": [
-            "2GB",
-            "4GB",
-            "6GB",
-            "8GB",
-            "12GB",
-            "32GB",
-            "64GB",
-            "16GB",
-            "1.5GB",
-            "10GB",
-            "1GB",
-            "20GB",
-            "24GB",
-            "3GB",
-            "No aplica"
-        ],
-        "type": "select"
-    },
-    {
-        "name": "Procesador",
-        "mandatory": false,
-        "options": [],
-        "type": "input"
-    },
-    {
-        "name": "Tipo de disco duro",
-        "mandatory": false,
-        "options": [],
-        "type": "input"
-    },
-    {
-        "name": "Teclado numérico",
-        "mandatory": false,
-        "options": [
-            "Sí",
-            "No"
-        ],
-        "type": "select"
     },
     {
         "name": "Tipo de pantalla",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Amoled",
             "Analógico",
@@ -268,64 +304,8 @@
         "type": "select"
     },
     {
-        "name": "Incluye mouse",
-        "mandatory": false,
-        "options": [
-            "Sí",
-            "Np",
-            "No"
-        ],
-        "type": "select"
-    },
-    {
-        "name": "Velocidad el Procesador",
-        "mandatory": true,
-        "options": [],
-        "type": "input"
-    },
-    {
-        "name": "Idioma del Teclado",
-        "mandatory": false,
-        "options": [
-            "Español",
-            "Inglés"
-        ],
-        "type": "select"
-    },
-    {
-        "name": "Teclado Iluminado",
-        "mandatory": true,
-        "options": [
-            "",
-            "Sí",
-            "No"
-        ],
-        "type": "select"
-    },
-    {
-        "name": "Entradas USB",
-        "mandatory": false,
-        "options": [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8"
-        ],
-        "type": "select"
-    },
-    {
-        "name": "Tarjeta gráfica",
-        "mandatory": false,
-        "options": [],
-        "type": "input"
-    },
-    {
         "name": "Disco Duro",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "120GB",
             "128GB",
@@ -438,8 +418,8 @@
         "type": "select"
     },
     {
-        "name": "Bluetooth",
-        "mandatory": false,
+        "name": "Disco Duro Expandible",
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -447,20 +427,51 @@
         "type": "select"
     },
     {
-        "name": "Características",
+        "name": "Memoria RAM",
+        "mandatory": true,
+        "options": [
+            "2GB",
+            "4GB",
+            "6GB",
+            "8GB",
+            "12GB",
+            "32GB",
+            "64GB",
+            "16GB",
+            "1.5GB",
+            "10GB",
+            "1GB",
+            "20GB",
+            "24GB",
+            "3GB",
+            "No aplica"
+        ],
+        "type": "select"
+    },
+    {
+        "name": "Procesador",
         "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
-        "name": "Resolución de Pantalla (MP)",
-        "mandatory": false,
+        "name": "Tipo de disco duro",
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
+        "name": "Teclado numérico",
+        "mandatory": true,
+        "options": [
+            "Sí",
+            "No"
+        ],
+        "type": "select"
+    },
+    {
         "name": "Tipo de memoria",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "DDR",
             "DDR2",
@@ -482,13 +493,13 @@
     },
     {
         "name": "Capacidad de batería",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Micrófono integrado",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -497,13 +508,13 @@
     },
     {
         "name": "Núcleos del Procesador",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Lector de Huellas",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -512,7 +523,7 @@
     },
     {
         "name": "Entrada VGA",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "0",
             "1",
@@ -527,7 +538,7 @@
     },
     {
         "name": "Garantía",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "1 Mes",
             "2 Meses",
@@ -554,19 +565,19 @@
     },
     {
         "name": "Cámara",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Tarjeta de Video",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Entrada de audio",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -575,7 +586,7 @@
     },
     {
         "name": "Lector de tarjetas",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -584,7 +595,7 @@
     },
     {
         "name": "NFC",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -592,14 +603,104 @@
         "type": "select"
     },
     {
+        "name": "Sistema Operativo",
+        "mandatory": true,
+        "options": [
+            "Windows7",
+            "Windows10",
+            "Windows11",
+            "OsCapitan",
+            "OsCatalina",
+            "IOS",
+            "Android",
+            "macOS",
+            "Freedos",
+            "Windows 9",
+            "Linux",
+            "iOS",
+            "Windows 8.1",
+            "Windows 8",
+            "Chrome",
+            "OS X Mavericks",
+            "OS X Mountain Lion",
+            "Chrome OS",
+            "Android 4.4",
+            "IOS 8.4",
+            "Windows 10 Pro",
+            "Windows 10 Home",
+            "Android TV",
+            "BlackBerry OS",
+            "Fire OS",
+            "Firefox OS",
+            "Funtouch",
+            "Tizen",
+            "WebOS",
+            "Windows 10 Home S",
+            "Windows Phone",
+            "Windows Server",
+            "Android 10",
+            "Android 11",
+            "Android 5",
+            "Android 6",
+            "Android 7",
+            "Android 8",
+            "Android 9",
+            "iOS 10",
+            "iOS 11",
+            "iOS 12",
+            "iOS 13",
+            "iOS 14",
+            "iOS 15",
+            "iOS 5",
+            "iOS 6",
+            "iOS 7",
+            "iOS 8",
+            "iOS 9",
+            "Windows 11 Home",
+            "Windows 11 Pro",
+            "MacOS Catalina",
+            "Android O",
+            "Android Q",
+            "Emui 10.1 + HMS",
+            "Emui 12",
+            "GMS",
+            "iPad OS",
+            "v9.0",
+            "Android 12",
+            "Windows 10 Home en inglés",
+            "iOS 16",
+            "Android 4.4.2 - KitKat",
+            "Android 2.2 - Froyo",
+            "Android 2.3 - Gingerbread",
+            "Android 4.0 - Ice cream sandwich",
+            "Android 4.1 - Jelly Bean",
+            "Android 4.2 - Jelly Bean",
+            "Android 4.3 - Jelly Bean",
+            "Android 4.4 - KitKat",
+            "Android 5.0 - Lollipop",
+            "Android 6.0 - Marshmallow",
+            "Android 7.0 - Nougat",
+            "Android 8.0 - Oreo",
+            "Android 9.0 - Pie",
+            "Android 3.0 - Honeycomb",
+            "Android 3.1 - Honeycomb",
+            "Android 3.2 - Honeycomb",
+            "IpadOS",
+            "macOS",
+            "macOS Big Sur",
+            "No Aplica"
+        ],
+        "type": "select"
+    },
+    {
         "name": "Modelo",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Wi-Fi",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "Sí",
             "No"
@@ -608,19 +709,19 @@
     },
     {
         "name": "Incluye",
-        "mandatory": false,
+        "mandatory": true,
         "options": [],
         "type": "input"
     },
     {
         "name": "Ficha Técnica",
-        "mandatory": true,
+        "mandatory": false,
         "options": [],
         "type": "input"
     },
     {
         "name": "Envío Internacional",
-        "mandatory": true,
+        "mandatory": false,
         "options": [
             "",
             "Sí"
@@ -629,7 +730,7 @@
     },
     {
         "name": "Conectividad",
-        "mandatory": false,
+        "mandatory": true,
         "options": [
             "2G",
             "2G / Wi-Fi / Bluetooth",
@@ -770,96 +871,6 @@
             "Wi-Fi",
             " Bluetooth",
             " GPS"
-        ],
-        "type": "select"
-    },
-    {
-        "name": "Sistema Operativo",
-        "mandatory": false,
-        "options": [
-            "Windows7",
-            "Windows10",
-            "Windows11",
-            "OsCapitan",
-            "OsCatalina",
-            "IOS",
-            "Android",
-            "macOS",
-            "Freedos",
-            "Windows 9",
-            "Linux",
-            "iOS",
-            "Windows 8.1",
-            "Windows 8",
-            "Chrome",
-            "OS X Mavericks",
-            "OS X Mountain Lion",
-            "Chrome OS",
-            "Android 4.4",
-            "IOS 8.4",
-            "Windows 10 Pro",
-            "Windows 10 Home",
-            "Android TV",
-            "BlackBerry OS",
-            "Fire OS",
-            "Firefox OS",
-            "Funtouch",
-            "Tizen",
-            "WebOS",
-            "Windows 10 Home S",
-            "Windows Phone",
-            "Windows Server",
-            "Android 10",
-            "Android 11",
-            "Android 5",
-            "Android 6",
-            "Android 7",
-            "Android 8",
-            "Android 9",
-            "iOS 10",
-            "iOS 11",
-            "iOS 12",
-            "iOS 13",
-            "iOS 14",
-            "iOS 15",
-            "iOS 5",
-            "iOS 6",
-            "iOS 7",
-            "iOS 8",
-            "iOS 9",
-            "Windows 11 Home",
-            "Windows 11 Pro",
-            "MacOS Catalina",
-            "Android O",
-            "Android Q",
-            "Emui 10.1 + HMS",
-            "Emui 12",
-            "GMS",
-            "iPad OS",
-            "v9.0",
-            "Android 12",
-            "Windows 10 Home en inglés",
-            "iOS 16",
-            "Android 4.4.2 - KitKat",
-            "Android 2.2 - Froyo",
-            "Android 2.3 - Gingerbread",
-            "Android 4.0 - Ice cream sandwich",
-            "Android 4.1 - Jelly Bean",
-            "Android 4.2 - Jelly Bean",
-            "Android 4.3 - Jelly Bean",
-            "Android 4.4 - KitKat",
-            "Android 5.0 - Lollipop",
-            "Android 6.0 - Marshmallow",
-            "Android 7.0 - Nougat",
-            "Android 8.0 - Oreo",
-            "Android 9.0 - Pie",
-            "Android 3.0 - Honeycomb",
-            "Android 3.1 - Honeycomb",
-            "Android 3.2 - Honeycomb",
-            "IpadOS",
-            "macOS",
-            "macOS Big Sur",
-            "No Aplica"
         ],
         "type": "select"
     }
