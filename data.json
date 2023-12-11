@@ -3,17 +3,17 @@
         "dataToLoad": [
             {
                 "estado": "Crear",
-                "SKU": "B098WK7CND ",
-                "PrecioShopify": "5985.00",
-                "PrecioListaShopify": "6584",
-                "fila": 50
-            },
-            {
-                "estado": "Crear",
                 "SKU": "B09TFM13JD",
                 "PrecioShopify": "629.00",
                 "PrecioListaShopify": "692",
                 "fila": 116
+            },
+            {
+                "estado": "Crear",
+                "SKU": "B098WK7CND ",
+                "PrecioShopify": "5985.00",
+                "PrecioListaShopify": "6584",
+                "fila": 50
             },
             {
                 "estado": "Crear",

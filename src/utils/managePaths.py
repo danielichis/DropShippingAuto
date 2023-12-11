@@ -5,7 +5,8 @@ import sys
 import json
 class managePaths:
     def __init__(self):
-        pass
+        profile_path=None
+        self.read_config_txt()
     def get_current_path(self,up_tree=0):
         # determine if application is a script file or frozen exe
         if getattr(sys, 'frozen', False):
@@ -33,7 +34,13 @@ class managePaths:
             data = json.load(json_file)
         data['asbPathImages']=absPathImages
         return data
-
+    
+    def read_config_txt(self):
+        with open (os.path.join(self.get_current_path(2),"config.txt")) as f:
+            #read first line
+            lines=f.readlines()
+        self.profiel_path=lines[0].replace("\n","").split("=")[1]
 mp=managePaths()
+
 
 

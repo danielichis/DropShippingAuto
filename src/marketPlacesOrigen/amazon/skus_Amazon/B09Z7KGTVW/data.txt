@@ -1,0 +1,30 @@
+-SKU:B09Z7KGTVW
+-URL:https://www.amazon.com/dp/B09Z7KGTVW
+-TITULO:Meta Quest Pro
+-PRECIO AMAZON:US$899.30
+-GARANTIA:None
+-CLASIFICACION:['Videojuegos', 'Realidad Virtual', 'Hardware Independiente', 'Auriculares']
+---------------------------------------
+
+-DESCRIPCIONES:
+---------------------------------------
+
+-OVERVIEW:
+---------------------------------------
+
+-DETALLES TECNICOS:
+---------------------------------------
+
+-ACERCA DEL PRODUCTO:
+---------------------------------------
+
+-OTROS DETALLES:
+---------------------------------------
+
+-CAJA VIENE CON:
+---------------------------------------
+
+-DETALLE COMPARATIVO:
+---------------------------------------
+
+-INFORMACION ADICIONAL:

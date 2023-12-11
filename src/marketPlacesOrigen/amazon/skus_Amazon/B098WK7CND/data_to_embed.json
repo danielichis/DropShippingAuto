@@ -21,20 +21,16 @@
         "Descripción de la tarjeta gráfica": "Integrado"
     },
     "Detalles Tecnicos": {
-        "Tamaño del área de visualización de la pantalla con pie": "13,4 Pulgadas",
-        "Resolución de la pantalla": "1920 x 1200 píxeles",
-        "Máxima resolución de pantalla": "1920 x 1080 Píxeles",
-        "Procesador": "2.9 GHz core_i7_family",
-        "RAM": "16 GB DDR4",
-        "Velocidad de memoria": "4267 MHz",
-        "Disco Duro": "512 GB SSD",
-        "Coprocesador de gráficos": "Intel Iris Xe Graphics",
-        "Marca Chipset": "Intel",
-        "Descripción de la tarjeta": "Integrado",
-        "Tamaño de RAM de la tarjeta gráfica": "16 GB",
-        "Tipo de conexión inalámbrica": "Bluetooth",
-        "Número de puertos USB 3.0": "1",
-        "Duración de la batería media (en horas)": "20 Horas"
+        "Marca": "MSI",
+        "Nombre del modelo": "Summit E13FlipEvo A11MT-223",
+        "Tamaño de pantalla": "13,4 Pulgadas",
+        "Color": "Negro (Ink Black)",
+        "Tamaño del disco duro": "512 GB",
+        "Modelo de CPU": "Core i7 Family",
+        "Tamaño de la memoria RAM instalada": "16 GB",
+        "Sistema operativo": "Windows 10 Home",
+        "Características especiales": "TPM 2.0",
+        "Descripción de la tarjeta gráfica": "Integrado"
     },
     "Acerca del producto": {
         "Rendimiento fluido": " el procesador Intel Core i7 de 11ª generación maximiza su eficiencia, multitarea y productividad.",
@@ -44,41 +40,25 @@
         "Audio de alta resolución": " con la capacidad de admitir muestreo de hasta 24 bits/192 kHz, escucha audio de la manera en que realmente se pretendía."
     },
     "Otros detalles": {
-        "Marca": "MSI",
-        "Series": "Summit E13FlipEvo A11MT-223",
-        "Número de modelo del producto": "Summit E13FlipEvo A11MT-223",
-        "Plataforma de hardware": "PC",
-        "Sistema operativo": "Windows 10 Home",
-        "Dimensiones del producto": "0,59 x 11,82 x 8,75 pulgadas",
-        "Dimensiones del artículo Largo x Ancho x Altura": "0.59 x 11.82 x 8.75 pulgadas",
-        "Color": "Negro (Ink Black)",
-        "Marca del procesador": "Intel",
-        "Número de procesadores": "4",
-        "Tipo de memoria del equipo": "DDR4 SDRAM",
-        "Tamaño de memoria flash": "16 GB",
-        "Interfaz de la unidad de disco duro": "Thunderbolt",
-        "Tipo de unidad óptica": "Sin unidad óptica",
-        "Voltaje": "3 Voltios",
-        "Pilas": "1 Polímero de litio necesaria(s), incluida(s)"
+        "": "Agregar al carrito",
+        "Precio": "US$1,097.00\nUS$1,097\n.\n00",
+        "Entrega": "Recíbelo el jueves, 28 de diciembre",
+        "Calificaciones De Los Clientes": "4.0\n4.0 de 5 estrellas\n59",
+        "Vida Útil De La Batería": "3.5",
+        "Para Juegos": "2.7",
+        "Pantalla Táctil": "3.7",
+        "Calidad De Pantalla": "—",
+        "Excelente Inversión": "—",
+        "Vendido Por": "HM PRIME TECH STORE",
+        "Tamaño De La Pantalla": "13.4 inches",
+        "Tamaño Del Disco Duro": "512 GB",
+        "Tamaño De La Memoria De La Computadora": "16 GB",
+        "Velocidad De La CPU": "2.9 GHz",
+        "Sistema Operativo": "Windows 10 Home",
+        "Tecnología RAM": "DDR4"
     },
     "Contenido de la caja": {},
-    "Mas detalles Tecnicos": {
-        "Tamaño Memoria Equipo": "16 GB",
-        "Fabricante Modelo CPU": "Intel",
-        "Velocidad CPU": "2.9 GHz",
-        "Resolución Máxima Pantalla": "1920 x 1080 pixels",
-        "Tamaño de la muestra": "13.4 pulgadas",
-        "Tecnología Pantalla": "Tecnología de conmutación en plano (IPS)",
-        "Tamaño Disco Duro": "512 GB",
-        "Dimensiones Artículo": "0.59 x 11.82 x 8.75 pulgadas",
-        "Peso Artículo": "2.98 libras",
-        "Sistema Operativo": "Windows 10 Home",
-        "Recuento Procesador": "4",
-        "Tipo RAM": "DDR4 SDRAM",
-        "Estándar Comunicación Inalámbrica": "Bluetooth"
-    },
+    "Mas detalles Tecnicos": {},
     "Informacion Importante": [],
-    "Informacion Adicional": {
-        "Producto en amazon.com desde": "Julio 8, 2021"
-    }
+    "Informacion Adicional": {}
 }

@@ -37,27 +37,17 @@
     "Acerca del producto": {},
     "Otros detalles": {},
     "Contenido de la caja": {},
-    "Mas detalles Tecnicos": {
-        "Marca": "Meta Quest",
-        "Color": "Blanco",
-        "Dispositivos Compatibles": "Smartphone",
-        "Tecnología Conectividad": "Wi-Fi",
-        "Tamaño de la muestra": "5.46",
-        "Campo de visión": "360",
-        "Peso Artículo": "1.83 libras",
-        "Sistema Operativo": "Oculus",
-        "Plataforma": "Meta Quest 2"
-    },
+    "Mas detalles Tecnicos": {},
     "Informacion Importante": [],
     "Informacion Adicional": {},
     "Garantia": null,
     "Nota": null,
     "Links Imagenes": [
-        "https://m.media-amazon.com/images/I/61tE7IcuLmL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71Ff1TswKSL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/61QQghZIg6L._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71unPYTHa5L._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71-Od7wfufL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/I/71W5iN7Z7UL._AC_SL1500_.jpg"
+        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/61tE7IcuLmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71Ff1TswKSL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/61QQghZIg6L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71unPYTHa5L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71-Od7wfufL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71W5iN7Z7UL._AC_SL1500_.jpg"
     ]
 }

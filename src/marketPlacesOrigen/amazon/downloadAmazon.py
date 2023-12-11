@@ -49,10 +49,10 @@ def get_abaoutProduct(pw_page):
     return abaoutProductDict
 
 def get_otherDetails(pw_page):
-    otherDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_2 tr")
+    otherDetails=pw_page.query_selector_all("table[class*='_product-comparison'] tr")
     otherDetailsDict={}
     for otherDetail in otherDetails:
-        otherDetailsDict[otherDetail.query_selector("th:nth-child(1)").inner_text()]=otherDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
+        otherDetailsDict[otherDetail.query_selector("td:nth-child(1)").inner_text()]=otherDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
     return otherDetailsDict
 
 def get_aditionalInfo(pw_page):

@@ -1,1 +1,7 @@
-from utils.dinamySelections import search_best_option
+a = 4
+b = 0
+
+if b != 0:
+    print(a / b)
+else:
+    print("Error: No se puede dividir por cero")
