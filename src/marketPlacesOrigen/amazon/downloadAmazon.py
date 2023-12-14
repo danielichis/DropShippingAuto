@@ -270,7 +270,7 @@ def download_info(dataSheet=None):
         products=load_products()
     pw = sync_playwright().start()
     browser = pw.chromium.launch(headless=False)
-    context=browser.new_context(storage_state="sessions/state_amazon.json")
+    context=browser.new_context(storage_state="src/sessions/state_amazon.json")
     pw_page = context.new_page()
 
     downloadsResponse=[]
@@ -293,7 +293,7 @@ def download_info(dataSheet=None):
             "sku":sku,
             "accion":accion
         })
-    context.storage_state(path="sessions/state_amazon.json")
+    context.storage_state(path="src/sessions/state_amazon.json")
     context.close()
     browser.close()
     pw.stop()
