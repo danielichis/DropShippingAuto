@@ -1,1 +1,1 @@
-PROFILE_PATH=C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2
+PROFILE_PATH=C:\Users\unaluka-bot\AppData\Local\Google\Chrome\User Data

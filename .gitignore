@@ -2,4 +2,5 @@ venv
 aprend.ipynb
 state.json
 products.csv
-
+config.txt
+*__pycache__

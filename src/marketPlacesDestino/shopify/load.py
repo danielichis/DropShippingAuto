@@ -74,9 +74,13 @@ def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
 def load_main_shopify(dataSheet=None):
     p = sync_playwright().start()
     user_dir=mp.profiel_path
-    context = p.chromium.launch_persistent_context(user_dir,headless=False)
+    browser = p.chromium.launch(headless=False)
+    context=browser.new_context(storage_state="state.json")
+    #context = p.chromium.launch_persistent_context(user_dir,headless=False)
+    #context = p.chromium.launch_persistent_context(user_dir,headless=False,channel="chrome")
+    #context=browser.new_context(storage_state="state.json")
     page_shopi=context.new_page()
-    context.pages[0].close()
+    #context.pages[0].close()
     newProductLink="https://admin.shopify.com/store/unaluka/products/new"
     newProductLink2="https://admin.shopify.com/store/395520/products/new"
     page_shopi.goto(newProductLink)
