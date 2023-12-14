@@ -75,7 +75,7 @@ def load_main_shopify(dataSheet=None):
     p = sync_playwright().start()
     user_dir=mp.profiel_path
     browser = p.chromium.launch(headless=False)
-    context=browser.new_context(storage_state="state.json")
+    context=browser.new_context(storage_state="state_shopify.json")
     #context = p.chromium.launch_persistent_context(user_dir,headless=False)
     #context = p.chromium.launch_persistent_context(user_dir,headless=False,channel="chrome")
     #context=browser.new_context(storage_state="state.json")
@@ -104,6 +104,10 @@ def load_main_shopify(dataSheet=None):
             "status":load_status
         })
         page_shopi.goto(newProductLink)
+    context.storage_state(path="state_shopify.json")
+    context.close()
+    browser.close()
+    p.stop()
     return responseLoad
 if __name__ == "__main__":
     load_main_shopify()

@@ -270,8 +270,9 @@ def download_info(dataSheet=None):
         products=load_products()
     pw = sync_playwright().start()
     browser = pw.chromium.launch(headless=False)
-    context=browser.new_context(storage_state="state.json")
+    context=browser.new_context(storage_state="state_amazon.json")
     pw_page = context.new_page()
+
     downloadsResponse=[]
     for sku in tqdm(products):
         urlProducto=f"https://www.amazon.com/dp/{sku}"
@@ -292,7 +293,7 @@ def download_info(dataSheet=None):
             "sku":sku,
             "accion":accion
         })
-    context.storage_state(path="state.json")
+    context.storage_state(path="state_amazon.json")
     context.close()
     browser.close()
     pw.stop()

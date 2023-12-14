@@ -4,3 +4,4 @@ state.json
 products.csv
 config.txt
 *__pycache__
+*skus_Amazon
