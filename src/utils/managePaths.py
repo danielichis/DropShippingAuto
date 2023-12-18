@@ -34,7 +34,11 @@ class managePaths:
             data = json.load(json_file)
         data['asbPathImages']=absPathImages
         return data
-    
+    def get_path_collections_embeddings(self):
+        return os.path.join(self.get_current_path(2),"src","utils","embeddings","collections-embeds.json")
+    def get_path_product_embeddings(self):
+        return os.path.join(self.get_current_path(2),"src","utils","embeddings","products-embeds.json")
+
     def read_config_txt(self):
         with open (os.path.join(self.get_current_path(2),"config.txt")) as f:
             #read first line

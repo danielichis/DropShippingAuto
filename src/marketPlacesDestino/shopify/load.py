@@ -6,7 +6,7 @@ from src.marketPlacesDestino.shopify.interfaces import acfMetafields as acm
 from src.utils.manageProducts import load_products
 from src.utils.managePaths import mp
 from src.utils.manipulateDicts import dc
-
+from src.utils.embeddings.embeding import get_top_n_match
 import os
 
 def load_descriptions(page_shopi,descs):
@@ -21,6 +21,27 @@ def load_descriptions(page_shopi,descs):
     diccionario=str(listaObjetos)
     codigo_js="var box=document.querySelector('iframe[id=product-description_ifr]').contentDocument.querySelector('body');var lista=document.createElement('ul');var listaDeObjetos = %s;for (const objeto of listaDeObjetos){var pelem=document.createElement('li');var stronge=document.createElement('strong');var valor=document.createTextNode(objeto.valor);stronge.textContent=objeto.campo;pelem.appendChild(stronge);pelem.appendChild(valor);lista.appendChild(pelem)};box.appendChild(lista);" %(diccionario)
     page_shopi.evaluate(codigo_js)
+
+def load_shopify_category_suggestion(page_shopi):
+    try:
+        page_shopi.query_selector("path[d*='M13.28']").click(timeout=3000)
+    except:
+        pass
+
+def select_shopify_collections(page_shopi,amazonDatSku):
+    page_shopi.get_by_role("combobox", name="Proveedor").fill("unaluka")
+    page_shopi.locator("input[id='CollectionsAutocompleteField1']").click()
+    currentCollections=page_shopi.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
+    TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
+    #page_shopi.select_option("Colecciones",name="Colecciones")
+    #page_shopi.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()
+    
+    
+    for collection in TopCollections:
+        #page_shopi.get_by_role("combobox", name="Colecciones").fill()
+        page_shopi.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click()
+        #page_shopi.locator(f"//span/div[text()={collection['collecion']}]").click()
+        #page_shopi.get_by_role("combobox", name="Colecciones").fill("")
 
 def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
     if amazonDatSku['Detalles Tecnicos']!={}:
@@ -47,10 +68,8 @@ def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
     page_shopi.query_selector(pshopy.cajaSKU.selector).fill(amazonDatSku['sku'])
     page_shopi.query_selector(pshopy.cajaPesoDelProducto.selector).fill("0.01")
     page_shopi.get_by_label("Estado").select_option(configData['modoPublicacion'])
-    try:
-        page_shopi.query_selector("path[d*='M13.28']").click(timeout=3000)
-    except:
-        pass
+    load_shopify_category_suggestion(page_shopi)
+    select_shopify_collections(page_shopi,amazonDatSku)
     page_shopi.query_selector_all("//span[text()='Guardar']")[1].click()
 
     page_shopi.goto("https://admin.shopify.com/store/unaluka/apps/arena-custom-fields/products_editor")

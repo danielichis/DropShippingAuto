@@ -3,5 +3,7 @@ aprend.ipynb
 state.json
 products.csv
 config.txt
-*__pycache__
 *skus_Amazon
+#excluir archivos que terminen en .pyc
+
+*.pyc
