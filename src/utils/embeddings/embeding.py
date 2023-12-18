@@ -1,21 +1,27 @@
-from openai.embeddings_utils import get_embedding, get_embeddings
-from openai.embeddings_utils import cosine_similarity
-import openai
+from openai import OpenAI
+import numpy as np
 from src.utils.managePaths import mp
 import json
 
-openai.api_key = "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"
 jsonCollectionsPath=mp.get_path_collections_embeddings()
 jsonProductsPath=mp.get_path_product_embeddings()
-def get_openai_embedding(text):
-    embedding = get_embedding(text, engine="text-embedding-ada-002")
-    return embedding
-def get_openai_embeddings(text):
-    embedding = get_embeddings(text, engine="text-embedding-ada-002")
-    return embedding
-
+def get_openai_embedding(text:str):
+    client = OpenAI(api_key="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")
+    response = client.embeddings.create(
+        input=text,
+        model="text-embedding-ada-002"
+    )
+    return response.data[0].embedding
+def get_openai_embeddings(texts:list):
+    client = OpenAI(api_key="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")
+    response = client.embeddings.create(
+        input=texts,
+        model="text-embedding-ada-002"
+    )
+    r=[x.embedding for x in response.data]
+    return r
 def get_similarity(embed1, embed2):
-    similarity = cosine_similarity(embed1, embed2)
+    similarity = np.dot(embed1, embed2)
     return similarity
 def get_data_google_sheet():
     with open("data.json","r",encoding="utf-8") as json_file:
@@ -117,4 +123,4 @@ def test_top_n_match():
     get_top_n_match(productSample,currentCollections,3)
 
 if __name__ == '__main__':
-    test_top_n_match()
+    get_openai_embeddings(["sopa","tallarin"])
