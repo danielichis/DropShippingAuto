@@ -7,6 +7,7 @@ from src.utils.manageProducts import load_products
 from src.utils.managePaths import mp
 from src.utils.manipulateDicts import dc
 from src.utils.embeddings.embeding import get_top_n_match
+import re
 import os
 
 def load_descriptions(page_shopi,descs):
@@ -34,9 +35,7 @@ def select_shopify_collections(page_shopi,amazonDatSku):
     currentCollections=page_shopi.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
     TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
     #page_shopi.select_option("Colecciones",name="Colecciones")
-    #page_shopi.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()
-    
-    
+    #page_shopi.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()    
     for collection in TopCollections:
         #page_shopi.get_by_role("combobox", name="Colecciones").fill()
         page_shopi.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click()
@@ -89,7 +88,12 @@ def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
     page_shopi.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("STOCK")
     abaoutProduct=dc.dict_to_string(amazonDatSku['Acerca del producto'])
     customFrame.locator("div[class='fr-element fr-view']").fill(abaoutProduct)
+    baseUrl="https://admin.shopify.com/store/unaluka/products/"
+    currentUrl=page_shopi.url
+    codeProduct=re.findall(r"\d+",currentUrl)[0]
     print(f"producto {amazonDatSku['sku']} subido a shopify")
+    #get the current url of page
+
 def load_main_shopify(dataSheet=None):
     p = sync_playwright().start()
     user_dir=mp.profiel_path
@@ -113,14 +117,14 @@ def load_main_shopify(dataSheet=None):
     for productData in dataToLoad:
         amazonDatSku=mp.data_sku(productData['SKU'].strip())
         try:
-            load_sku(page_shopi,amazonDatSku,productData,configData)
-            load_status="success"
+            url=load_sku(page_shopi,amazonDatSku,productData,configData)
+            load_status="Cargado correctamente"
         except Exception as e:
-            print(e)
-            load_status="error"
+            load_status="ERROR:"+str(e)
         responseLoad.append({
             "sku":productData['SKU'].strip(),
-            "status":load_status
+            "status":load_status,
+            "url":url
         })
         page_shopi.goto(newProductLink)
     context.storage_state(path="src/sessions/state_shopify.json")

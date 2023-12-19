@@ -9,7 +9,9 @@
     ],
     "titulo": "Meta Quest 2 — Advanced All-In-One Virtual Reality Headset — 128 GB",
     "precio": "US$249.00",
-    "descripciones": {},
+    "descripciones": {
+        ">": "*Meta Quest es para mayores de 13 años."
+    },
     "Vista General": {
         "Marca": "Meta Quest",
         "Color": "Blanco",
@@ -34,7 +36,9 @@
         "Campo de visión": "360",
         "Tipo de conector": "USB Tipo C"
     },
-    "Acerca del producto": {},
+    "Acerca del producto": {
+        ">": "Consulte la guía de seguridad infantil en línea; Cuentas para mayores de 10 años. Ciertas aplicaciones, juegos y experiencias pueden ser adecuados para un público más maduro."
+    },
     "Otros detalles": {},
     "Contenido de la caja": {},
     "Mas detalles Tecnicos": {},
@@ -43,11 +47,11 @@
     "Garantia": null,
     "Nota": null,
     "Links Imagenes": [
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/61tE7IcuLmL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71Ff1TswKSL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/61QQghZIg6L._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71unPYTHa5L._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71-Od7wfufL._AC_SL1500_.jpg",
-        "https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/71W5iN7Z7UL._AC_SL1500_.jpg"
+        "https://m.media-amazon.com/images/I/61tE7IcuLmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71Ff1TswKSL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61QQghZIg6L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71unPYTHa5L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71-Od7wfufL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71W5iN7Z7UL._AC_SL1500_.jpg"
     ]
 }

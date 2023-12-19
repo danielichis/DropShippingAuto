@@ -39,12 +39,13 @@ def get_abaoutProduct(pw_page):
     abaoutProduct=pw_page.query_selector_all("div#feature-bullets li span")
     abaoutProductDict={}
     if len(abaoutProduct)>0:
-        for abaoutP in abaoutProduct:
+        for i,abaoutP in enumerate(abaoutProduct):
             try:
                 ab1=abaoutP.inner_text().split(":")[0]
                 ab2=abaoutP.inner_text().split(":")[1]
                 abaoutProductDict[ab1]=ab2
             except:
+                abaoutProductDict[str(">")]=abaoutP.inner_text()
                 pass    
     return abaoutProductDict
 
@@ -109,18 +110,23 @@ def get_comparitions(pw_page):
     return comparisonDict
 def get_descriptions(pw_page):
     descriptions=pw_page.query_selector("div#productDescription span")
+    dicDescs={}
     if descriptions:
         list_Descs=descriptions.inner_text().split("\n\n")
-    else:
-        list_Descs=[]
-    dicDescs={}
-    for desc in list_Descs:
-        print("texto en linea: "+desc)
-        try:
-            d1=desc.split(":")[0]
-            d2=desc.split(":")[1]
-            dicDescs[d1]=d2
-        except:
+        if len(list_Descs)==1:
+            list_Descs=[x+"." for x in descriptions.inner_text().split(".") if x!=""]
+            for i,desc in enumerate(list_Descs):
+                dicDescs[str(">")]=desc
+        elif len(list_Descs)>1:
+            for i,desc in enumerate(list_Descs):
+                #print("texto en linea: "+desc)
+                try:
+                    d1=desc.split(":")[0]
+                    d2=desc.split(":")[1]
+                    dicDescs[d1]=d2
+                except: 
+                    pass
+        else:
             pass
     return dicDescs
 def get_classificaction(pw_page):
@@ -263,7 +269,6 @@ def save_screenshot(pw_page,skuFolder):
     os.makedirs(skuFolder)
     pw_page.screenshot(path=f"{skuFolder}/screenshot.png")
 def download_info(dataSheet=None):
-    
     if dataSheet:
         products=[item['SKU'].strip() for item in dataSheet]
     else:
@@ -279,19 +284,19 @@ def download_info(dataSheet=None):
         currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
         skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
         if not os.path.exists(skuFolder):
-            # try:
-            download_sku(pw_page,sku,urlProducto,skuFolder)
-            # except Exception as e:
-            #     print(e)
-            #     save_screenshot(pw_page,skuFolder)
-            accion="descargado"            
+            try:
+                download_sku(pw_page,sku,urlProducto,skuFolder)
+                status="Descargado correctamente"    
+            except Exception as e:
+                print(e)
+                status="ERROR:"+str(e)
+                save_screenshot(pw_page,skuFolder)
         else:
-            flag_download=False
-            accion="no descargado, el producto ya existe en el directorio"
+            status="no descargado, el producto ya existe en el directorio"
             print("el producto ya existe")
         downloadsResponse.append({
             "sku":sku,
-            "accion":accion
+            "status":status
         })
     context.storage_state(path="src/sessions/state_amazon.json")
     context.close()

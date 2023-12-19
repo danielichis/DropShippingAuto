@@ -14,34 +14,6 @@
                 "PrecioShopify": "629.00",
                 "PrecioListaShopify": "692",
                 "fila": 116
-            },
-            {
-                "estado": "Crear",
-                "SKU": "B0BYRC941X ",
-                "PrecioShopify": "4465.00",
-                "PrecioListaShopify": "4912",
-                "fila": 139
-            },
-            {
-                "estado": "Crear",
-                "SKU": "B099VMT8VZ",
-                "PrecioShopify": "1595.00",
-                "PrecioListaShopify": "1755",
-                "fila": 140
-            },
-            {
-                "estado": "Crear",
-                "SKU": "B09B8DQ26F",
-                "PrecioShopify": "1815.00",
-                "PrecioListaShopify": "1997",
-                "fila": 141
-            },
-            {
-                "estado": "Crear",
-                "SKU": "B09Z7KGTVW",
-                "PrecioShopify": "4279.00",
-                "PrecioListaShopify": "4707",
-                "fila": 142
             }
         ],
         "configData": {

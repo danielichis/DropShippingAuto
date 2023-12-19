@@ -7,6 +7,7 @@
 ---------------------------------------
 
 -DESCRIPCIONES:
+>:*Meta Quest es para mayores de 13 años.
 ---------------------------------------
 
 -OVERVIEW:
@@ -38,6 +39,7 @@ Tipo de conector:USB Tipo C
 ---------------------------------------
 
 -ACERCA DEL PRODUCTO:
+>:Consulte la guía de seguridad infantil en línea; Cuentas para mayores de 10 años. Ciertas aplicaciones, juegos y experiencias pueden ser adecuados para un público más maduro.
 ---------------------------------------
 
 -OTROS DETALLES:

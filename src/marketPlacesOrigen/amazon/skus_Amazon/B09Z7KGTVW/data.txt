@@ -1,12 +1,13 @@
 -SKU:B09Z7KGTVW
 -URL:https://www.amazon.com/dp/B09Z7KGTVW
 -TITULO:Meta Quest Pro
--PRECIO AMAZON:US$899.30
+-PRECIO AMAZON:US$923.48
 -GARANTIA:None
 -CLASIFICACION:['Videojuegos', 'Realidad Virtual', 'Hardware Independiente', 'Auriculares']
 ---------------------------------------
 
 -DESCRIPCIONES:
+>: Solo para edades de 13 años en adelante.
 ---------------------------------------
 
 -OVERVIEW:
@@ -16,6 +17,7 @@
 ---------------------------------------
 
 -ACERCA DEL PRODUCTO:
+>:Haz más en realidad virtual, más rápido con un potente hardware que incluye almacenamiento de 256 GB, 12 GB de RAM, 10 sensores VR/MR avanzados, audio espacial y mucho más.
 ---------------------------------------
 
 -OTROS DETALLES:

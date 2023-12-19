@@ -6,10 +6,14 @@
         "Auriculares"
     ],
     "titulo": "Meta Quest Pro",
-    "descripciones": {},
+    "descripciones": {
+        ">": " Solo para edades de 13 años en adelante."
+    },
     "Vista General": {},
     "Detalles Tecnicos": {},
-    "Acerca del producto": {},
+    "Acerca del producto": {
+        ">": "Haz más en realidad virtual, más rápido con un potente hardware que incluye almacenamiento de 256 GB, 12 GB de RAM, 10 sensores VR/MR avanzados, audio espacial y mucho más."
+    },
     "Otros detalles": {},
     "Contenido de la caja": {},
     "Mas detalles Tecnicos": {},

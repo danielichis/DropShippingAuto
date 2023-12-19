@@ -6,7 +6,9 @@
         "Auriculares"
     ],
     "titulo": "Meta Quest 2 — Advanced All-In-One Virtual Reality Headset — 128 GB",
-    "descripciones": {},
+    "descripciones": {
+        ">": "*Meta Quest es para mayores de 13 años."
+    },
     "Vista General": {
         "Marca": "Meta Quest",
         "Color": "Blanco",
@@ -31,7 +33,9 @@
         "Campo de visión": "360",
         "Tipo de conector": "USB Tipo C"
     },
-    "Acerca del producto": {},
+    "Acerca del producto": {
+        ">": "Consulte la guía de seguridad infantil en línea; Cuentas para mayores de 10 años. Ciertas aplicaciones, juegos y experiencias pueden ser adecuados para un público más maduro."
+    },
     "Otros detalles": {},
     "Contenido de la caja": {},
     "Mas detalles Tecnicos": {},

@@ -1,19 +1,20 @@
 from openai import OpenAI
 import numpy as np
 from src.utils.managePaths import mp
+from src.utils.creds import api_key_openai
 import json
 
 jsonCollectionsPath=mp.get_path_collections_embeddings()
 jsonProductsPath=mp.get_path_product_embeddings()
 def get_openai_embedding(text:str):
-    client = OpenAI(api_key="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")
+    client = OpenAI(api_key=api_key_openai)
     response = client.embeddings.create(
         input=text,
         model="text-embedding-ada-002"
     )
     return response.data[0].embedding
 def get_openai_embeddings(texts:list):
-    client = OpenAI(api_key="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")
+    client = OpenAI(api_key=api_key_openai)
     response = client.embeddings.create(
         input=texts,
         model="text-embedding-ada-002"

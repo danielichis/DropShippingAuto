@@ -7,6 +7,7 @@
 ---------------------------------------
 
 -DESCRIPCIONES:
+>: El modo de expedición completamente nuevo, la gestión de la salud 24/7, la duración de la batería de 14 días y la compatibilidad con dispositivos Android e iOS también lo convierten en un compañero inteligente ideal para la vida cotidiana.
 ---------------------------------------
 
 -OVERVIEW:
@@ -39,6 +40,7 @@ Dispositivos compatibles:Smartphone
 Materiales de primera calidad, diseño superior: HUAWEI Watch Ultimate está hecho de metal líquido a base de circonio, con un bisel de cerámica de nanotecnología y una esfera de reloj de zafiro con una pantalla LTPO AMOLED de 1.5 pulgadas, siendo un equipo robusto y resistente al desgaste.
 Tecnología de buceo de 328.1 ft: HUAWEI Watch Ultimate te permite realizar inmersiones más desafiantes, gracias a su diseño impermeable de 16 estructuras y filtro impermeable a nivel de micras. Varios modos de buceo como buceo recreativo, buceo técnico3, modo de buceo3 y buceo libre.
 Nuevo modo de expedición: el nuevo modo Expedition de HUAWEI Watch Ultimate es compatible con tecnología GNSS de cinco sistemas de doble banda para garantizar un posicionamiento más preciso. Con más de 20 modos profesionales y más de 100 modos de ejercicio básicos, este reloj cubre las actividades al aire libre de tus sueños, desde caminatas hasta carreras de senderos y montañismo.
+>:【Batería robusta y carga rápida】Duración de la batería de 14 días con uso típico; duración de la batería de 8 días con uso intensivo; se carga a plena capacidad en 60 minutos, con carga inalámbrica rápida.
 Compatible con Android e iOS: el reloj es compatible tanto con iOS como con Android, para una mayor facilidad de uso. También viene con correa de buceo Voyage Blue
 Comunicación inalámbrica estándar: bluetooth
 Color de la banda: titanio

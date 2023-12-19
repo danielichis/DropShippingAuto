@@ -13,15 +13,22 @@ def run_bot():
         }
         with open("data.json","w",encoding="utf-8") as json_file:
             json.dump(saveData,json_file,indent=4,ensure_ascii=False)
+        
         print("descagando informacion de amazon")
-        # dr=download_info(request.json)
-        # lr=load_main_shopify(request.json)
-        # print(request.json)
-        # response={
-        #     **dr,
-        #     **lr
-        # }
-        return jsonify(response)
+        with open("data.json","r",encoding="utf-8") as json_file:
+            data=json.load(json_file)
+
+        dr=download_info(data['data']['dataToLoad'])
+        lr=load_main_shopify(data['data'])
+        botResponses=[]
+        for i,r in enumerate(dr):
+            botResponse={
+                **r,
+                **lr[i]
+            }
+            botResponses.append(botResponse)
+        
+        return jsonify(botResponses)
 if __name__ == '__main__':
     app.run(debug=True,port=5069)
     
