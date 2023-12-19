@@ -4,5 +4,3 @@ state.json
 products.csv
 config.txt
 *skus_Amazon
-#excluir archivos que terminen en .pyc
-*.pyc
