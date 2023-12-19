@@ -286,17 +286,21 @@ def download_info(dataSheet=None):
         if not os.path.exists(skuFolder):
             try:
                 download_sku(pw_page,sku,urlProducto,skuFolder)
-                status="Descargado correctamente"    
+                status="descargado correctamente"
+                newProduct="yes"    
             except Exception as e:
                 print(e)
+                newProduct="yes"
                 status="ERROR:"+str(e)
                 save_screenshot(pw_page,skuFolder)
         else:
-            status="no descargado, el producto ya existe en el directorio"
+            status="descargado correctamente"
+            newProduct="no"
             print("el producto ya existe")
         downloadsResponse.append({
             "sku":sku,
-            "status":status
+            "status":status,
+            "newProduct":newProduct
         })
     context.storage_state(path="src/sessions/state_amazon.json")
     context.close()
