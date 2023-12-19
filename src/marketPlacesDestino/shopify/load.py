@@ -92,7 +92,7 @@ def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
     currentUrl=page_shopi.url
     codeProduct=re.findall(r"\d+",currentUrl)[0]
     print(f"producto {amazonDatSku['sku']} subido a shopify")
-    #get the current url of page
+    return baseUrl+codeProduct
 
 def load_main_shopify(dataSheet=None):
     p = sync_playwright().start()
