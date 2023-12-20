@@ -1,0 +1,26 @@
+[
+    {
+        "sku": "B0CGTNPFZD",
+        "status_l": "Cargado correctamente",
+        "url": "https://admin.shopify.com/store/unaluka/products/7306206511310",
+        "PrecioListaShopify": "4707",
+        "PrecioShopify": "4279.00",
+        "SKU": "B0CGTNPFZD",
+        "estado": "Crear",
+        "fila": 143,
+        "newProduct": "no",
+        "status_d": "descargado correctamente"
+    },
+    {
+        "sku": "B0CL68RLWS",
+        "status_l": "Cargado correctamente",
+        "url": "https://admin.shopify.com/store/unaluka/products/7306206675150",
+        "PrecioListaShopify": "4707",
+        "PrecioShopify": "4279.00",
+        "SKU": "B0CL68RLWS",
+        "estado": "Crear",
+        "fila": 144,
+        "newProduct": "no",
+        "status_d": "descargado correctamente"
+    }
+]

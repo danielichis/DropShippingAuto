@@ -110,20 +110,21 @@ def load_main_shopify(dataSheet=None):
     dataToLoad=dataSheet['dataToLoad']
     configData=dataSheet['configData']
     if dataToLoad:
-        products=[item['SKU'].strip() for item in dataToLoad]
+        products=[item['sku'].strip() for item in dataToLoad]
     else:
         products=load_products()
     responseLoad=[]
     for productData in dataToLoad:
-        amazonDatSku=mp.data_sku(productData['SKU'].strip())
+        amazonDatSku=mp.data_sku(productData['sku'].strip())
         try:
             url=load_sku(page_shopi,amazonDatSku,productData,configData)
             load_status="Cargado correctamente"
         except Exception as e:
             load_status="ERROR:"+str(e)
+            url=""
         responseLoad.append({
-            "sku":productData['SKU'].strip(),
-            "status":load_status,
+            "sku":productData['sku'].strip(),
+            "status_l":load_status,
             "url":url
         })
         page_shopi.goto(newProductLink)

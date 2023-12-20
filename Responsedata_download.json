@@ -1,0 +1,22 @@
+[
+    {
+        "sku": "B0CGTNPFZD",
+        "status_d": "descargado correctamente",
+        "newProduct": "no",
+        "estado": "Crear",
+        "SKU": "B0CGTNPFZD",
+        "PrecioShopify": "4279.00",
+        "PrecioListaShopify": "4707",
+        "fila": 143
+    },
+    {
+        "sku": "B0CL68RLWS",
+        "status_d": "descargado correctamente",
+        "newProduct": "no",
+        "estado": "Crear",
+        "SKU": "B0CL68RLWS",
+        "PrecioShopify": "4279.00",
+        "PrecioListaShopify": "4707",
+        "fila": 144
+    }
+]

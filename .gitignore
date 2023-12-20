@@ -1,6 +1,11 @@
 venv
+src/utils/creds.py
 aprend.ipynb
 state.json
 products.csv
 config.txt
 *skus_Amazon
+*creds.py
+*__pycache__
+
+

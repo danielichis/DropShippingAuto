@@ -299,7 +299,7 @@ def download_info(dataSheet=None):
             print("el producto ya existe")
         downloadsResponse.append({
             "sku":sku,
-            "status":status,
+            "status_d":status,
             "newProduct":newProduct
         })
     context.storage_state(path="src/sessions/state_amazon.json")
