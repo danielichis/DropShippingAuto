@@ -1,2 +1,0 @@
-api_key_openai="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"
-

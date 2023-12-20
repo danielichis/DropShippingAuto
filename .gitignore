@@ -5,7 +5,7 @@ state.json
 products.csv
 config.txt
 *skus_Amazon
-*creds.py
+*credentials.py
 *__pycache__
 
 
