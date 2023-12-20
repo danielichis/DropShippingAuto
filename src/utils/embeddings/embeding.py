@@ -1,7 +1,7 @@
 from openai import OpenAI
 import numpy as np
 from src.utils.managePaths import mp
-from src.utils.creds import api_key_openai
+from src.utils.credentials import api_key_openai
 import json
 
 jsonCollectionsPath=mp.get_path_collections_embeddings()
