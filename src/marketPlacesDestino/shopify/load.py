@@ -49,6 +49,8 @@ def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
         descs=amazonDatSku['Vista General']
     elif amazonDatSku['Acerca del producto']!={}:
         descs=amazonDatSku['Acerca del producto']
+    elif amazonDatSku['descripciones']!={}:
+        descs=amazonDatSku['descripciones']
     else:
         raise Exception("no se encontro una descripcion para el producto")
     page_shopi.wait_for_selector(pshopy.cajaNombreProducto.selector)
@@ -119,8 +121,8 @@ def load_main_shopify(dataSheet=None):
         products=load_products()
     responseLoad=[]
     for productData in dataToLoad:
-        amazonDatSku=mp.data_sku(productData['sku'].strip())
         try:
+            amazonDatSku=mp.data_sku(productData['sku'].strip())
             url=load_sku(page_shopi,amazonDatSku,productData,configData)
             load_status="Cargado correctamente"
         except Exception as e:

@@ -68,7 +68,7 @@ def get_bulletDetails(pw_page):
     bulletInfo=pw_page.query_selector_all("div#detailBullets_feature_div li")
     bulletInfoDict={}
     for bullet in bulletInfo:
-        bulletInfoDict[bullet.query_selector("span span").inner_text()]=bullet.query_selector("span:nth-child(2)").inner_text()
+        bulletInfoDict[bullet.query_selector("span span").inner_text()]=bullet.query_selector("span:nth-child(2)").inner_text().replace("\u200e","")
     return bulletInfoDict
 
 def get_urls(pw_page):
@@ -157,6 +157,7 @@ def get_garanty(pw_page):
     return garanty
 
 def download_sku(pw_page,sku,urlProducto,skuFolder):
+    urls_images=get_urls(pw_page)
     pw_page.goto(urlProducto)
     print("\nPagina cargada en el producto "+sku)
     pw_page.wait_for_selector("div#wayfinding-breadcrumbs_feature_div li span[class=a-list-item]")
@@ -175,7 +176,7 @@ def download_sku(pw_page,sku,urlProducto,skuFolder):
     comparitions=get_comparitions(pw_page)
     descriptions=get_descriptions(pw_page)
     garanty=get_garanty(pw_page)    
-    urls_images=get_urls(pw_page)
+    
     img_down(urls_images,skuFolder)
     data={
         "sku":sku,
@@ -293,6 +294,7 @@ def download_info(dataSheet=None):
                 newProduct="yes"
                 status="ERROR:"+str(e)
                 save_screenshot(pw_page,skuFolder)
+                pw_page.close()
         else:
             status="descargado correctamente"
             newProduct="no"

@@ -1,27 +1,6 @@
 {
     "data": {
-        "dataToLoad": [
-            {
-                "PrecioListaShopify": "4707",
-                "PrecioShopify": "4279.00",
-                "SKU": "B0CGTNPFZD",
-                "estado": "Crear",
-                "fila": 143,
-                "newProduct": "no",
-                "sku": "B0CGTNPFZD",
-                "status_d": "descargado correctamente"
-            },
-            {
-                "PrecioListaShopify": "4707",
-                "PrecioShopify": "4279.00",
-                "SKU": "B0CL68RLWS",
-                "estado": "Crear",
-                "fila": 144,
-                "newProduct": "no",
-                "sku": "B0CL68RLWS",
-                "status_d": "descargado correctamente"
-            }
-        ],
+        "dataToLoad": [],
         "configData": {
             "modoPublicacion": "DRAFT",
             "colecciones": ""

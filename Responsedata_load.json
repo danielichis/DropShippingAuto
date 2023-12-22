@@ -1,25 +1,13 @@
 [
     {
-        "sku": "B0CGTNPFZD",
-        "status_l": "Cargado correctamente",
-        "url": "https://admin.shopify.com/store/unaluka/products/7306450829518",
-        "PrecioListaShopify": "4707",
-        "PrecioShopify": "4279.00",
-        "SKU": "B0CGTNPFZD",
+        "sku": "B07CZSFHZM",
+        "status_l": "ERROR:[Errno 2] No such file or directory: 'C:\\\\Users\\\\unaluka-bot\\\\Documents\\\\bot-unaluka\\\\DropShippingAuto\\\\src\\\\marketPlacesOrigen\\\\amazon\\\\skus_Amazon\\\\B07CZSFHZM\\\\data.json'",
+        "url": "",
+        "PrecioListaShopify": "1099",
+        "PrecioShopify": "999.00",
+        "SKU": "B07CZSFHZM ",
         "estado": "Crear",
-        "fila": 143,
-        "newProduct": "no",
-        "status_d": "descargado correctamente"
-    },
-    {
-        "sku": "B0CL68RLWS",
-        "status_l": "Cargado correctamente",
-        "url": "https://admin.shopify.com/store/unaluka/products/7306452271310",
-        "PrecioListaShopify": "4707",
-        "PrecioShopify": "4279.00",
-        "SKU": "B0CL68RLWS",
-        "estado": "Crear",
-        "fila": 144,
+        "fila": 157,
         "newProduct": "no",
         "status_d": "descargado correctamente"
     }
