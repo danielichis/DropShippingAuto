@@ -130,7 +130,11 @@ def get_descriptions(pw_page):
             pass
     return dicDescs
 def get_classificaction(pw_page):
-    classificaction=pw_page.locator("div#wayfinding-breadcrumbs_feature_div li span[class=a-list-item]").all_inner_texts()
+    try:
+        pw_page.wait_for_selector("div#wayfinding-breadcrumbs_feature_div li span[class=a-list-item]",timeout=3000)
+        classificaction=pw_page.locator("div#wayfinding-breadcrumbs_feature_div li span[class=a-list-item]").all_inner_texts()
+    except:
+        classificaction="sin clasificacion"
     return classificaction
 
 def get_price(pw_page):
@@ -160,7 +164,7 @@ def download_sku(pw_page,sku,urlProducto,skuFolder):
     urls_images=get_urls(pw_page)
     pw_page.goto(urlProducto)
     print("\nPagina cargada en el producto "+sku)
-    pw_page.wait_for_selector("div#wayfinding-breadcrumbs_feature_div li span[class=a-list-item]")
+    
 
     classificaction=get_classificaction(pw_page)
     title=get_title(pw_page)
@@ -285,6 +289,7 @@ def download_info(dataSheet=None):
         currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
         skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
         if not os.path.exists(skuFolder):
+            #download_sku(pw_page,sku,urlProducto,skuFolder)
             try:
                 download_sku(pw_page,sku,urlProducto,skuFolder)
                 status="descargado correctamente"

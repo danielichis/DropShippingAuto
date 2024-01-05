@@ -34,4 +34,4 @@ def run_load_shopify():
     return botResponses
 if __name__ == '__main__':
     run_download_shopify()
-    run_load_shopify()
+    #run_load_shopify()
