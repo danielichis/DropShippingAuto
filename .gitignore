@@ -3,7 +3,6 @@ src/utils/creds.py
 aprend.ipynb
 state.json
 products.csv
-config.txt
 *skus_Amazon
 *credentials.py
 *__pycache__

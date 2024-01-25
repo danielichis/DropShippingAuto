@@ -1,6 +1,17 @@
 {
     "data": {
-        "dataToLoad": [],
+        "dataToLoad": [
+            {
+                "PrecioListaShopify": "1099",
+                "PrecioShopify": "999.00",
+                "SKU": "B0BTHL673V ",
+                "estado": "Crear",
+                "fila": 158,
+                "newProduct": "no",
+                "sku": "B0BTHL673V",
+                "status_d": "descargado correctamente"
+            }
+        ],
         "configData": {
             "modoPublicacion": "DRAFT",
             "colecciones": ""

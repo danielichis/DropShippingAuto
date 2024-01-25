@@ -1,13 +1,13 @@
 [
     {
-        "sku": "B07CZSFHZM",
-        "status_l": "ERROR:[Errno 2] No such file or directory: 'C:\\\\Users\\\\unaluka-bot\\\\Documents\\\\bot-unaluka\\\\DropShippingAuto\\\\src\\\\marketPlacesOrigen\\\\amazon\\\\skus_Amazon\\\\B07CZSFHZM\\\\data.json'",
+        "sku": "B0BTHL673V",
+        "status_l": "ERROR:Timeout 30000ms exceeded.",
         "url": "",
         "PrecioListaShopify": "1099",
         "PrecioShopify": "999.00",
-        "SKU": "B07CZSFHZM ",
+        "SKU": "B0BTHL673V ",
         "estado": "Crear",
-        "fila": 157,
+        "fila": 158,
         "newProduct": "no",
         "status_d": "descargado correctamente"
     }
