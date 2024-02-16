@@ -1,6 +1,7 @@
 import csv
-
+import json
 def load_products():
-    with open(r"products.csv", newline="") as f:
-        reader = csv.reader(f)
-        return [item[0] for item in list(reader)]
+    #open json to load
+    with open("dataToLoad.json","r",encoding="utf-8") as json_file:
+        dataLoad=json.load(json_file)
+    return dataLoad

@@ -1,12 +1,32 @@
 [
     {
-        "sku": "B0BTHL673V",
+        "sku": "B08J4FQWCX",
         "status_d": "descargado correctamente",
-        "newProduct": "yes",
+        "newProduct": "no",
         "estado": "Crear",
-        "SKU": "B0BTHL673V ",
-        "PrecioShopify": "999.00",
-        "PrecioListaShopify": "1099",
-        "fila": 158
+        "SKU": "B08J4FQWCX",
+        "PrecioShopify": "9999.00",
+        "PrecioListaShopify": "10999",
+        "fila": 162
+    },
+    {
+        "sku": "B0825SNHP1",
+        "status_d": "descargado correctamente",
+        "newProduct": "no",
+        "estado": "Crear",
+        "SKU": "B0825SNHP1",
+        "PrecioShopify": "9999.00",
+        "PrecioListaShopify": "10999",
+        "fila": 163
+    },
+    {
+        "sku": "B08QXQQXBT",
+        "status_d": "descargado correctamente",
+        "newProduct": "no",
+        "estado": "Crear",
+        "SKU": "B08QXQQXBT",
+        "PrecioShopify": "9999.00",
+        "PrecioListaShopify": "10999",
+        "fila": 164
     }
 ]

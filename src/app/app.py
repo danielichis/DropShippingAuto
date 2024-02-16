@@ -39,6 +39,8 @@ def index():
     print("ir a google con browser abierto")
     #got_to_amazon(page)
     return "recibido"
+
+
 if __name__ == '__main__':
     app.run(debug=True,port=5069)
     

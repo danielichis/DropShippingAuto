@@ -78,7 +78,10 @@ def get_urls(pw_page):
     urls=pw_page.query_selector_all("img[data-old-hires]")
     urlsList=[]
     for url in urls:
-        urlsList.append(url.get_attribute("data-old-hires"))
+        if len(url.get_attribute("data-old-hires"))>4:
+            urlsList.append(url.get_attribute("data-old-hires"))
+        elif len(url.get_attribute("src"))>4:
+            urlsList.append(url.get_attribute("src"))
     return urlsList
 
 def get_importantInfo(pw_page):
@@ -161,8 +164,8 @@ def get_garanty(pw_page):
     return garanty
 
 def download_sku(pw_page,sku,urlProducto,skuFolder):
-    urls_images=get_urls(pw_page)
     pw_page.goto(urlProducto)
+    urls_images=get_urls(pw_page)
     print("\nPagina cargada en el producto "+sku)
     
 
@@ -271,7 +274,10 @@ def remove_all_sku_folder():
         os.remove(skuPath)
 def save_screenshot(pw_page,skuFolder):
     #create folder
-    os.makedirs(skuFolder)
+    try:
+        os.makedirs(skuFolder)
+    except Exception as e:
+        print(e)
     pw_page.screenshot(path=f"{skuFolder}/screenshot.png")
 def download_info(dataSheet=None):
     if dataSheet:
