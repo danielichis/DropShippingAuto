@@ -5,9 +5,9 @@ import requests
 import io
 from tqdm import tqdm
 import os
-from src.utils.manageProducts import load_products
+from DropShippingAuto.src.utils.manageProducts import load_products
 from PIL import Image
-from src.utils.managePaths import mp
+from DropShippingAuto.src.utils.managePaths import mp
 import csv
 
 def get_overView(pw_page):
@@ -78,10 +78,7 @@ def get_urls(pw_page):
     urls=pw_page.query_selector_all("img[data-old-hires]")
     urlsList=[]
     for url in urls:
-        if len(url.get_attribute("data-old-hires"))>4:
-            urlsList.append(url.get_attribute("data-old-hires"))
-        elif len(url.get_attribute("src"))>4:
-            urlsList.append(url.get_attribute("src"))
+        urlsList.append(url.get_attribute("data-old-hires"))
     return urlsList
 
 def get_importantInfo(pw_page):
@@ -167,7 +164,6 @@ def download_sku(pw_page,sku,urlProducto,skuFolder):
     pw_page.goto(urlProducto)
     urls_images=get_urls(pw_page)
     print("\nPagina cargada en el producto "+sku)
-    
 
     classificaction=get_classificaction(pw_page)
     title=get_title(pw_page)
@@ -274,23 +270,21 @@ def remove_all_sku_folder():
         os.remove(skuPath)
 def save_screenshot(pw_page,skuFolder):
     #create folder
-    try:
-        os.makedirs(skuFolder)
-    except Exception as e:
-        print(e)
+    os.makedirs(skuFolder)
     pw_page.screenshot(path=f"{skuFolder}/screenshot.png")
 def download_info(dataSheet=None):
     if dataSheet:
-        products=[item['SKU'].strip() for item in dataSheet]
+        products=[item for item in dataSheet]
     else:
         products=load_products()
+        products=[x for x in products['dataToLoad']]
     pw = sync_playwright().start()
     browser = pw.chromium.launch(headless=False)
-    context=browser.new_context(storage_state="src/sessions/state_amazon.json")
+    context=browser.new_context(storage_state="DropShippingAuto/src/sessions/state_amazon.json")
     pw_page = context.new_page()
-
     downloadsResponse=[]
-    for sku in tqdm(products):
+    for product in tqdm(products):
+        sku=product['SKU'].strip()
         urlProducto=f"https://www.amazon.com/dp/{sku}"
         currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
         skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
@@ -313,9 +307,10 @@ def download_info(dataSheet=None):
         downloadsResponse.append({
             "sku":sku,
             "status_d":status,
-            "newProduct":newProduct
+            "newProduct":newProduct,
+            "product":product
         })
-    context.storage_state(path="src/sessions/state_amazon.json")
+    context.storage_state(path="DropShippingAuto/src/sessions/state_amazon.json")
     context.close()
     browser.close()
     pw.stop()

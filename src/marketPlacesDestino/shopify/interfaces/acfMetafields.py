@@ -1,4 +1,4 @@
-from src.utils.selectores import localizador
+from DropShippingAuto.src.utils.selectores import localizador
 
 #Para llenar especificaciones adicionales en la app Metafields
 

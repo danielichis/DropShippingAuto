@@ -1,32 +1,56 @@
 [
     {
-        "sku": "B08J4FQWCX",
+        "sku": "B08CGMYQGN",
         "status_d": "descargado correctamente",
-        "newProduct": "no",
+        "newProduct": "yes",
+        "product": {
+            "estado": "Crear",
+            "SKU": "B08CGMYQGN",
+            "PrecioShopify": "189.00",
+            "PrecioListaShopify": "208",
+            "PrecioDinners": "215",
+            "PrecioRealPlaza": "215",
+            "PrecioRipley": "NaN",
+            "PrecioMercadoLibre": "0",
+            "PrecioShopstar": "0",
+            "fila": 55
+        },
         "estado": "Crear",
-        "SKU": "B08J4FQWCX",
-        "PrecioShopify": "9999.00",
-        "PrecioListaShopify": "10999",
-        "fila": 162
+        "SKU": "B08CGMYQGN",
+        "PrecioShopify": "189.00",
+        "PrecioListaShopify": "208",
+        "PrecioDinners": "215",
+        "PrecioRealPlaza": "215",
+        "PrecioRipley": "NaN",
+        "PrecioMercadoLibre": "0",
+        "PrecioShopstar": "0",
+        "fila": 55
     },
     {
-        "sku": "B0825SNHP1",
+        "sku": "B077KXQ995",
         "status_d": "descargado correctamente",
-        "newProduct": "no",
+        "newProduct": "yes",
+        "product": {
+            "estado": "Crear",
+            "SKU": "B077KXQ995",
+            "PrecioShopify": "365.00",
+            "PrecioListaShopify": "402",
+            "PrecioDinners": "413",
+            "PrecioRealPlaza": "413",
+            "PrecioRipley": "NaN",
+            "PrecioMercadoLibre": "0",
+            "PrecioShopstar": "0",
+            "fila": 56
+        },
         "estado": "Crear",
-        "SKU": "B0825SNHP1",
-        "PrecioShopify": "9999.00",
-        "PrecioListaShopify": "10999",
-        "fila": 163
-    },
-    {
-        "sku": "B08QXQQXBT",
-        "status_d": "descargado correctamente",
-        "newProduct": "no",
-        "estado": "Crear",
-        "SKU": "B08QXQQXBT",
-        "PrecioShopify": "9999.00",
-        "PrecioListaShopify": "10999",
-        "fila": 164
+        "SKU": "B077KXQ995",
+        "PrecioShopify": "365.00",
+        "PrecioListaShopify": "402",
+        "PrecioDinners": "413",
+        "PrecioRealPlaza": "413",
+        "PrecioRipley": "NaN",
+        "PrecioMercadoLibre": "0",
+        "PrecioShopstar": "0",
+        "fila": 56
     }
 ]

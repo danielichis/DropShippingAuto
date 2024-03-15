@@ -1,7 +1,7 @@
 import json
 import csv
-from src.utils.managePaths import mp
-from src.utils.manageProducts import load_products
+from DropShippingAuto.src.utils.managePaths import mp
+from DropShippingAuto.src.utils.manageProducts import load_products
 import os
 import re
 #read csv file
@@ -17,7 +17,7 @@ def load_json(product):
     vendedor="UNALUKA INTERNACIONAL"
     categoria=dataAmazon["clasificacion"]
     if "Marca" in dataAmazon['Vista General'].keys():
-        marca=dataAmazon["Vista General"]["Marca:"]
+        marca=dataAmazon["Vista General"]["Marca"]
     elif "Marca" in dataAmazon['Detalles Tecnicos'].keys():
         marca=dataAmazon["Detalles Tecnicos"]["Marca"]
     else:
@@ -58,6 +58,7 @@ def load_json(product):
         "Altura cm":altura_cm,
         "peso_kg":peso_kg
     }
+    imagesPath=get_images_paths(product['SKU'])
     dataToLoad={
         "vendedor":vendedor,
         "categoria":categoria,
@@ -66,7 +67,8 @@ def load_json(product):
         "nombreProducto":nombreProducto,
         "descripcion":descriptionString.strip(),
         "precioAmazon":precioAmazon,
-        "dimensions_cm":dimensions_cm
+        "dimensions_cm":dimensions_cm,
+        "imagesPath":imagesPath
     }
     return dataToLoad
 
@@ -88,11 +90,9 @@ def dinners_to_load_info():
     products=load_products()
     print(len(products))
     allData_list=[]
-    for product in products['data']['dataToLoad']:
-        imagesPath=get_images_paths(product['SKU'])
+    for product in products['dataToLoad']:
         data=load_json(product['SKU'])
         allData={
-            "imagesPath":imagesPath,
             "data":data
         }
         allData_list.append(allData)

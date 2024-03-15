@@ -1,40 +1,42 @@
 {
-    "data": {
-        "dataToLoad": [
-            {
-                "PrecioListaShopify": "10999",
-                "PrecioShopify": "9999.00",
-                "SKU": "B08J4FQWCX",
+    "dataToLoad": [
+        {
+            "sku": "B07QSTJV95",
+            "status_d": "descargado correctamente",
+            "newProduct": "no",
+            "product": {
                 "estado": "Crear",
-                "fila": 162,
-                "newProduct": "no",
-                "sku": "B08J4FQWCX",
-                "status_d": "descargado correctamente"
-            },
-            {
-                "PrecioListaShopify": "10999",
-                "PrecioShopify": "9999.00",
-                "SKU": "B0825SNHP1",
-                "estado": "Crear",
-                "fila": 163,
-                "newProduct": "no",
-                "sku": "B0825SNHP1",
-                "status_d": "descargado correctamente"
-            },
-            {
-                "PrecioListaShopify": "10999",
-                "PrecioShopify": "9999.00",
-                "SKU": "B08QXQQXBT",
-                "estado": "Crear",
-                "fila": 164,
-                "newProduct": "no",
-                "sku": "B08QXQQXBT",
-                "status_d": "descargado correctamente"
+                "SKU": "B07QSTJV95",
+                "PrecioShopify": "299.00",
+                "PrecioListaShopify": "329",
+                "PrecioDinners": "347",
+                "PrecioRealPlaza": "347",
+                "PrecioRipley": "347",
+                "PrecioMercadoLibre": "369",
+                "PrecioShopstar": "347",
+                "fila": 85
             }
-        ],
-        "configData": {
-            "modoPublicacion": "DRAFT",
-            "colecciones": ""
+        },
+        {
+            "sku": "B0CKYF12ZR",
+            "status_d": "descargado correctamente",
+            "newProduct": "yes",
+            "product": {
+                "estado": "Crear",
+                "SKU": "B0CKYF12ZR",
+                "PrecioShopify": "149.00",
+                "PrecioListaShopify": "164",
+                "PrecioDinners": "175",
+                "PrecioRealPlaza": "171",
+                "PrecioRipley": "175",
+                "PrecioMercadoLibre": "182",
+                "PrecioShopstar": "171",
+                "fila": 91
+            }
         }
+    ],
+    "configData": {
+        "modoPublicacion": "DRAFT",
+        "colecciones": ""
     }
 }

@@ -1,7 +1,7 @@
 from playwright.sync_api import sync_playwright
-from src.utils.dinamySelections import search_best_option
-from src.otrasWeb.scrapUpc import get_upc
-from src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
+from DropShippingAuto.src.utils.dinamySelections import search_best_option
+from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
+from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
 import json
 import time
 homeDinners="https://admin.quickcomm.co/catalog/products"
@@ -16,17 +16,21 @@ class multiLoaderDinners:
         user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
         self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
         self.page=self.browser.new_page()
-        self.go_to_create_product()
-
-
-class LoaderDinners:
-    def __init__(self,dataToLoad):
-        self.dataToLoad=dataToLoad
-        
+    
     def go_to_create_product(self):
         self.page.goto(homeDinners)
         self.page.get_by_role("button", name=" Crear Producto").click()
         self.page.get_by_role("button", name=" Empezar").click()
+
+    def load_all_products(self):
+        loadDinners=LoaderDinners(self.dataToLoad)
+        for product in self.dataToLoad:
+            self.load_main_dinners(product)
+
+        
+class LoaderDinners:
+    def __init__(self,dataToLoad):
+        self.dataToLoad=dataToLoad
 
     def load_seller(self):
         self.page.locator("//span[text()='Vendedor']//parent::div//input").click()
@@ -153,5 +157,8 @@ class LoaderDinners:
         self.load_upc()
         self.load_dimensions()
         self.load_aditional_fields()
+if __name__ == "__main__":
+    mloader=multiLoaderDinners(infoDinnersToLoad)
+    mloader.go_to_create_product()
 
     

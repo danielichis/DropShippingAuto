@@ -1,7 +1,7 @@
 import requests
 from selectolax.parser import HTMLParser
 import re
-from src.utils.manageProducts import load_products
+from DropShippingAuto.src.utils.manageProducts import load_products
 
 def get_upc_from_upcitemdb(sku):
     upcItemdbUrl = "https://www.upcitemdb.com/"

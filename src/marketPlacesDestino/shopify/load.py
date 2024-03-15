@@ -1,12 +1,14 @@
 
 from playwright.sync_api import sync_playwright
 import time
-from src.marketPlacesDestino.shopify.interfaces import productosShopify as pshopy
-from src.marketPlacesDestino.shopify.interfaces import acfMetafields as acm
-from src.utils.manageProducts import load_products
-from src.utils.managePaths import mp
-from src.utils.manipulateDicts import dc
-from src.utils.embeddings.embeding import get_top_n_match
+import traceback
+from DropShippingAuto.src.marketPlacesDestino.shopify.interfaces import productosShopify as pshopy
+from DropShippingAuto.src.marketPlacesDestino.shopify.interfaces import acfMetafields as acm
+from DropShippingAuto.src.utils.manageProducts import load_products
+from DropShippingAuto.src.utils.managePaths import mp
+from DropShippingAuto.src.utils.manipulateDicts import dc
+from DropShippingAuto.src.utils.embeddings.embeding import get_top_n_match
+import json
 import re
 import os
 
@@ -38,7 +40,12 @@ def select_shopify_collections(page_shopi,amazonDatSku):
     #page_shopi.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()    
     for collection in TopCollections:
         #page_shopi.get_by_role("combobox", name="Colecciones").fill()
-        page_shopi.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click()
+        try:
+            page_shopi.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click(timeout=3000)
+        except Exception as e:
+            tb=traceback.format_exc()
+            print(tb)
+            pass
         #page_shopi.locator(f"//span/div[text()={collection['collecion']}]").click()
         #page_shopi.get_by_role("combobox", name="Colecciones").fill("")
 
@@ -62,9 +69,9 @@ def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
     page_shopi.locator("span>input[type='file']").set_input_files(amazonDatSku['asbPathImages'])
     page_shopi.wait_for_selector(pshopy.cajaPrecioProducto.selector)
     page_shopi.locator(pshopy.cajaPrecioProducto.selector).click()
-    page_shopi.locator(pshopy.cajaPrecioProducto.selector).fill(productDataSht['PrecioShopify'],timeout=3000)
+    page_shopi.locator(pshopy.cajaPrecioProducto.selector).fill(productDataSht['product']['PrecioShopify'],timeout=3000)
     page_shopi.locator(pshopy.cajaPrecioComparacion.selector).click()
-    page_shopi.locator(pshopy.cajaPrecioComparacion.selector).fill(productDataSht['PrecioListaShopify'],timeout=3000)
+    page_shopi.locator(pshopy.cajaPrecioComparacion.selector).fill(productDataSht['product']['PrecioListaShopify'],timeout=3000)
     page_shopi.locator(pshopy.cajaStock.selector).click()
     page_shopi.locator(pshopy.cajaStock.selector).fill("1")
     page_shopi.locator(pshopy.cajaSKU.selector).click()
@@ -98,11 +105,18 @@ def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
     print(f"producto {amazonDatSku['sku']} subido a shopify")
     return baseUrl+codeProduct
 
+def handle_login(page_shopi):
+    if len(page_shopi.query_selector_all("h1[class='ui-heading']"))>0:
+        print("seleccionando cuenta...")
+        page_shopi.locator("div[class='user-card ']").click()
 def load_main_shopify(dataSheet=None):
+    if dataSheet==None:
+        with open("DropShippingAuto/dataToLoad.json","r",encoding="utf-8") as json_file:
+            dataSheet=json.load(json_file)
     p = sync_playwright().start()
     user_dir=mp.profiel_path
     browser = p.chromium.launch(headless=False)
-    context=browser.new_context(storage_state="src/sessions/state_shopify.json")
+    context=browser.new_context(storage_state="DropShippingAuto/src/sessions/state_shopify.json")
     #context = p.chromium.launch_persistent_context(user_dir,headless=False)
     #context = p.chromium.launch_persistent_context(user_dir,headless=False,channel="chrome")
     #context=browser.new_context(storage_state="state.json")
@@ -111,6 +125,8 @@ def load_main_shopify(dataSheet=None):
     newProductLink="https://admin.shopify.com/store/unaluka/products/new"
     newProductLink2="https://admin.shopify.com/store/395520/products/new"
     page_shopi.goto(newProductLink)
+    page_shopi.wait_for_load_state("load")
+    handle_login(page_shopi)
     dataToLoad=dataSheet['dataToLoad']
     configData=dataSheet['configData']
     if dataToLoad:
@@ -118,13 +134,15 @@ def load_main_shopify(dataSheet=None):
     else:
         products=load_products()
     responseLoad=[]
+
     for productData in dataToLoad:
         try:
             amazonDatSku=mp.data_sku(productData['sku'].strip())
             url=load_sku(page_shopi,amazonDatSku,productData,configData)
             load_status="Cargado correctamente"
         except Exception as e:
-            load_status="ERROR:"+str(e)
+            tb=traceback.format_exc()
+            load_status="ERROR:"+str(tb)
             url=""
         responseLoad.append({
             "sku":productData['sku'].strip(),
@@ -132,10 +150,13 @@ def load_main_shopify(dataSheet=None):
             "url":url
         })
         page_shopi.goto(newProductLink)
-    context.storage_state(path="src/sessions/state_shopify.json")
+    context.storage_state(path="DropShippingAuto/src/sessions/state_shopify.json")
     context.close()
     browser.close()
     p.stop()
+    #save the response in json file
+    with open("DropShippingAuto/Responsedata_load.json","w",encoding="utf-8") as json_file:
+        json.dump(responseLoad,json_file,indent=4,ensure_ascii=False)
     return responseLoad
 if __name__ == "__main__":
     load_main_shopify()

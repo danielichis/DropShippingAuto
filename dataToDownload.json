@@ -1,31 +1,32 @@
 {
-    "data": {
-        "dataToLoad": [
-            {
-                "estado": "Crear",
-                "SKU": "B08J4FQWCX",
-                "PrecioShopify": "9999.00",
-                "PrecioListaShopify": "10999",
-                "fila": 162
-            },
-            {
-                "estado": "Crear",
-                "SKU": "B0825SNHP1",
-                "PrecioShopify": "9999.00",
-                "PrecioListaShopify": "10999",
-                "fila": 163
-            },
-            {
-                "estado": "Crear",
-                "SKU": "B08QXQQXBT",
-                "PrecioShopify": "9999.00",
-                "PrecioListaShopify": "10999",
-                "fila": 164
-            }
-        ],
-        "configData": {
-            "modoPublicacion": "DRAFT",
-            "colecciones": ""
+    "dataToLoad": [
+        {
+            "estado": "Crear",
+            "SKU": "B07QSTJV95",
+            "PrecioShopify": "299.00",
+            "PrecioListaShopify": "329",
+            "PrecioDinners": "347",
+            "PrecioRealPlaza": "347",
+            "PrecioRipley": "347",
+            "PrecioMercadoLibre": "369",
+            "PrecioShopstar": "347",
+            "fila": 85
+        },
+        {
+            "estado": "Crear",
+            "SKU": "B0CKYF12ZR",
+            "PrecioShopify": "149.00",
+            "PrecioListaShopify": "164",
+            "PrecioDinners": "175",
+            "PrecioRealPlaza": "171",
+            "PrecioRipley": "175",
+            "PrecioMercadoLibre": "182",
+            "PrecioShopstar": "171",
+            "fila": 91
         }
+    ],
+    "configData": {
+        "modoPublicacion": "DRAFT",
+        "colecciones": ""
     }
 }

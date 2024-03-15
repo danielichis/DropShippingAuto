@@ -18,8 +18,7 @@ def run_download():
             "data":request.json
         }
         with open("dataToDownload.json","w",encoding="utf-8") as json_file:
-            json.dump(saveData,json_file,indent=4,ensure_ascii=False)
-        
+            json.dump(saveData,json_file,indent=4,ensure_ascii=False)        
     botResponses=run_download_shopify()
     return jsonify(botResponses)
 

@@ -1,7 +1,7 @@
 from openai import OpenAI
 import numpy as np
-from src.utils.managePaths import mp
-from src.utils.credentials import api_key_openai
+from DropShippingAuto.src.utils.managePaths import mp
+from DropShippingAuto.src.utils.credentials import api_key_openai
 import json
 
 jsonCollectionsPath=mp.get_path_collections_embeddings()
@@ -123,5 +123,15 @@ def test_top_n_match():
     currentCollections=["Promociones de laptops","Laptops","Laptops para estudiantes","Laptops para trabajo"]
     get_top_n_match(productSample,currentCollections,3)
 
+def anwser_with_system():
+    client = OpenAI(api_key=api_key_openai)
+
+    messages = [
+        {"role": "system", "content": "You are albert einstein"},
+        {"role": "user", "content": "please explain the theory of relativity"}
+    ]
+    
+    
 if __name__ == '__main__':
-    get_openai_embeddings(["sopa","tallarin"])
+    #get_openai_embeddings(["sopa","tallarin"])
+    anwser_with_system()
