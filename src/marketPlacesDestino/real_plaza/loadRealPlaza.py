@@ -25,12 +25,40 @@ class multiLoaderRP:
         #self.page.get_by_role("button", name=" Crear Producto").click()
         #self.page.get_by_role("button", name=" Empezar").click()
 
-    def load_aditional_fields(self):
+    def load_product_name(self):
+        #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
+        self.page.get_by_role("textbox", name="Nombre").fill("productName")
+
+    def load_description(self):
+        #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
+        self.page.locator("div[class='ql-editor']").fill("<p>productDescriptiooooooon</p>")
+    def load_brand(self):
+        self.page.locator("div[id='inputBrand']").click()
+        brands=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
+        print(brands)
+
+
+    def load_category(self):
         self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
+        #getting the list of categories
+        time.sleep(1)
+        categoryListLocator=self.page.locator("div[class='list-group']>div[class='list-group-item']").all()
+        categoryList=[]
+        
+        for category in categoryListLocator:
+           categoryList.append({"name":category.locator("span").inner_text(),
+                                "button":category.locator("button")})
+        print(categoryList)
+        #example
         self.page.locator(".btn-subcategory").first.click()
         self.page.locator(".btn-subcategory").first.click()
         self.page.get_by_text("Aceite Vegetal").click()
         print("categoria seleccionada")
+        
+
+
+    def load_aditional_fields(self):
+        time.sleep(1)
         aditional_fields=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
         print(aditional_fields)
         print("Se imprimieron los campos adicionales")
@@ -87,7 +115,13 @@ class LoaderRP:
 if __name__ == "__main__":
     RPmloader=multiLoaderRP(2)
     RPmloader.go_to_create_product()
+    RPmloader.load_product_name()
+    RPmloader.load_category()
     RPmloader.load_aditional_fields()
+    RPmloader.load_brand()
+    RPmloader.load_description()
     print("terminado")
 
     
+#class="multiselect__element"
+
