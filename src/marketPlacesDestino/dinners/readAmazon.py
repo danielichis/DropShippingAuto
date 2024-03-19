@@ -9,8 +9,8 @@ import re
 def sku_folder(sku):
     return os.path.join(mp.get_current_path(1),"marketPlacesOrigen\\amazon\\skus_Amazon",sku)
 
-def load_json(product):
-    skuFolder=sku_folder(product)
+def dinners_data_load(product_sku):
+    skuFolder=sku_folder(product_sku)
     dataJsonPath=skuFolder+"/data.json"
     with open(dataJsonPath, "r",encoding="utf-8") as f:
         dataAmazon= json.load(f)
@@ -58,7 +58,8 @@ def load_json(product):
         "Altura cm":altura_cm,
         "peso_kg":peso_kg
     }
-    imagesPath=get_images_paths(product['SKU'])
+    print(product_sku)
+    imagesPath=get_images_paths(product_sku)
     dataToLoad={
         "vendedor":vendedor,
         "categoria":categoria,
@@ -91,7 +92,7 @@ def dinners_to_load_info():
     print(len(products))
     allData_list=[]
     for product in products['dataToLoad']:
-        data=load_json(product['SKU'])
+        data=dinners_data_load(product['SKU'])
         allData={
             "data":data
         }
@@ -102,7 +103,7 @@ def dinners_to_load_info():
         json.dump(allData_list, f, indent=4, ensure_ascii=False)
     return allData_list
 
-
 infoDinnersToLoad=dinners_to_load_info()
 if __name__ == "__main__":
     dinners_to_load_info()
+    print("infoDinnersToLoad",infoDinnersToLoad)

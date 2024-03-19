@@ -1,4 +1,5 @@
 from playwright.sync_api import sync_playwright
+from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
@@ -12,7 +13,7 @@ class multiLoaderRP:
     def __init__(self,dataToLoad):
         self.dataToLoad=dataToLoad
         self.p = sync_playwright().start()
-        user_dir=r"C:\Users\risin\AppData\Local\Google\Chrome\UserData2"
+        user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
         self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
         self.page=self.browser.new_page()
     
@@ -31,7 +32,11 @@ class multiLoaderRP:
 
     def load_description(self):
         #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
-        self.page.locator("div[class='ql-editor']").fill("<p>productDescriptiooooooon</p>")
+        properties={
+                "name":"description1",
+                "value":"23434"
+            }
+        insertPropertiesToPage("div[class='ql-editor ql-blank']",properties,self.page)
     def load_brand(self):
         self.page.locator("div[id='inputBrand']").click()
         brands=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()

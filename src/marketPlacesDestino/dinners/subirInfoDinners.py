@@ -2,6 +2,8 @@ from playwright.sync_api import sync_playwright
 from DropShippingAuto.src.utils.dinamySelections import search_best_option
 from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
+from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
+from utils.managePaths import mp
 import json
 import time
 homeDinners="https://admin.quickcomm.co/catalog/products"
@@ -14,30 +16,58 @@ class multiLoaderDinners:
         self.dataToLoad=dataToLoad
         self.p = sync_playwright().start()
         user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
-        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
-        self.page=self.browser.new_page()
+        self.context = self.p.chromium.launch_persistent_context(user_dir,headless=False)
+        self.page=self.context.new_page()
     
     def go_to_create_product(self):
         self.page.goto(homeDinners)
+        if self.page.get_by_text("Hello! Log in with your email.").is_visible():
+            print("pide login")
+            self.login_dinners()
         self.page.get_by_role("button", name=" Crear Producto").click()
         self.page.get_by_role("button", name=" Empezar").click()
 
+    def login_dinners(self):
+        self.page.locator("button[class='btn btn-main']").click()
+        self.page.locator("i[class='fas fa-sign-in-alt']").click()
+        pass
+
     def load_all_products(self):
-        loadDinners=LoaderDinners(self.dataToLoad)
-        for product in self.dataToLoad:
-            self.load_main_dinners(product)
+        print(self.dataToLoad)
+        for productData in self.dataToLoad:
+            loadDinners=LoaderDinners(productData,self.page,self.context,self.p)
+            loadDinners.load_main_dinners()
+            r=loadDinners.create_new_product()
+            if r:
+                print("Producto creado")
+            else:
+                print("Error al crear producto,cerraando ventana del producto")
+            self.go_to_create_product()
 
         
-class LoaderDinners:
-    def __init__(self,dataToLoad):
+class LoaderDinners():
+    def __init__(self,dataToLoad,page,context,p):
         self.dataToLoad=dataToLoad
-
+        self.page=page
+        self.context=context
+        self.p=p
+    def on_success(self,response):
+        print("Success")
+        print(response.ok, response.request.method)
+    def on_error(self,response):
+        print(response.ok, response.status_text)
+        print("Error")
+    def create_new_product(self):
+        with self.page.expect_response("https://api.quickcomm.co/catalog/products",timeout=4000) as response_info:
+            self.page.locator("product-create button[type=submit]").click()
+        response = response_info.value
+        return response.ok
     def load_seller(self):
         self.page.locator("//span[text()='Vendedor']//parent::div//input").click()
         self.page.locator("//a[text()='UNALUKA INTERNACIONAL']").click()
 
     def load_brand(self):
-        marca_a_buscar=infoDinnersToLoad['data']['marca']
+        marca_a_buscar=self.dataToLoad['data']['marca']
         self.page.locator("//span[text()='Marca']//parent::div//input").type(marca_a_buscar,delay=100)
         time.sleep(0.5)
         self.page.wait_for_selector("//span[text()='Marca']/parent::div//a[@class='ng-star-inserted']")
@@ -46,7 +76,7 @@ class LoaderDinners:
         self.page.locator("a").filter(has_text=re.compile(rf"^{best_option}$")).click()
 
     def load_category(self):
-        categoria=infoDinnersToLoad['data']['categoria']
+        categoria=self.dataToLoad['data']['categoria']
         categoria.reverse()
         for cate in categoria:
             self.page.locator("//span[text()='Categoría']//parent::div//input").type(cate,delay=100)
@@ -59,25 +89,25 @@ class LoaderDinners:
                 self.page.locator("//span[text()='Categoría']//parent::div//input").fill("")
 
     def load_upc(self):
-        upc=get_upc(infoDinnersToLoad['data']['sku'])
+        upc=get_upc(self.dataToLoad['data']['sku'])
         self.page.locator("div").filter(has_text=re.compile(r"^Código InternoIdentificador unico \(Opcional\)$")).get_by_role("textbox").fill(upc)
         self.page.query_selector("input[formcontrolname='barCode']").fill(upc)
 
     def load_name_product(self):
-        name_product=infoDinnersToLoad['data']['nombreProducto']
+        name_product=self.dataToLoad['data']['nombreProducto']
         self.page.locator("div").filter(has_text=re.compile(r"^Nombre Producto$")).get_by_role("textbox").fill(name_product)
 
     def load_description(self):
-        description=infoDinnersToLoad['data']['descripcion']
+        description=self.dataToLoad['data']['descripcion']
         self.page.locator("//div[@class='ngx-editor-textarea']").fill(description)
 
     def load_base_price(self):
-        base_price=infoDinnersToLoad['data']['precioBase'] 
+        base_price=self.dataToLoad['data']['precioAmazon'] 
         base_price=str(round(float(re.findall(r"(\d+\.\d+)",base_price)[0]),2))
         self.page.locator("div").filter(has_text=re.compile(r"^Precio Base$")).get_by_role("spinbutton").fill(base_price)
 
     def load_special_price(self):
-        special_price=infoDinnersToLoad['data']['precioBase']
+        special_price=self.dataToLoad['data']['precioAmazon']
         special_price=str(round(float(re.findall(r"(\d+\.\d+)",special_price)[0]),2))
         self.page.locator("div").filter(has_text=re.compile(r"^Precio Especial$")).get_by_role("spinbutton").fill(special_price)
 
@@ -92,33 +122,34 @@ class LoaderDinners:
         self.page.locator("div").filter(has_text=re.compile(r"^Ganancia$")).get_by_role("textbox").fill(profit)
 
     def load_sku(self):
-        sku=infoDinnersToLoad['data']['sku']
+        sku=self.dataToLoad['data']['sku']
         self.page.locator("div").filter(has_text=re.compile(r"^SKU \(código de artículo\)$")).get_by_role("textbox").fill(sku)
     def load_stock(self):
         stock="1"
         self.page.locator("div").filter(has_text=re.compile(r"^Stock$")).get_by_role("spinbutton").fill(stock)
 
     def load_dimensions(self):
-        dimensions=infoDinnersToLoad['data']['dimensions_cm']
-        self.page.get_by_placeholder("Largo cm").fill(str(dimensions["Largo cm"]))
-        self.page.get_by_placeholder("Ancho cm").fill(str(dimensions["Ancho cm"]))
-        self.page.get_by_placeholder("Altura cm").fill(str(dimensions["Altura cm"]))
-        self.page.get_by_placeholder("Peso").fill(dimensions["peso_kg"])
+        dimensions=self.dataToLoad['data']['dimensions_cm']
+        self.page.get_by_placeholder("Largo cm").fill(str(25))
+        self.page.get_by_placeholder("Ancho cm").fill(str(25))
+        self.page.get_by_placeholder("Altura cm").fill(str(25))
+        self.page.get_by_placeholder("Peso").fill(str(200))
 
     def load_images(self):
-        for imagePath in infoDinnersToLoad["imagesPath"]:
+        for imagePath in self.dataToLoad["data"]["imagesPath"]:
             self.page.locator(".uploaded-photos__item > input").first.set_input_files(imagePath)
 
     def load_aditional_fields(self):
         self.page.wait_for_selector("div[class='col-md-6 ng-star-inserted']")
         aditionalFields=self.page.query_selector_all("div[class='col-md-6 ng-star-inserted']")
         lista_atributos_adicionales=self.page.locator("//div[@class='col-md-6 ng-star-inserted']//span[text()='*']/parent::span").all_inner_texts()
-        lista_obligatorios=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']")
-        lista_inputs=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div input")
-        lista_selects=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div select")
-        lista_opcionales=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div>span:not(:has(>span))")
+        lista_obligatorios=self.page.locator("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']").all_inner_texts()
+        list_oblig=self.page.locator("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']").all_inner_texts()
+        lista_inputs=self.page.locator("div[class='col-md-6 ng-star-inserted'] div input").all_inner_texts()
+        lista_selects=self.page.locator("div[class='col-md-6 ng-star-inserted'] div select").all_inner_texts()
+        lista_opcionales=self.page.locator("div[class='col-md-6 ng-star-inserted'] div>span:not(:has(>span))").all_inner_texts()
         fieldsData=[]
-        for field in aditionalFields:
+        for i,field in enumerate(aditionalFields):
             textField=field.query_selector("span").inner_text()
             if "*" in textField:
                 mandatory=True
@@ -136,14 +167,26 @@ class LoaderDinners:
                 "name":textField.replace("*","").strip(),
                 "mandatory":mandatory,
                 "options":options,
-                "type":type
+                "type":type,
+                "fieldObject":field
             }
+
             fieldsData.append(fieldData)
         
-        with open("fieldsData.json", "w",encoding="utf-8") as f:
-            json.dump(fieldsData, f, indent=4, ensure_ascii=False)
-        print(fieldsData)
-
+        #filtrar los campos obligatorios y que sean tipo input
+        mandatorySelectFields=[field['name'] for field in fieldsData if field["mandatory"]==True and field["type"]=="input"]
+        contentProduct=mp.data_sku(self.dataToLoad['data']['sku'])
+        dimArgs=get_dinamic_args_extraction(content_product=str(contentProduct),fieldsFromMarketPlace=mandatorySelectFields)
+        #str to dict
+        dimArgs=json.loads(dimArgs)
+        for field in fieldsData:
+            if field["mandatory"]==True and field["type"]=="input":
+                textField=field["name"]
+                valueField=dimArgs[textField]
+                field["fieldObject"].query_selector("input").fill(valueField)
+        print(mandatorySelectFields)
+    
+        
     def load_main_dinners(self):
         self.load_images()
         self.load_seller()
@@ -157,8 +200,10 @@ class LoaderDinners:
         self.load_upc()
         self.load_dimensions()
         self.load_aditional_fields()
+        self.create_new_product()
 if __name__ == "__main__":
     mloader=multiLoaderDinners(infoDinnersToLoad)
     mloader.go_to_create_product()
+    mloader.load_all_products()
 
     
