@@ -7,8 +7,9 @@ class managePaths:
     def __init__(self):
         profile_path=None
         self.read_config_txt()
+        
     def get_current_path(self,up_tree=0):
-        # determine if application is a script file or frozen exe
+        # determine if application is a script file or frozen exe 3
         if getattr(sys, 'frozen', False):
             application_path = os.path.dirname(sys.executable)
         elif __file__:
