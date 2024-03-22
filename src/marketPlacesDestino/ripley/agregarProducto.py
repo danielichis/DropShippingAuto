@@ -1,4 +1,4 @@
-from utils.selectores import localizador
+from utilsDropSh.selectores import localizador
 
 #El ejercicio se realizó con laptops
 #El procedimiento lo hacían con un excel, nosotros crearemos un bot que lo haga manualmente

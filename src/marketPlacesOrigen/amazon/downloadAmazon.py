@@ -5,9 +5,9 @@ import requests
 import io
 from tqdm import tqdm
 import os
-from DropShippingAuto.src.utils.manageProducts import load_products
+from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from PIL import Image
-from DropShippingAuto.src.utils.managePaths import mp
+from DropShippingAuto.src.utilsDropSh.managePaths import mp
 import csv
 
 def get_overView(pw_page):
@@ -160,7 +160,36 @@ def get_garanty(pw_page):
         garanty=None
     return garanty
 
-def download_sku(pw_page,sku,urlProducto,skuFolder):
+def get_sku_amazon_product(pw_page,product):
+    sku=product['SKU'].strip()
+    currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
+    skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
+    if not os.path.exists(skuFolder):
+        #download_sku(pw_page,sku,urlProducto,skuFolder)
+        try:
+            download_sku(pw_page,sku)
+            status="descargado correctamente"
+            newProduct="yes"    
+        except Exception as e:
+            print(e)
+            newProduct="yes"
+            status="ERROR:"+str(e)
+            save_screenshot(pw_page,skuFolder)
+            pw_page.close()
+    else:
+        status="descargado correctamente"
+        newProduct="no"
+    response={
+        "product":product,
+        "status_d":status,
+        "newProduct":newProduct,
+    }
+    return response
+def download_sku(pw_page,sku):
+    urlProducto=f"https://www.amazon.com/dp/{sku}"
+    currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
+    skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
+
     pw_page.goto(urlProducto)
     urls_images=get_urls(pw_page)
     print("\nPagina cargada en el producto "+sku)
@@ -276,7 +305,7 @@ def download_info(dataSheet=None):
     if dataSheet:
         products=[item for item in dataSheet]
     else:
-        products=load_products()
+        products=get_data_to_download()
         products=[x for x in products['dataToLoad']]
     pw = sync_playwright().start()
     browser = pw.chromium.launch(headless=False)
@@ -284,31 +313,12 @@ def download_info(dataSheet=None):
     pw_page = context.new_page()
     downloadsResponse=[]
     for product in tqdm(products):
-        sku=product['SKU'].strip()
-        urlProducto=f"https://www.amazon.com/dp/{sku}"
-        currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
-        skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
-        if not os.path.exists(skuFolder):
-            #download_sku(pw_page,sku,urlProducto,skuFolder)
-            try:
-                download_sku(pw_page,sku,urlProducto,skuFolder)
-                status="descargado correctamente"
-                newProduct="yes"    
-            except Exception as e:
-                print(e)
-                newProduct="yes"
-                status="ERROR:"+str(e)
-                save_screenshot(pw_page,skuFolder)
-                pw_page.close()
-        else:
-            status="descargado correctamente"
-            newProduct="no"
-            print("el producto ya existe")
+        r=get_sku_amazon_product(pw_page,product)
         downloadsResponse.append({
-            "sku":sku,
-            "status_d":status,
-            "newProduct":newProduct,
-            "product":product
+            "sku":product['SKU'],
+            "status_d":r['status_d'],
+            "newProduct":r['newProduct'],
+            "product":r['product']
         })
     context.storage_state(path="DropShippingAuto/src/sessions/state_amazon.json")
     context.close()

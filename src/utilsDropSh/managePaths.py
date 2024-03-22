@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from DropShippingAuto.src.utils.manipulateDicts import dc
+from DropShippingAuto.src.utilsDropSh.manipulateDicts import dc
 import sys
 import json
 class managePaths:

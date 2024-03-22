@@ -1,3 +1,3 @@
-from src.utils.selectores import localizador
+from src.utilsDropSh.selectores import localizador
 
 print(localizador)

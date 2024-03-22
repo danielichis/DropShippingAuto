@@ -1,4 +1,4 @@
-from utils.selectores import localizador
+from utilsDropSh.selectores import localizador
 
 #Para crear nuevo producto - previa
 boton_catalogo=localizador("botón para ingresar al catálogo de productos","ul[class='nav']>li:nth-child(3)","css")

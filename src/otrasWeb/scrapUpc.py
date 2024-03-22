@@ -1,7 +1,7 @@
 import requests
 from selectolax.parser import HTMLParser
 import re
-from DropShippingAuto.src.utils.manageProducts import load_products
+from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 
 def get_upc_from_upcitemdb(sku):
     upcItemdbUrl = "https://www.upcitemdb.com/"
@@ -44,11 +44,11 @@ def get_upc(sku):
     if upc["upc"]=="Not found":
         upc=get_upc_from_upcitemdb(sku)
     if upc["upc"]=="Not found":
-        raise Exception("upc not found")
+        upc["upc"]="-"
     return upc["upc"]
 
 def test_skus():
-    skus=load_products()
+    skus=get_data_to_download()
     for sku in skus:
         get_upc_from_barcode_index(sku)
         get_upc_from_upcitemdb(sku)

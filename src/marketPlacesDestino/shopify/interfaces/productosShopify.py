@@ -1,4 +1,4 @@
-from DropShippingAuto.src.utils.selectores import localizador
+from DropShippingAuto.src.utilsDropSh.selectores import localizador
 botonDeProductos=localizador("boton para ir a Productos","ul[class]>li:nth-child(3)>div>div>a[aria-expanded] ","css")
 botonAgregarProducto=localizador("boton para agregar Producto Nuevo","a[href='/store/unaluka/products/new']","css") 
 #aquí dejo el anterior en xpath   //span[text()='Agregar producto']

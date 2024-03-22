@@ -1,9 +1,11 @@
 from playwright.sync_api import sync_playwright
-from DropShippingAuto.src.utils.dinamySelections import search_best_option
+from DropShippingAuto.src.utilsDropSh.dinamySelections import search_best_option
 from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
 from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
+from utils.embeddings.embeding import get_best_similarity_option
 from utils.managePaths import mp
+from utils.jsHandler import insertPropertiesToPage
 import json
 import time
 homeDinners="https://admin.quickcomm.co/catalog/products"
@@ -15,7 +17,7 @@ class multiLoaderDinners:
     def __init__(self,dataToLoad):
         self.dataToLoad=dataToLoad
         self.p = sync_playwright().start()
-        user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
+        user_dir=mp.get_current_chrome_profile_path()
         self.context = self.p.chromium.launch_persistent_context(user_dir,headless=False)
         self.page=self.context.new_page()
     
@@ -70,10 +72,13 @@ class LoaderDinners():
         marca_a_buscar=self.dataToLoad['data']['marca']
         self.page.locator("//span[text()='Marca']//parent::div//input").type(marca_a_buscar,delay=100)
         time.sleep(0.5)
-        self.page.wait_for_selector("//span[text()='Marca']/parent::div//a[@class='ng-star-inserted']")
-        lista_marcas=self.page.locator("//span[text()='Marca']/parent::div//a[@class='ng-star-inserted']").all_inner_texts()
-        best_option=search_best_option(marca_a_buscar,lista_marcas,"-")
-        self.page.locator("a").filter(has_text=re.compile(rf"^{best_option}$")).click()
+        try:
+            self.page.wait_for_selector("//span[text()='Marca']/parent::div//a[@class='ng-star-inserted']",timeout=5000)
+            lista_marcas=self.page.locator("//span[text()='Marca']/parent::div//a[@class='ng-star-inserted']").all_inner_texts()
+            best_option=search_best_option(marca_a_buscar,lista_marcas,"-")
+            self.page.locator("a").filter(has_text=re.compile(rf"^{best_option}$")).click()
+        except:
+            print("no se encontro marca, marca nueba")
 
     def load_category(self):
         categoria=self.dataToLoad['data']['categoria']
@@ -99,7 +104,9 @@ class LoaderDinners():
 
     def load_description(self):
         description=self.dataToLoad['data']['descripcion']
-        self.page.locator("//div[@class='ngx-editor-textarea']").fill(description)
+        self.page.locator("//div[@class='ngx-editor-textarea']").fill("---")
+        insertPropertiesToPage("div[class='ngx-editor-textarea']",description,self.page)
+        
 
     def load_base_price(self):
         base_price=self.dataToLoad['data']['precioAmazon'] 
@@ -142,12 +149,6 @@ class LoaderDinners():
     def load_aditional_fields(self):
         self.page.wait_for_selector("div[class='col-md-6 ng-star-inserted']")
         aditionalFields=self.page.query_selector_all("div[class='col-md-6 ng-star-inserted']")
-        lista_atributos_adicionales=self.page.locator("//div[@class='col-md-6 ng-star-inserted']//span[text()='*']/parent::span").all_inner_texts()
-        lista_obligatorios=self.page.locator("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']").all_inner_texts()
-        list_oblig=self.page.locator("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']").all_inner_texts()
-        lista_inputs=self.page.locator("div[class='col-md-6 ng-star-inserted'] div input").all_inner_texts()
-        lista_selects=self.page.locator("div[class='col-md-6 ng-star-inserted'] div select").all_inner_texts()
-        lista_opcionales=self.page.locator("div[class='col-md-6 ng-star-inserted'] div>span:not(:has(>span))").all_inner_texts()
         fieldsData=[]
         for i,field in enumerate(aditionalFields):
             textField=field.query_selector("span").inner_text()
@@ -167,25 +168,27 @@ class LoaderDinners():
                 "name":textField.replace("*","").strip(),
                 "mandatory":mandatory,
                 "options":options,
-                "type":type,
+                "fieldType":type,
                 "fieldObject":field
             }
 
             fieldsData.append(fieldData)
-        
-        #filtrar los campos obligatorios y que sean tipo input
-        mandatorySelectFields=[field['name'] for field in fieldsData if field["mandatory"]==True and field["type"]=="input"]
+        mandatorySelectFields=[field for field in fieldsData if field["mandatory"]==True]
         contentProduct=mp.data_sku(self.dataToLoad['data']['sku'])
         dimArgs=get_dinamic_args_extraction(content_product=str(contentProduct),fieldsFromMarketPlace=mandatorySelectFields)
-        #str to dict
         dimArgs=json.loads(dimArgs)
-        for field in fieldsData:
-            if field["mandatory"]==True and field["type"]=="input":
-                textField=field["name"]
-                valueField=dimArgs[textField]
+        for field in mandatorySelectFields:
+            textField=field["name"]
+            valueField=dimArgs[textField]
+            if field["fieldType"]=="input":
                 field["fieldObject"].query_selector("input").fill(valueField)
-        print(mandatorySelectFields)
-    
+            elif field["fieldType"]=="select":
+                if valueField in field["options"]:
+                    optionToSelect=valueField
+                else:
+                    optionToSelect=get_best_similarity_option(field["options"],valueField)
+                field["fieldObject"].query_selector("select").select_option(optionToSelect)
+                print("selecion hecha")    
         
     def load_main_dinners(self):
         self.load_images()

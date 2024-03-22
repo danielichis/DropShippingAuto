@@ -1,7 +1,7 @@
 import json
 import csv
 from DropShippingAuto.src.utilsDropSh.managePaths import mp
-from DropShippingAuto.src.utilsDropSh.manageProducts import load_products
+from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 import os
 import re
 #read csv file
@@ -9,7 +9,7 @@ import re
 def sku_folder(sku):
     return os.path.join(mp.get_current_path(1),"marketPlacesOrigen\\amazon\\skus_Amazon",sku)
 
-def dinners_data_load(product_sku):
+def get_product_in_amazon_carpet_parsed(product_sku):
     skuFolder=sku_folder(product_sku)
     dataJsonPath=skuFolder+"/data.json"
     with open(dataJsonPath, "r",encoding="utf-8") as f:
@@ -60,7 +60,7 @@ def dinners_data_load(product_sku):
         "Altura cm":altura_cm,
         "peso_kg":peso_kg
     }
-    print(product_sku)
+    
     imagesPath=get_images_paths(product_sku)
     dataToLoad={
         "vendedor":vendedor,
@@ -73,6 +73,7 @@ def dinners_data_load(product_sku):
         "dimensions_cm":dimensions_cm,
         "imagesPath":imagesPath
     }
+    print(dataToLoad)
     return dataToLoad
 
 def get_images_paths(product):
@@ -89,12 +90,12 @@ def save_json(product,data):
     dataJsonPath=skuFolder+f"/product_{product}.json"
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
-def dinners_to_load_info():
-    products=load_products()
+def get_all_products_in_amazon_carpet_parsed():
+    products=get_data_to_download()
     print(len(products))
     allData_list=[]
     for product in products['dataToLoad']:
-        data=dinners_data_load(product['SKU'])
+        data=get_product_in_amazon_carpet_parsed(product['SKU'])
         allData={
             "data":data
         }
@@ -105,7 +106,7 @@ def dinners_to_load_info():
         json.dump(allData_list, f, indent=4, ensure_ascii=False)
     return allData_list
 
-infoDinnersToLoad=dinners_to_load_info()
+infoDinnersToLoad=get_all_products_in_amazon_carpet_parsed()
 if __name__ == "__main__":
-    dinners_to_load_info()
-    print("infoDinnersToLoad",infoDinnersToLoad)
+    #get_all_products_in_amazon_carpet_parsed()
+    get_product_in_amazon_carpet_parsed("B07QSTJV95")
