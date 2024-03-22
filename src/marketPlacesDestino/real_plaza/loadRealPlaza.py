@@ -3,10 +3,50 @@ from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
+from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
+from utils.managePaths import mp
 import json
 import time
 homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
+
+
+dataToLoad= [
+        {
+            "sku": "B07QSTJV95",
+            "status_d": "descargado correctamente",
+            "newProduct": "no",
+            "product": {
+                "estado": "Crear",
+                "SKU": "B07QSTJV95",
+                "PrecioShopify": "299.00",
+                "PrecioListaShopify": "329",
+                "PrecioDinners": "347",
+                "PrecioRealPlaza": "347",
+                "PrecioRipley": "347",
+                "PrecioMercadoLibre": "369",
+                "PrecioShopstar": "347",
+                "fila": 85
+            }
+        },
+        {
+            "sku": "B0CKYF12ZR",
+            "status_d": "descargado correctamente",
+            "newProduct": "yes",
+            "product": {
+                "estado": "Crear",
+                "SKU": "B0CKYF12ZR",
+                "PrecioShopify": "149.00",
+                "PrecioListaShopify": "164",
+                "PrecioDinners": "175",
+                "PrecioRealPlaza": "171",
+                "PrecioRipley": "175",
+                "PrecioMercadoLibre": "182",
+                "PrecioShopstar": "171",
+                "fila": 91
+            }
+        }
+    ]
 
 
 class multiLoaderRP:
@@ -67,9 +107,6 @@ class multiLoaderRP:
             brand_index = -1
         self.page.locator(f"li:nth-child({brand_index+1}) > .multiselect__option").click()
 
-
-
-
     def load_site(self):
         time.sleep(1)
         sites_list=self.page.locator("div[id='__BVID__197_']>label>span>span").all()
@@ -101,8 +138,7 @@ class multiLoaderRP:
                                       "mandatory":mandatory,
                                       "type":type,
                                       "options":options,
-                                      "fieldObject":additional_field}
-                                      })
+                                      "fieldObject":additional_field})
             
         mandatory_fields=[field for field in additional_fields if field["mandatory"]==True]
             
