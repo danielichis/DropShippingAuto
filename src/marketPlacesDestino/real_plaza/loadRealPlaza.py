@@ -13,7 +13,7 @@ class multiLoaderRP:
     def __init__(self,dataToLoad):
         self.dataToLoad=dataToLoad
         self.p = sync_playwright().start()
-        user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
+        user_dir=r"C:\Users\risin\AppData\Local\Google\Chrome\UserData2"
         self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
         self.page=self.browser.new_page()
     
@@ -37,11 +37,7 @@ class multiLoaderRP:
                 "value":"23434"
             }
         insertPropertiesToPage("div[class='ql-editor ql-blank']",properties,self.page)
-    def load_brand(self):
-        self.page.locator("div[id='inputBrand']").click()
-        brands=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
-        print(brands)
-
+        print("Se insertó descripción")
 
     def load_category(self):
         self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
@@ -60,14 +56,74 @@ class multiLoaderRP:
         self.page.get_by_text("Aceite Vegetal").click()
         print("categoria seleccionada")
         
+    def load_brand(self):
+        self.page.locator("div[id='inputBrand']").click()
+        brands_text=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
+        print(brands_text)
+        try:
+            brand_index = brands_text.index("GENÉRICO")
+            print(brand_index)
+        except:
+            brand_index = -1
+        self.page.locator(f"li:nth-child({brand_index+1}) > .multiselect__option").click()
 
+
+
+
+    def load_site(self):
+        time.sleep(1)
+        sites_list=self.page.locator("div[id='__BVID__197_']>label>span>span").all()
+        sites_list_text=self.page.locator("div[id='__BVID__197_']>label>span>span").all_inner_texts()
+        print(sites_list_text)
+        print("Seleccionando RealPlaza")
+        sites_list[4].click()
 
     def load_aditional_fields(self):
         time.sleep(1)
-        aditional_fields=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
-        print(aditional_fields)
-        print("Se imprimieron los campos adicionales")
+        additional_fields_locator=self.page.locator("div[class='row mt-3 attr-row']").all()
+        additional_fields_text=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
+        additional_fields=[]
+        
+        for additional_field in additional_fields_locator:
 
+            if len(additional_field.locator("div[role='alert']").all())>0:
+                mandatory=True
+            else:
+                mandatory=False
+            type=additional_field.locator("input").all()[0].get_attribute("type")
+            if type!="text":
+                #options=additional_field.locator("input span").all_inner_texts()
+                options=additional_field.locator("span span").all_inner_texts()
+            else:
+                options=[]
+            name=additional_field.locator("legend").inner_text()
+            additional_fields.append({"name":name,
+                                      "mandatory":mandatory,
+                                      "type":type,
+                                      "options":options,
+                                      "fieldObject":additional_field}
+                                      })
+            
+        mandatory_fields=[field for field in additional_fields if field["mandatory"]==True]
+            
+
+            
+            
+        
+        print("Campos adicionales " + str(len(additional_fields)))
+        print(additional_fields)
+        print("-------------------")
+
+        print("Campos obligatorios " + str(len(mandatory_fields)))
+        print(mandatory_fields)
+        print("-------------------")
+
+        #print(additional_fields_locator)
+        #print(additional_fields_text)
+        #print("Se imprimieron los campos adicionales")
+        #div[role='alert']
+        #self.page.get_by_role("button", name="Guardar").click()
+        #self.page.get_by_role("button", name="Cancelar").click()
 
 #    def load_all_products(self):
 #        loadDinners=LoaderDinners(self.dataToLoad)
@@ -125,6 +181,7 @@ if __name__ == "__main__":
     RPmloader.load_aditional_fields()
     RPmloader.load_brand()
     RPmloader.load_description()
+    RPmloader.load_site()
     print("terminado")
 
     
