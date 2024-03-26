@@ -9,6 +9,7 @@ import json
 import time
 homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
+from random import randrange
 
 
 dataToLoad= [
@@ -79,22 +80,67 @@ class multiLoaderRP:
         insertPropertiesToPage("div[class='ql-editor ql-blank']",properties,self.page)
         print("Se insertó descripción")
 
-    def load_category(self):
-        self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
+    def load_category(self)->bool:
         #getting the list of categories
+        #self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
+        
         time.sleep(1)
-        categoryListLocator=self.page.locator("div[class='list-group']>div[class='list-group-item']").all()
+
+        try:
+            categoryListLocator=self.page.locator("div[class='list-group']>div[class='list-group-item']").all()
+        except:
+            print("Ya no hay más categorías por seleccionar")
+            return False
+            
         categoryList=[]
         
         for category in categoryListLocator:
-           categoryList.append({"name":category.locator("span").inner_text(),
-                                "button":category.locator("button")})
+            try:
+                button=category.locator("button[class='btn-subcategory']")
+            except:
+                button=None
+
+            categoryList.append({"name":category.locator("span").inner_text(),
+                                "button":button})
         print(categoryList)
         #example
-        self.page.locator(".btn-subcategory").first.click()
-        self.page.locator(".btn-subcategory").first.click()
-        self.page.get_by_text("Aceite Vegetal").click()
-        print("categoria seleccionada")
+
+        #getting random number
+        ##Use embeddings function to select the best category
+        #categoryList=search_best_option(categoryList)
+        categNumb=randrange(0,len(categoryList))
+        print(categNumb)
+        #selecting the category
+
+        try:
+            categoryList[categNumb]["button"].click()
+        except:
+            self.page.get_by_text(categoryList[categNumb]["name"]).click()
+            print("Se llegó al último nivel de dicha categoría")
+            return False
+    
+        print("Categoria seleccionada:"+categoryList[categNumb]["name"])
+        return True
+        #self.page.locator(".btn-subcategory").first.click()
+        #self.page.locator(".btn-subcategory").first.click()
+        #self.page.get_by_text("Aceite Vegetal").click()
+        #print("categoria seleccionada")
+
+
+    def load_all_category(self):
+
+        self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
+        while True:
+            missingCategories=self.load_category()
+            if not missingCategories:
+                break
+        print("Se cargaron todas las categorías")
+        # #example
+        # #categoryList[0]["button"].click()
+        # self.page.locator(".btn-subcategory").first.click()
+        # self.page.locator(".btn-subcategory").first.click()
+        # self.page.get_by_text("Aceite Vegetal").click()
+        # print("categoria seleccionada")
         
     def load_brand(self):
         self.page.locator("div[id='inputBrand']").click()
@@ -127,6 +173,7 @@ class multiLoaderRP:
                 mandatory=True
             else:
                 mandatory=False
+
             type=additional_field.locator("input").all()[0].get_attribute("type")
             if type!="text":
                 #options=additional_field.locator("input span").all_inner_texts()
@@ -153,6 +200,9 @@ class multiLoaderRP:
         print("Campos obligatorios " + str(len(mandatory_fields)))
         print(mandatory_fields)
         print("-------------------")
+
+        for field in mandatory_fields:
+            field.fieldObject.locator("input").fill("test")
 
         #print(additional_fields_locator)
         #print(additional_fields_text)
@@ -213,7 +263,7 @@ if __name__ == "__main__":
     RPmloader=multiLoaderRP(2)
     RPmloader.go_to_create_product()
     RPmloader.load_product_name()
-    RPmloader.load_category()
+    RPmloader.load_all_category()
     RPmloader.load_aditional_fields()
     RPmloader.load_brand()
     RPmloader.load_description()
