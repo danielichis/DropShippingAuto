@@ -188,10 +188,6 @@ class multiLoaderRP:
                                       "fieldObject":additional_field})
             
         mandatory_fields=[field for field in additional_fields if field["mandatory"]==True]
-            
-
-            
-            
         
         print("Campos adicionales " + str(len(additional_fields)))
         print(additional_fields)
@@ -201,8 +197,45 @@ class multiLoaderRP:
         print(mandatory_fields)
         print("-------------------")
 
-        for field in mandatory_fields:
-            field.fieldObject.locator("input").fill("test")
+        self.mandatory_fields=mandatory_fields
+
+    def fill_mandatory_fields(self):
+
+        for field in self.mandatory_fields:
+            type=field["type"]
+
+            if type=="text":
+                field["fieldObject"].locator("input").fill("test")
+            elif type=="check":
+                field["fieldObject"].locator("input").first().check()
+            elif type=="radio":
+                field["fieldObject"].locator("input").first().check()
+        print("Campos obligatorios llenados")
+
+    def create_product(self):
+        self.page.get_by_role("button", name="Guardar").click()
+        self.page.get_by_role("button", name="OK").click()
+        print("Producto creado")
+        self.page.wait_for_load_state("networkidle")
+
+    def create_variant(self):
+
+        self.page.locator("[id=\"__BVID__228_\"]").fill("22") #UPC
+        self.page.get_by_label("Crear variante para el").locator("#nombreFormatterHelp").fill("eee") #nombre
+        #Precios
+        self.page.get_by_role("textbox", name="Precio regular").fill("250")
+        self.page.get_by_role("textbox", name="Precio con descuento").fill("200")
+        self.page.get_by_role("textbox", name="Descuento válido desde").fill("2024-03-28")
+        self.page.get_by_role("textbox", name="Descuento válido hasta").fill("2024-04-25")
+        #Medidas
+        self.page.get_by_role("textbox", name="Alto cm").fill("22")
+        self.page.get_by_role("textbox", name="Ancho cm").fill("22")
+        self.page.get_by_role("textbox", name="Largo cm").fill("22")
+        self.page.get_by_role("textbox", name="Peso gr").fill("22")
+        #Imagen
+        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
+
+
 
         #print(additional_fields_locator)
         #print(additional_fields_text)
@@ -262,13 +295,19 @@ class LoaderRP:
 if __name__ == "__main__":
     RPmloader=multiLoaderRP(2)
     RPmloader.go_to_create_product()
+    print("---Paso 1: Crear Producto---")
     RPmloader.load_product_name()
     RPmloader.load_all_category()
     RPmloader.load_aditional_fields()
-    RPmloader.load_brand()
+    RPmloader.fill_mandatory_fields()
     RPmloader.load_description()
+    RPmloader.load_brand()
     RPmloader.load_site()
-    print("terminado")
+    RPmloader.create_product()   
+    print("Producto Creado")
+    print("---Paso 2: Crear Variantes---")
+    RPmloader.create_variant()
+    print("---Variante creada---")
 
     
 #class="multiselect__element"
