@@ -113,10 +113,11 @@ class multiLoaderRP:
         #selecting the category
 
         try:
-            categoryList[categNumb]["button"].click()
+            categoryList[categNumb]["button"].click(timeout=3000)
         except:
-            self.page.get_by_text(categoryList[categNumb]["name"]).click()
+            self.page.get_by_text(categoryList[categNumb]["name"],exact=True).click()
             print("Se llegó al último nivel de dicha categoría")
+            print("Categoria seleccionada:"+categoryList[categNumb]["name"])
             return False
     
         print("Categoria seleccionada:"+categoryList[categNumb]["name"])
@@ -135,6 +136,7 @@ class multiLoaderRP:
             if not missingCategories:
                 break
         print("Se cargaron todas las categorías")
+        self.page.wait_for_load_state("networkidle")
         # #example
         # #categoryList[0]["button"].click()
         # self.page.locator(".btn-subcategory").first.click()
@@ -162,7 +164,7 @@ class multiLoaderRP:
         sites_list[4].click()
 
     def load_aditional_fields(self):
-        time.sleep(1)
+        time.sleep(2)
         additional_fields_locator=self.page.locator("div[class='row mt-3 attr-row']").all()
         additional_fields_text=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
         additional_fields=[]
@@ -234,6 +236,28 @@ class multiLoaderRP:
         self.page.get_by_role("textbox", name="Peso gr").fill("22")
         #Imagen
         #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
+        self.load_img()
+        #Select button 
+        self.page.get_by_label("Crear variante para el").get_by_role("button", name="Crear Variante").click()
+        self.page.wait_for_load_state("networkidle")
+        #storing SKU 
+        self.variant_sku=self.page.locator("td[data-label='SKU']>div").inner_text()
+        #save variant
+        self.page.get_by_role("button", name="Guardar").click()
+        self.page.get_by_role("button", name="OK").click()
+        self.page.wait_for_load_state("networkidle")
+
+    def load_img(self):
+        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
+        img_route=r"C:\Users\risin\Downloads\imgTest\test_1.jpg"
+        self.page.locator("input[type='file']").first.set_input_files(img_route)
+
+    def update_inventory_number(self):
+        self.page.get_by_role("link", name="Administrar Productos").click()
+        self.page.get_by_role("tr").filter(has_text=self.variant_sku).locator("td[aria-colindex='8'] button").click()
+        print("Se actualizó el inventario")
+
+
 
 
 
@@ -308,6 +332,7 @@ if __name__ == "__main__":
     print("---Paso 2: Crear Variantes---")
     RPmloader.create_variant()
     print("---Variante creada---")
+    RPmloader.update_inventory_number()
 
     
 #class="multiselect__element"
