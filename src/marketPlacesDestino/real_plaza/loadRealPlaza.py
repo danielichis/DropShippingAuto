@@ -113,7 +113,7 @@ class multiLoaderRP:
         #selecting the category
 
         try:
-            categoryList[categNumb]["button"].click(timeout=3000)
+            categoryList[categNumb]["button"].click(timeout=2000)
         except:
             self.page.get_by_text(categoryList[categNumb]["name"],exact=True).click()
             print("Se llegó al último nivel de dicha categoría")
@@ -240,12 +240,17 @@ class multiLoaderRP:
         #Select button 
         self.page.get_by_label("Crear variante para el").get_by_role("button", name="Crear Variante").click()
         self.page.wait_for_load_state("networkidle")
-        #storing SKU 
-        self.variant_sku=self.page.locator("td[data-label='SKU']>div").inner_text()
         #save variant
         self.page.get_by_role("button", name="Guardar").click()
         self.page.get_by_role("button", name="OK").click()
         self.page.wait_for_load_state("networkidle")
+        #storing SKU and ID of product
+        self.variant_sku=self.page.locator("td[data-label='SKU']>div").inner_text()
+        self.page.get_by_text("Datos del Producto").click()
+        self.product_id=self.page.locator("input[id='idInput']").input_value()
+        print(self.variant_sku)
+        print(self.product_id)
+        
 
     def load_img(self):
         #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
@@ -253,10 +258,19 @@ class multiLoaderRP:
         self.page.locator("input[type='file']").first.set_input_files(img_route)
 
     def update_inventory_number(self):
-        self.page.get_by_role("link", name="Administrar Productos").click()
-        self.page.get_by_role("tr").filter(has_text=self.variant_sku).locator("td[aria-colindex='8'] button").click()
-        print("Se actualizó el inventario")
-
+        self.page.get_by_role("navigation").get_by_text("Inventario", exact=True).click()
+        self.page.get_by_role("link", name="Administrar Inventario").click()
+        self.page.wait_for_load_state("networkidle")
+        print("Buscando producto por ID")
+        self.page.locator("tr[role='row']").filter(has_text=self.product_id).locator("td[aria-colindex='5'] button").click()
+        #self.page.locator("tr[role='row']").all()[0].locator("td[aria-colindex='8'] button").click()
+        print("Se abrió la ventana de editar inventario")
+        print("buscando variante por SKU")
+        self.page.locator("tr[role='row']").filter(has_text=self.variant_sku).locator("td[aria-colindex='5'] span[class='inventoryTotal']").click()
+        self.page.get_by_role("textbox", name="Nuevo valor de inventario").fill("1")
+        self.page.get_by_role("button", name="Guardar").click()
+        self.page.wait_for_load_state("networkidle")
+        print("Inventario de variante actualizado a 1")
 
 
 
