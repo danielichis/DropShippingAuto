@@ -347,6 +347,8 @@ if __name__ == "__main__":
     RPmloader.create_variant()
     print("---Variante creada---")
     RPmloader.update_inventory_number()
+    RPmloader.go_to_create_product()
+    print("Producto creado y variante creada")
 
     
 #class="multiselect__element"
