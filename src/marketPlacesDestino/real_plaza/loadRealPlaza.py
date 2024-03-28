@@ -198,20 +198,37 @@ class multiLoaderRP:
         print("Campos obligatorios " + str(len(mandatory_fields)))
         print(mandatory_fields)
         print("-------------------")
-
+        #storing mandatory and additional fields on the object
         self.mandatory_fields=mandatory_fields
+        self.additional_fields=additional_fields
 
     def fill_mandatory_fields(self):
-
-        for field in self.mandatory_fields:
+        
+        for field in self.additional_fields:
             type=field["type"]
-
+            
             if type=="text":
                 field["fieldObject"].locator("input").fill("test")
-            elif type=="check":
-                field["fieldObject"].locator("input").first().check()
+            elif type=="number":
+                field["fieldObject"].locator("input").fill("2")
+            elif type=="checkbox":
+                #field["fieldObject"].locator("input").first().check()
+                for check_label in field["options"]:
+                    print(check_label)
+                    #field["fieldObject"].locator("input").all()[0].check()
+                    #field["fieldObject"].get_by_label(check_label,exact=True).check()
+                    field["fieldObject"].get_by_text(check_label,exact=True).first.click()
             elif type=="radio":
-                field["fieldObject"].locator("input").first().check()
+                #field["fieldObject"].locator("input").first().check()
+                radio_label=label=field["options"][0]
+                print(radio_label)
+                #field["fieldObject"].locator("input").all()[0].check()
+                #field["fieldObject"].get_by_text(radio_label,exact=True).click()
+                field["fieldObject"].get_by_text(radio_label,exact=True).click()
+            else:
+                print(type)
+                field["fieldObject"].locator("input").fill("test")
+                
         print("Campos obligatorios llenados")
 
     def create_product(self):
@@ -251,7 +268,6 @@ class multiLoaderRP:
         print(self.variant_sku)
         print(self.product_id)
         
-
     def load_img(self):
         #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
         img_route=r"C:\Users\risin\Downloads\imgTest\test_1.jpg"
@@ -271,22 +287,6 @@ class multiLoaderRP:
         self.page.get_by_role("button", name="Guardar").click()
         self.page.wait_for_load_state("networkidle")
         print("Inventario de variante actualizado a 1")
-
-
-
-
-        #print(additional_fields_locator)
-        #print(additional_fields_text)
-        #print("Se imprimieron los campos adicionales")
-        #div[role='alert']
-        #self.page.get_by_role("button", name="Guardar").click()
-        #self.page.get_by_role("button", name="Cancelar").click()
-
-#    def load_all_products(self):
-#        loadDinners=LoaderDinners(self.dataToLoad)
-#        for product in self.dataToLoad:
-#            self.load_main_dinners(product)
-
 
         
 class LoaderRP:
