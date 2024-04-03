@@ -1,4 +1,4 @@
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright,expect
 from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
@@ -10,7 +10,8 @@ import time
 homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
 from random import randrange
-
+from datetime import date,timedelta
+from img_sizer1000x1000 import resize_image
 
 dataToLoad= [
         {
@@ -55,7 +56,7 @@ class multiLoaderRP:
         self.dataToLoad=dataToLoad
         self.p = sync_playwright().start()
         user_dir=r"C:\Users\risin\AppData\Local\Google\Chrome\UserData2"
-        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
+        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/')
         self.page=self.browser.new_page()
     
     def go_to_create_product(self):
@@ -165,6 +166,7 @@ class multiLoaderRP:
 
     def load_aditional_fields(self):
         time.sleep(2)
+        expect(self.page.locator("div[class='row mt-3 attr-row']").first).not_to_be_empty()
         additional_fields_locator=self.page.locator("div[class='row mt-3 attr-row']").all()
         additional_fields_text=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
         additional_fields=[]
@@ -176,8 +178,8 @@ class multiLoaderRP:
             else:
                 mandatory=False
 
-            type=additional_field.locator("input").all()[0].get_attribute("type")
-            if type!="text":
+            type=additional_field.locator("input").first.get_attribute("type")
+            if type!="text" or type!="number":
                 #options=additional_field.locator("input span").all_inner_texts()
                 options=additional_field.locator("span span").all_inner_texts()
             else:
@@ -204,7 +206,7 @@ class multiLoaderRP:
 
     def fill_mandatory_fields(self):
         
-        for field in self.additional_fields:
+        for field in self.mandatory_fields:
             type=field["type"]
             
             if type=="text":
@@ -224,7 +226,7 @@ class multiLoaderRP:
                 print(radio_label)
                 #field["fieldObject"].locator("input").all()[0].check()
                 #field["fieldObject"].get_by_text(radio_label,exact=True).click()
-                field["fieldObject"].get_by_text(radio_label,exact=True).click()
+                field["fieldObject"].get_by_text(radio_label,exact=True).first.click()
             else:
                 print(type)
                 field["fieldObject"].locator("input").fill("test")
@@ -244,8 +246,17 @@ class multiLoaderRP:
         #Precios
         self.page.get_by_role("textbox", name="Precio regular").fill("250")
         self.page.get_by_role("textbox", name="Precio con descuento").fill("200")
-        self.page.get_by_role("textbox", name="Descuento válido desde").fill("2024-03-28")
-        self.page.get_by_role("textbox", name="Descuento válido hasta").fill("2024-04-25")
+
+        #Obteniendo fechas
+        from_date = date.today()
+        until_date=from_date+timedelta(days=5)
+        from_str=from_date.strftime("%Y-%m-%d")
+        until_str=until_date.strftime("%Y-%m-%d")
+        print("Fechas de descuento:", from_str,until_str)
+
+        #LLenando fechas
+        self.page.get_by_role("textbox", name="Descuento válido desde").fill(from_str)
+        self.page.get_by_role("textbox", name="Descuento válido hasta").fill(until_str)
         #Medidas
         self.page.get_by_role("textbox", name="Alto cm").fill("22")
         self.page.get_by_role("textbox", name="Ancho cm").fill("22")
@@ -270,8 +281,12 @@ class multiLoaderRP:
         
     def load_img(self):
         #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
-        img_route=r"C:\Users\risin\Downloads\imgTest\test_1.jpg"
-        self.page.locator("input[type='file']").first.set_input_files(img_route)
+        img_route=r"C:\Users\risin\Downloads\imgTest\test2.jpg"
+        img_route_resized=r"C:\Users\risin\Downloads\imgTest\test_1_resized.jpg"
+        print("Convirtiendo imagen a 1000x1000...")
+        resize_image(img_route,img_route_resized)
+        print("Imagen convertida")
+        self.page.locator("input[type='file']").first.set_input_files(img_route_resized)
 
     def update_inventory_number(self):
         self.page.get_by_role("navigation").get_by_text("Inventario", exact=True).click()
@@ -347,8 +362,10 @@ if __name__ == "__main__":
     RPmloader.create_variant()
     print("---Variante creada---")
     RPmloader.update_inventory_number()
-    RPmloader.go_to_create_product()
     print("Producto creado y variante creada")
+    print("Regresando a la página de crear producto")
+    RPmloader.go_to_create_product()
+    
 
     
 #class="multiselect__element"
