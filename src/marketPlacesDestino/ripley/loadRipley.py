@@ -58,6 +58,59 @@ class multiLoaderRIP:
 
         print("Se cargaron todas las categorías")
 
+    def load_section2_product_char(self):
+
+        divs2_names=self.page.locator("div[id='productCreationForm'] div[id*='productCreationFormField'][style='display:block'] label[class='required']").all_inner_texts()
+        divs2_locators=[]
+        
+        for name in divs2_names:
+            divs2_locators.append({"name":name,
+                                   "locator":self.page.get_by_label(name,exact=True).first,
+                                   #"tag_name":self.page.get_by_label(name,exact=True).first.evaluate("element => element.tagName")
+                                   })
+
+        print("Campos de la sección 2")
+        print(divs2_names)
+        print(divs2_locators)
+
+        for loc in divs2_locators:
+
+            try:
+                loc["locator"].fill("test",timeout=3000)
+            except Exception as e:
+                print(e)
+                print("Not a fillable element")
+                continue
+
+
+        print("Se imprimieron los nombres de la seccion Caracteristicas del Producto")
+        
+    def load_section_offer_char(self):
+
+        divs4_names=self.page.locator("div[id='ui-id-0'] div[id^='variantFormField-ui-id-0'][style='display:block'] label[class='required']").all_inner_texts()
+        divs4_locators=[]
+        
+        for name in divs4_names:
+            divs4_locators.append({"name":name,
+                                   "locator":self.page.get_by_label(name,exact=True).first,
+                                   #"tag_name":self.page.get_by_label(name,exact=True).first.evaluate("element => element.tagName")
+                                   })
+
+        print("Campos de la sección 4 :Caracteristicas de la Oferta")
+        print(divs4_names)
+        print(divs4_locators)
+
+        for loc in divs4_locators:
+
+            try:
+                loc["locator"].fill("test",timeout=3000)
+            except Exception as e:
+                print(e)
+                print("Not a fillable element")
+                continue
+
+
+        print("Se imprimieron los nombres de la seccion 2")
 
     def load_product_name(self):
         #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
@@ -299,6 +352,8 @@ if __name__ == "__main__":
     RIPmloader=multiLoaderRIP(2)
     RIPmloader.go_to_create_product()
     RIPmloader.load_all_category()
+    RIPmloader.load_section2_product_char()
+    RIPmloader.load_section_offer_char()
     # RPmloader.go_to_create_product()
     # print("---Paso 1: Crear Producto---")
     # RPmloader.load_product_name()
