@@ -1,7 +1,7 @@
 import json
 import csv
 from DropShippingAuto.src.utilsDropSh.managePaths import mp
-from DropShippingAuto.src.utilsDropSh.manageProducts import load_products
+from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 import os
 import re
 #read csv file
@@ -90,7 +90,7 @@ def save_json(product,data):
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 def dinners_to_load_info():
-    products=load_products()
+    products=get_data_to_download()
     print(len(products))
     allData_list=[]
     for product in products['dataToLoad']:

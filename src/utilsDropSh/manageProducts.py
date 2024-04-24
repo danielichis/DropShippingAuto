@@ -18,7 +18,7 @@ def get_product_amazon_sku(sku:str)->dict:
 
 def test_get_product_amazon_sku():
     sku="B07QSTJV95"
-    data=get_list_products_amazon_sku(sku)
+    data=get_data_to_download(sku)
     print(data)
 if __name__ == "__main__":
     test_get_product_amazon_sku()

@@ -8,6 +8,7 @@ import os
 from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from PIL import Image
 from DropShippingAuto.src.utilsDropSh.managePaths import mp
+import traceback
 import csv
 
 def get_overView(pw_page):
@@ -26,10 +27,16 @@ def get_overView(pw_page):
 
 def get_technicalDetails(pw_page):
     technicalDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr")
-    child="th"
-    if len(technicalDetails)==0:
+    
+    if len(pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr"))>0:
+        technicalDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr")
+        child="th"
+    elif len(pw_page.query_selector_all("div[id=poExpander] tbody tr"))>0:
         technicalDetails=pw_page.query_selector_all("div[id=poExpander] tbody tr")
         child="td"
+    elif len(pw_page.query_selector_all("table[id*='technicalSpecifications'] tr"))>0:
+        technicalDetails=pw_page.query_selector_all("table[id*='technicalSpecifications'] tr")
+        child="th"
     technicalDetailsDict={}
     for technicalDetail in technicalDetails:
         technicalDetailsDict[technicalDetail.query_selector(f"{child}:nth-child(1)").inner_text()]=technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
@@ -90,18 +97,18 @@ def get_importantInfo(pw_page):
         })
     return importantInfoList
 def img_down(links,skuFolder):
-
     skuImageFolder=os.path.join(skuFolder,"images")
     os.makedirs(skuFolder)
     os.makedirs(skuImageFolder)
     for link in links:
-        response  = requests.get(link).content 
-        image_file = io.BytesIO(response)
-        image  = Image.open(image_file)
-        sku=link.split('/')[-1]
-        imagePath=os.path.join(skuImageFolder,sku)
-        with open(imagePath , "wb") as f:
-            image.save(f , "JPEG")
+        if link!="":
+            response  = requests.get(link).content 
+            image_file = io.BytesIO(response)
+            image  = Image.open(image_file)
+            sku=link.split('/')[-1]
+            imagePath=os.path.join(skuImageFolder,sku)
+            with open(imagePath , "wb") as f:
+                image.save(f , "JPEG")
 def get_comparitions(pw_page):
     rows=pw_page.query_selector_all("table[id='HLCXComparisonTable'] tr[class='comparison_other_attribute_row']")
     comparisonDict={}
@@ -116,7 +123,7 @@ def get_descriptions(pw_page):
         if len(list_Descs)==1:
             list_Descs=[x+"." for x in descriptions.inner_text().split(".") if x!=""]
             for i,desc in enumerate(list_Descs):
-                dicDescs[str(">")]=desc
+                dicDescs[str("-")]=desc
         elif len(list_Descs)>1:
             for i,desc in enumerate(list_Descs):
                 #print("texto en linea: "+desc)
@@ -166,11 +173,13 @@ def get_sku_amazon_product(pw_page,product):
     skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
     if not os.path.exists(skuFolder):
         #download_sku(pw_page,sku,urlProducto,skuFolder)
-        try:
+        try:    
             download_sku(pw_page,sku)
             status="descargado correctamente"
-            newProduct="yes"    
+            newProduct="yes"
+            tb="ok"    
         except Exception as e:
+            tb=traceback.format_exc()
             print(e)
             newProduct="yes"
             status="ERROR:"+str(e)
@@ -179,10 +188,15 @@ def get_sku_amazon_product(pw_page,product):
     else:
         status="descargado correctamente"
         newProduct="no"
+        tb="ok"
     response={
-        "product":product,
-        "status_d":status,
-        "newProduct":newProduct,
+        "product":sku,
+        "status":status,
+        "url":f"https://www.amazon.com/dp/{sku}",
+        "marketplace":"amazon",
+        "condition":newProduct,
+        "log":tb,
+        "fecha":time.strftime("%Y-%m-%d %H:%M:%S")
     }
     return response
 def download_sku(pw_page,sku):
@@ -316,7 +330,7 @@ def download_info(dataSheet=None):
         r=get_sku_amazon_product(pw_page,product)
         downloadsResponse.append({
             "sku":product['SKU'],
-            "status_d":r['status_d'],
+            "status":r['status'],
             "newProduct":r['newProduct'],
             "product":r['product']
         })

@@ -12,127 +12,143 @@ import json
 import re
 import os
 
-def load_descriptions(page_shopi,descs):
-    if type(descs)!=dict:
-        raise Exception("el parametro descs debe ser un diccionario")
-    listaObjetos=[]
-    for k,v in descs.items():
-        listaObjetos.append({
-            "campo":k.replace("'","").replace('"',""),
-            "valor":": "+v.replace("'","").replace('"',"")
-        })
-    diccionario=str(listaObjetos)
-    codigo_js="var box=document.querySelector('iframe[id=product-description_ifr]').contentDocument.querySelector('body');var lista=document.createElement('ul');var listaDeObjetos = %s;for (const objeto of listaDeObjetos){var pelem=document.createElement('li');var stronge=document.createElement('strong');var valor=document.createTextNode(objeto.valor);stronge.textContent=objeto.campo;pelem.appendChild(stronge);pelem.appendChild(valor);lista.appendChild(pelem)};box.appendChild(lista);" %(diccionario)
-    page_shopi.evaluate(codigo_js)
+class LoaderShopify:
+    def __init__(self,dataToLoad,sheetProductData,configSheetData,page,context,p):
+        self.dataToLoad=dataToLoad
+        self.page=page
+        self.context=context
+        self.p=p
+        self.sheetProductData=sheetProductData
+        self.configDataSheet=configSheetData
+    def load_descriptions(self):
+        descs=self.dataToLoad['descripciones']
+        if type(descs)!=dict:
+            raise Exception("el parametro descs debe ser un diccionario")
+        listaObjetos=[]
+        for k,v in descs.items():
+            listaObjetos.append({
+                "campo":k.replace("'","").replace('"',""),
+                "valor":": "+v.replace("'","").replace('"',"")
+            })
+        diccionario=str(listaObjetos)
+        codigo_js="var box=document.querySelector('iframe[id=product-description_ifr]').contentDocument.querySelector('body');var lista=document.createElement('ul');var listaDeObjetos = %s;for (const objeto of listaDeObjetos){var pelem=document.createElement('li');var stronge=document.createElement('strong');var valor=document.createTextNode(objeto.valor);stronge.textContent=objeto.campo;pelem.appendChild(stronge);pelem.appendChild(valor);lista.appendChild(pelem)};box.appendChild(lista);" %(diccionario)
+        self.page.evaluate(codigo_js)
 
-def load_shopify_category_suggestion(page_shopi):
-    try:
-        page_shopi.query_selector("path[d*='M13.28']").click(timeout=3000)
-    except:
-        pass
-
-def select_shopify_collections(page_shopi,amazonDatSku):
-    page_shopi.get_by_role("combobox", name="Proveedor").fill("unaluka")
-    page_shopi.locator("input[id='CollectionsAutocompleteField1']").click()
-    currentCollections=page_shopi.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
-    TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
-    #page_shopi.select_option("Colecciones",name="Colecciones")
-    #page_shopi.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()    
-    for collection in TopCollections:
-        #page_shopi.get_by_role("combobox", name="Colecciones").fill()
+    def load_shopify_category_suggestion(self):
         try:
-            page_shopi.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click(timeout=3000)
+            self.page.query_selector("path[d*='M13.28']").click(timeout=3000)
+        except:
+            pass
+
+    def select_shopify_collections(self):
+        amazonDatSku=self.dataToLoad
+        self.page.get_by_role("combobox", name="Proveedor").fill("unaluka")
+        self.page.locator("input[id='CollectionsAutocompleteField1']").click()
+        currentCollections=self.page.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
+        TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
+        #self.page.select_option("Colecciones",name="Colecciones")
+        #self.page.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()    
+        for collection in TopCollections:
+            #self.page.get_by_role("combobox", name="Colecciones").fill()
+            try:
+                self.page.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click(timeout=3000)
+            except Exception as e:
+                tb=traceback.format_exc()
+                print(tb)
+                pass
+            #page_shopi.locator(f"//span/div[text()={collection['collecion']}]").click()
+            #page_shopi.get_by_role("combobox", name="Colecciones").fill("")
+    def load_main_sku_shopify(self):
+        try:
+            url=self.load_sku()
+            tb="ok"
         except Exception as e:
             tb=traceback.format_exc()
-            print(tb)
-            pass
-        #page_shopi.locator(f"//span/div[text()={collection['collecion']}]").click()
-        #page_shopi.get_by_role("combobox", name="Colecciones").fill("")
-def load_main_sku_shopify(page_shopi,sheetProductData,configData):
-    try:
-        page_shopi.wait_for_load_state("load")
-        handle_login(page_shopi)
-        amazonDatSku=mp.data_sku(sheetProductData['SKU'].strip())
-        url=load_sku(page_shopi,amazonDatSku,sheetProductData,configData)
-        load_status="Cargado correctamente"
-    except Exception as e:
-        tb=traceback.format_exc()
-        load_status="ERROR:"+str(tb)
-        url=""
-    responseLoad={
-        "sku":sheetProductData['SKU'].strip(),
-        "status_l":load_status,
-        "url":url
-    }
-    print(responseLoad)
-    with open("DropShippingAuto/Responsedata_load.json","w",encoding="utf-8") as json_file:
-        json.dump(responseLoad,json_file,indent=4,ensure_ascii=False)
-    return responseLoad
+            url=""
+            self.status="ERROR AL CARGAR"
+        responseLoad={
+            "sku":self.dataToLoad['sku'],
+            "status":self.status,
+            "url":url,
+            "marketplace":"shopify",
+            "condition":"new",
+            "log":tb,
+            "fecha":time.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        print(responseLoad)
+        with open("DropShippingAuto/Responsedata_load_shopify.json","w",encoding="utf-8") as json_file:
+            json.dump(responseLoad,json_file,indent=4,ensure_ascii=False)
+        self.responseShopifyLoad=responseLoad
+    def load_sku(self):
 
-def load_sku(page_shopi,amazonDatSku,productDataSht,configData):
-    if amazonDatSku['Detalles Tecnicos']!={}:
-        descs=amazonDatSku['Detalles Tecnicos']
-    elif amazonDatSku['Vista General']!={}:
-        descs=amazonDatSku['Vista General']
-    elif amazonDatSku['Acerca del producto']!={}:
-        descs=amazonDatSku['Acerca del producto']
-    elif amazonDatSku['descripciones']!={}:
-        descs=amazonDatSku['descripciones']
-    else:
-        raise Exception("no se encontro una descripcion para el producto")
-    page_shopi.wait_for_selector(pshopy.cajaNombreProducto.selector)
-    #cambiar a un iframe
-    page_shopi.query_selector(pshopy.cajaNombreProducto.selector).fill(amazonDatSku["titulo"])
-    load_descriptions(page_shopi,descs)
-    page_shopi.frame_locator(pshopy.frameDescripcionProducto.selector).locator(pshopy.cajaDescripcionProducto.selector).click()
-    page_shopi.wait_for_selector("span>input[type='file']")
-    page_shopi.locator("span>input[type='file']").set_input_files(amazonDatSku['asbPathImages'])
-    page_shopi.wait_for_selector(pshopy.cajaPrecioProducto.selector)
-    page_shopi.locator(pshopy.cajaPrecioProducto.selector).click()
-    page_shopi.locator(pshopy.cajaPrecioProducto.selector).fill(productDataSht['PrecioShopify'],timeout=3000)
-    page_shopi.locator(pshopy.cajaPrecioComparacion.selector).click()
-    page_shopi.locator(pshopy.cajaPrecioComparacion.selector).fill(productDataSht['PrecioListaShopify'],timeout=3000)
-    page_shopi.locator(pshopy.cajaStock.selector).click()
-    page_shopi.locator(pshopy.cajaStock.selector).fill("1")
-    page_shopi.locator(pshopy.cajaSKU.selector).click()
-    page_shopi.locator(pshopy.cajaSKU.selector).fill(amazonDatSku['sku'])
-    page_shopi.locator(pshopy.cajaPesoDelProducto.selector).click()
-    page_shopi.locator(pshopy.cajaPesoDelProducto.selector).fill("0.01")
-    page_shopi.get_by_label("Estado").select_option(configData['modoPublicacion'])
-    load_shopify_category_suggestion(page_shopi)
-    select_shopify_collections(page_shopi,amazonDatSku)
-    page_shopi.query_selector_all("//span[text()='Guardar']")[1].click()
-    page_shopi.wait_for_selector("span[class*='Polaris-Banner--textSuccessOnBgFill']+h2",timeout=4000)
-    page_shopi.goto("https://admin.shopify.com/store/unaluka/apps/arena-custom-fields/products_editor")
-    customFrame=page_shopi.frame_locator("iframe[title='ACF: Metafields Custom Fields']")
-    customFrame.locator(acm.cajaBuscadorProductosActivos.selector).fill(amazonDatSku["titulo"].replace('"',""))
-    time.sleep(3)
-    try:
-        customFrame.locator(acm.botonBuscarProducto.selector).click(timeout=3000)
-        products=customFrame.locator(acm.listaProductoParaEditar.selector)
-        products.first.click(timeout=3000)
-    except:
+        if self.dataToLoad['Detalles Tecnicos']!={}:
+            descs=self.dataToLoad['Detalles Tecnicos']
+        elif self.dataToLoad['Vista General']!={}:
+            descs=self.dataToLoad['Vista General']
+        elif self.dataToLoad['Acerca del producto']!={}:
+            descs=self.dataToLoad['Acerca del producto']
+        elif self.dataToLoad['descripciones']!={}:
+            descs=self.dataToLoad['descripciones']
+        else:
+            raise Exception("no se encontro una descripcion para el producto")
+        self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
+        #cambiar a un iframe
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["titulo"])
+        self.load_descriptions()
         time.sleep(2)
-        customFrame.locator(acm.botonBuscarProducto.selector).click(timeout=3000)
-        products=customFrame.locator(acm.listaProductoParaEditar.selector)
-        products.first.click(timeout=3000)
-    page_shopi.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("STOCK")
-    abaoutProduct=dc.dict_to_string(amazonDatSku['Acerca del producto'])
-    customFrame.locator("div[class='fr-element fr-view']").fill(abaoutProduct)
-    baseUrl="https://admin.shopify.com/store/unaluka/products/"
-    currentUrl=page_shopi.url
-    codeProduct=re.findall(r"\d+",currentUrl)[0]
-    print(f"producto {amazonDatSku['sku']} subido a shopify")
-    return baseUrl+codeProduct
+        #self.page.frame_locator(pshopy.frameDescripcionProducto.selector).locator(pshopy.cajaDescripcionProducto.selector).click()
+        self.page.wait_for_selector("span>input[type='file']")
+        self.page.locator("span>input[type='file']").set_input_files(self.dataToLoad['imagesPath'])
+        self.page.wait_for_selector(pshopy.cajaPrecioProducto.selector)
+        self.page.locator(pshopy.cajaPrecioProducto.selector).click()
+        self.page.locator(pshopy.cajaPrecioProducto.selector).fill(str(self.sheetProductData['PRECIO FINAL MARKETPLACE']),timeout=3000)
+        self.page.locator(pshopy.cajaPrecioComparacion.selector).click()
+        self.page.locator(pshopy.cajaPrecioComparacion.selector).fill(str(self.sheetProductData['PRECIO LISTA MARKETPLACE']),timeout=3000)
+        self.page.locator(pshopy.cajaStock.selector).click()
+        self.page.locator(pshopy.cajaStock.selector).fill("1")
+        self.page.locator(pshopy.cajaSKU.selector).click()
+        self.page.locator(pshopy.cajaSKU.selector).fill(self.dataToLoad['sku'])
+        self.page.locator(pshopy.cajaPesoDelProducto.selector).click()
+        self.page.locator(pshopy.cajaPesoDelProducto.selector).fill("0.01")
+        self.page.get_by_label("Estado").select_option(self.configDataSheet['MODO PUBLICACION SHOPIFY'])
+        self.load_shopify_category_suggestion()
+        self.select_shopify_collections()
+        self.page.query_selector_all("//span[text()='Guardar']")[1].click()
+        self.page.wait_for_selector("span[class*='Polaris-Banner--textSuccessOnBgFill']+h2",timeout=8000)
+        self.page.goto("https://admin.shopify.com/store/unaluka/apps/arena-custom-fields/products_editor")
+        customFrame=self.page.frame_locator("iframe[title='ACF: Metafields Custom Fields']")
+        customFrame.locator(acm.cajaBuscadorProductosActivos.selector).fill(self.dataToLoad["titulo"].replace('"',""))
+        time.sleep(3)
+        try:
+            customFrame.locator(acm.botonBuscarProducto.selector).click(timeout=3000)
+            products=customFrame.locator(acm.listaProductoParaEditar.selector)
+            products.first.click(timeout=3000)
+        except:
+            time.sleep(2)
+            customFrame.locator(acm.botonBuscarProducto.selector).click(timeout=3000)
+            products=customFrame.locator(acm.listaProductoParaEditar.selector)
+            products.first.click(timeout=3000)
+        self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("STOCK")
+        abaoutProduct=dc.dict_to_string(self.dataToLoad['Acerca del producto'])
+        customFrame.locator("div[class='fr-element fr-view']").fill(abaoutProduct)
+        baseUrl="https://admin.shopify.com/store/unaluka/products/"
+        currentUrl=self.page.url
+        codeProduct=re.findall(r"\d+",currentUrl)[0]
+        print(f"producto {self.dataToLoad['sku']} subido a shopify")
+        self.status="CARGADO CORRECTAMENTE"
+        return baseUrl+codeProduct
 
-def handle_login(page_shopi):
-    if len(page_shopi.query_selector_all("h1[class='ui-heading']"))>0:
-        page_shopi.locator("input[id='account_email']").fill("picking@unaluka.com")
-        page_shopi.locator("span[class='ui-button__text']").click()
-        page_shopi.locator("input[id='account_password']").fill("A123456789")
-        page_shopi.locator("span[class='ui-button__text']").click()
-        print("cuenta seleccionada")
-def load_main_shopify(dataSheet=None):
+    def handle_login_shopify(self):
+        if len(self.page.query_selector_all("h1[class='ui-heading']"))>0:
+            if self.page.query_selector_all("h1[class='ui-heading']")[0].inner_text()=="Selecciona una cuenta":
+                self.page.locator("div[class='user-card ']").click()
+            else:
+                self.page.locator("input[id='account_email']").fill("picking@unaluka.com")
+                self.page.locator("span[class='ui-button__text']").click()
+                self.page.locator("input[id='account_password']").fill("A123456789")
+                self.page.locator("span[class='ui-button__text']").click()
+                print("cuenta seleccionada")
+def test_main_shopify(dataSheet=None):
     if dataSheet==None:
         with open("DropShippingAuto/dataToLoad.json","r",encoding="utf-8") as json_file:
             dataSheet=json.load(json_file)
@@ -140,22 +156,20 @@ def load_main_shopify(dataSheet=None):
     user_dir=mp.profiel_path
     browser = p.chromium.launch(headless=False)
     context=browser.new_context(storage_state="DropShippingAuto/src/sessions/state_shopify.json")
-    #context = p.chromium.launch_persistent_context(user_dir,headless=False)
-    #context = p.chromium.launch_persistent_context(user_dir,headless=False,channel="chrome")
-    #context=browser.new_context(storage_state="state.json")
+    loaderShopify=LoaderShopify(dataSheet['dataToLoadSheet'],
+                                dataSheet['configDataSheet'],
+                                context.pages[0],context,p)
     page_shopi=context.new_page()
     #context.pages[0].close()
     newProductLink="https://admin.shopify.com/store/unaluka/products/new"
     newProductLink2="https://admin.shopify.com/store/395520/products/new"
     page_shopi.goto(newProductLink)
     page_shopi.wait_for_load_state("load")
-    handle_login(page_shopi)
+    loaderShopify.handle_login_shopify(page_shopi)
     dataToLoad=dataSheet['dataToLoadSheet']
     configData=dataSheet['configDataSheet']
     if dataToLoad:
         products=[item['sku'].strip() for item in dataToLoad]
-    else:
-        products=load_products()
     responseLoad=[]
 
     for productData in dataToLoad:
@@ -163,8 +177,8 @@ def load_main_shopify(dataSheet=None):
             "loadDataSheet":productData,
             "configDataSheet":configData
         }
-        r=load_main_sku_shopify(page_shopi,data)
-
+        r=loaderShopify.load_main_sku_shopify(page_shopi,data)
+        
         page_shopi.goto(newProductLink)
     context.storage_state(path="DropShippingAuto/src/sessions/state_shopify.json")
     context.close()
@@ -175,4 +189,4 @@ def load_main_shopify(dataSheet=None):
         json.dump(responseLoad,json_file,indent=4,ensure_ascii=False)
     return responseLoad
 if __name__ == "__main__":
-    load_main_shopify()
+    test_main_shopify()
