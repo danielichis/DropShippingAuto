@@ -113,7 +113,7 @@ class amazon_mkt_peruvians:
 if __name__ == "__main__":
     with open("dataToDownloadAndLoad.json","r") as f:
         sheetData=json.load(f)
-    print("cargando productos")
+    print("cargando productosSS")
     amp=amazon_mkt_peruvians(sheetData)
     amp.main_process()
     

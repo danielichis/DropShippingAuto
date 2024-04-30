@@ -95,8 +95,7 @@ class LoaderShopify:
         #cambiar a un iframe
         self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["titulo"])
         self.load_descriptions()
-        time.sleep(2)
-        #self.page.frame_locator(pshopy.frameDescripcionProducto.selector).locator(pshopy.cajaDescripcionProducto.selector).click()
+        self.page.frame_locator(pshopy.frameDescripcionProducto.selector).locator(pshopy.cajaDescripcionProducto.selector).click()
         self.page.wait_for_selector("span>input[type='file']")
         self.page.locator("span>input[type='file']").set_input_files(self.dataToLoad['imagesPath'])
         self.page.wait_for_selector(pshopy.cajaPrecioProducto.selector)
