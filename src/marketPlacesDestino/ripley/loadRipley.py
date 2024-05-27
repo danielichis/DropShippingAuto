@@ -84,33 +84,166 @@ class multiLoaderRIP:
 
 
         print("Se imprimieron los nombres de la seccion Caracteristicas del Producto")
+    
+    def add_tag_n_attributes(self,locators_list:list)->list:
+
+        for loc in locators_list:
+            try:
+                tag=loc["locator"].evaluate("element => element.nodeName",timeout=3000)
+                attributes=loc["locator"].evaluate("element => element.getAttributeNames()")
+            except:
+                tag="Not found"
+                attributes=[]
+            
+            key_values={}
+            
+            for attribute in attributes:
+                key_values[attribute]=loc["locator"].evaluate(f"element => element.getAttribute('{attribute}')")    
+            
+            loc["tag"]=tag
+            loc["key_values"]=key_values
+
+            print(loc["name"]+"-"+loc["tag"])
+            print(loc["key_values"])
+
+        print("Se obtuvieron el tag y los atributos de los locators")
+
+        
+    def get_options_locator_list(self,locators_list:list)->list:
+
+        for locator in locators_list:
+            if locator["tag"]=="SELECT":
+                options_list_locator=locator["locator"].locator("option").all_inner_texts()
+                # options_list=[]
+                # for option in options_list_locator:
+                #     options_list.append({"name":option.inner_text(),
+                #                         "locator":option})
+                # locator["options"]=options_list
+                locator["options"]=options_list_locator
+                print(options_list_locator)
+            elif locator["tag"]=="TEXTAREA":
+                locator["options"]=[]
+            elif locator["tag"]=="INPUT":
+                if "aria-owns" in locator["key_values"]:
+                    #makeclick using role
+                    #self.page.get_by_role("combobox", name=locator["name"]).click()
+                    try:
+                        title=locator.get("name")
+                        combobox_locator=self.page.locator("div[class='input col-md-4 col-lg-4']").filter(has=self.page.locator(f"input[title='{title}']")).first.click()
+                    except Exception as e:
+                        print("Error al hacer click en combobox"+str(e))
+                        print("Pasando a siguiente elemento")
+                        continue
+                    id=locator["key_values"]["aria-owns"]
+                    options_list_locator=self.page.locator(f"#{id}").locator("li").all()
+                    options=[]
+                    for item in options_list_locator:
+                        options.append({"name":item.inner_text(),
+                                        "locator":item})
+                    print(id)
+                    print([x["name"] for x in options])
+                    locator["combobox"]=combobox_locator
+                    locator["options"]=options
+                    #select first option 
+                    locator["options"][0]["locator"].click()
+                elif "value" in locator["key_values"]:
+                    print("Se encontró input")
+                    locator["options"]=[]
+                    print("INPUT + value")
+            else:
+                print("puede ser imagen")
+                print(locator["tag"])
+                locator["options"]=["IMG"]
+
+        print("Se obtuvieron opciones de los locators")
+
+    def test_locators_list(self,locators_list:list)->None:
+        for loc in locators_list:
+            print(loc["name"]+"-"+loc["tag"])
+            if loc["options"]==[]:
+
+                try:
+                    loc["locator"].fill("test")
+                except Exception as e:
+                    print("error"+str(e))
+                    print("Pasando a siguiente elemento")
+                    continue
+            elif loc["options"][0]=="IMG":
+                print("Se subió imagen")
+                #loc["locator"].set_input_files(r"C:\Users\risin\Downloads\imgTest\test2.jpg")
+            else:
+                print("Not a fillable element")
+        # for loc in locators_list:
+        #     try:
+        #         loc["locator"].fill("test",timeout=3000)
+        #         #loc["locator"].click(timeout=3000)
+        #     except Exception as e:
+        #         print(e)
+        #         print("Not a fillable element")
+        #         continue   
+
+
         
     def load_section_offer_char(self):
 
-        divs4_names=self.page.locator("div[id='ui-id-0'] div[id^='variantFormField-ui-id-0'][style='display:block'] label[class='required']").all_inner_texts()
+        #self.page.get_by_label("Marca",exact=True).first.click()
+        #print("Se hizo click en la marca")
+
+        #divs4_names=self.page.locator("div[id='ui-id-0'] div[id^='variantFormField-ui-id-0'][style='display:block'] label[class='required']").all_inner_texts()
+        #divs4_names=self.page.locator("div[style='display:block'] label[class='required']").all_inner_texts()
+        divs4_names=self.page.locator("label:visible[class='required']").all_inner_texts()
+        divs4_loc=self.page.locator("label:visible[class='required']").all()
         divs4_locators=[]
+        print(divs4_names)
+        print(len(divs4_names))
+
+        divs42_locators=[]
+        for loc in divs4_loc:
+            divs42_locators.append({"name":loc.inner_text(),
+                                    "for":loc.get_attribute("for"),
+                                    "locator":self.page.locator("#"+loc.get_attribute("for")),
+                                  })
+            
+
+        print(divs42_locators)
+        
         
         for name in divs4_names:
             divs4_locators.append({"name":name,
-                                   "locator":self.page.get_by_label(name,exact=True).first,
-                                   #"tag_name":self.page.get_by_label(name,exact=True).first.evaluate("element => element.tagName")
+                                   "locator":self.page.get_by_label(name,exact=True).first
+                                   #locator:self.page.locator()
+                                   #"tag_name":self.page.get_by_label(name,exact=True).first.evaluate("element => element.nodeName")
                                    })
-
+            
+        
+        
         print("Campos de la sección 4 :Caracteristicas de la Oferta")
         print(divs4_names)
+        print("locators")
         print(divs4_locators)
 
+        #Getting locators elements and attributes
+
+        #self.add_tag_n_attributes(divs4_locators)
+        self.add_tag_n_attributes(divs4_locators)
+
+        self.get_options_locator_list(divs4_locators)
+
+
+        #Getting options for aria-owns elements
+
+        print("Imprimiendo opciones...")
         for loc in divs4_locators:
+            print(loc["name"]+"-"+loc["tag"])
+            print(loc["options"])
 
-            try:
-                loc["locator"].fill("test",timeout=3000)
-            except Exception as e:
-                print(e)
-                print("Not a fillable element")
-                continue
+                        
+       # print(divs4_locators)
+        self.test_locators_list(divs4_locators)
+        print("Se capturaron los campos obligatorios")
 
 
-        print("Se imprimieron los nombres de la seccion 2")
+
 
     def load_product_name(self):
         #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
@@ -352,7 +485,7 @@ if __name__ == "__main__":
     RIPmloader=multiLoaderRIP(2)
     RIPmloader.go_to_create_product()
     RIPmloader.load_all_category()
-    RIPmloader.load_section2_product_char()
+    #RIPmloader.load_section2_product_char()
     RIPmloader.load_section_offer_char()
     # RPmloader.go_to_create_product()
     # print("---Paso 1: Crear Producto---")

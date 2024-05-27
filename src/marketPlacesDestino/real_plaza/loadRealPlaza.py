@@ -158,8 +158,8 @@ class multiLoaderRP:
 
     def load_site(self):
         time.sleep(1)
-        sites_list=self.page.locator("div[id='__BVID__197_']>label>span>span").all()
-        sites_list_text=self.page.locator("div[id='__BVID__197_']>label>span>span").all_inner_texts()
+        sites_list=self.page.locator("div[id='__BVID__206_']>label>span>span").all()
+        sites_list_text=self.page.locator("div[id='__BVID__206_']>label>span>span").all_inner_texts()
         print(sites_list_text)
         print("Seleccionando RealPlaza")
         sites_list[4].click()
@@ -241,7 +241,7 @@ class multiLoaderRP:
 
     def create_variant(self):
 
-        self.page.locator("[id=\"__BVID__228_\"]").fill("22") #UPC
+        self.page.locator("#__BVID__237_").fill("22") #UPC
         self.page.get_by_label("Crear variante para el").locator("#nombreFormatterHelp").fill("eee") #nombre
         #Precios
         self.page.get_by_role("textbox", name="Precio regular").fill("250")
@@ -252,11 +252,19 @@ class multiLoaderRP:
         until_date=from_date+timedelta(days=5)
         from_str=from_date.strftime("%Y-%m-%d")
         until_str=until_date.strftime("%Y-%m-%d")
+        from_day_str=from_date.strftime("%#d")
+        until_day_str=until_date.strftime("%#d")
         print("Fechas de descuento:", from_str,until_str)
-
+        print("dias:",from_day_str,until_day_str)
         #LLenando fechas
-        self.page.get_by_role("textbox", name="Descuento válido desde").fill(from_str)
-        self.page.get_by_role("textbox", name="Descuento válido hasta").fill(until_str)
+        #solve later
+        #self.page.get_by_role("textbox", name="Descuento valido desde").fill(from_str)
+        #self.page.get_by_role("textbox", name="Descuento válido hasta").fill(until_str)
+        #Llenando fechas 2
+        self.page.get_by_label("Descuento válido desde").get_by_role("textbox").click()
+        self.page.locator(f"td[title='{from_str}']").first.click()
+        self.page.get_by_label("Descuento válido hasta").get_by_role("textbox").click()
+        self.page.locator(f"td[title='{until_str}']").first.click()
         #Medidas
         self.page.get_by_role("textbox", name="Alto cm").fill("22")
         self.page.get_by_role("textbox", name="Ancho cm").fill("22")
@@ -276,8 +284,8 @@ class multiLoaderRP:
         self.variant_sku=self.page.locator("td[data-label='SKU']>div").inner_text()
         self.page.get_by_text("Datos del Producto").click()
         self.product_id=self.page.locator("input[id='idInput']").input_value()
-        print(self.variant_sku)
-        print(self.product_id)
+        print("SKU del producto creado: "+self.variant_sku)
+        print("ID del producto creado: "+ self.product_id)
         
     def load_img(self):
         #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
@@ -365,6 +373,8 @@ if __name__ == "__main__":
     print("Producto creado y variante creada")
     print("Regresando a la página de crear producto")
     RPmloader.go_to_create_product()
+    
+
     
 
     
