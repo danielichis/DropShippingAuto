@@ -112,6 +112,7 @@ class LoaderShopify:
         self.page.get_by_label("Estado").select_option(self.configDataSheet['MODO PUBLICACION SHOPIFY'])
         self.load_shopify_category_suggestion()
         self.select_shopify_collections()
+        
         self.page.query_selector_all("//span[text()='Guardar']")[1].click()
         self.page.wait_for_selector("span[class*='Polaris-Banner--textSuccessOnBgFill']+h2",timeout=8000)
         self.page.goto("https://admin.shopify.com/store/unaluka/apps/arena-custom-fields/products_editor")

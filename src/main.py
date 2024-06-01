@@ -107,6 +107,7 @@ class amazon_mkt_peruvians:
             print("Error en el proceso principal")
             print(tb)
     def end(self):
+        
         self.context.close()
         self.p.stop()
 

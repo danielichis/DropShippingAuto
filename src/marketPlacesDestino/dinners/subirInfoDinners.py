@@ -108,7 +108,8 @@ class LoaderDinners():
         if marca_a_buscar in lista_marcas:
             self.page.locator("a").filter(has_text=re.compile(rf"^{marca_a_buscar}$")).click()
         else:
-            self.page.locator("a").filter(has_text="PSB").click()
+            pass
+            #self.page.locator("a").filter(has_text="PSB").click()
 
     def load_category(self):
         amazonCategories=self.dataToLoad['clasificacion']
