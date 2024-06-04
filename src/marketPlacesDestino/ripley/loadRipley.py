@@ -1,10 +1,11 @@
 from playwright.sync_api import sync_playwright,expect
-from utils.jsHandler import insertPropertiesToPage
+#from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
-from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
-from utils.managePaths import mp
+#from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
+#from utils.managePaths import mp
+from StringHandling import extract_number_of_for,get_id_ul
 import json
 import time
 homeRipley="https://ripleyperu-prod.mirakl.net/login"
@@ -18,13 +19,29 @@ class multiLoaderRIP:
     def __init__(self,dataToLoad):
         self.dataToLoad=dataToLoad
         self.p = sync_playwright().start()
-        user_dir=r"C:\Users\risin\AppData\Local\Google\Chrome\UserData2"
-        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/')
+        #user_dir=r"C:\Users\risin\AppData\Local\Google\Chrome\UserData2"
+        user_dir="/Users/macbook/Library/Application Support/Google/Chrome2"
+        #self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos')
+        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
         self.page=self.browser.new_page()
+        
+
+    def to_login(self):
+        print("Iniciando sesion...")
+        user_name="mkpinter@unaluka.com"
+        user_password="Unaluk@Flash*"
+        self.page.get_by_placeholder("Tu inicio de sesión").fill(user_name)
+        self.page.get_by_role("button",name="Siguiente").click()
+        self.page.get_by_label("Password*").fill(user_password)
+        self.page.get_by_role("button",name="Sign in").click()
+        print("Sesion iniciada")
     
-    def go_to_create_product(self):
+    def go_to_home(self):
         self.page.goto(homeRipley)
+        self.to_login()
         self.page.get_by_text("Añadir una oferta").click()
+
+    def add_product(self):
         self.page.get_by_role("link", name="+ Crear un producto").click()
         print("pagina cargada")
 
@@ -55,8 +72,12 @@ class multiLoaderRIP:
             except:
                 print("No hay más categorías por seleccionar")
                 break
+        self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_load_state('domcontentloaded')
+        self.page.wait_for_load_state('load')
 
         print("Se cargaron todas las categorías")
+        
 
     def load_section2_product_char(self):
 
@@ -129,7 +150,7 @@ class multiLoaderRIP:
                     #self.page.get_by_role("combobox", name=locator["name"]).click()
                     try:
                         title=locator.get("name")
-                        combobox_locator=self.page.locator("div[class='input col-md-4 col-lg-4']").filter(has=self.page.locator(f"input[title='{title}']")).first.click()
+                        combobox_locator=self.page.locator("div[class='input col-md-4 col-lg-4']").filter(has=self.page.locator(f"input:enabled[title='{title}']")).first.click()
                     except Exception as e:
                         print("Error al hacer click en combobox"+str(e))
                         print("Pasando a siguiente elemento")
@@ -157,13 +178,74 @@ class multiLoaderRIP:
 
         print("Se obtuvieron opciones de los locators")
 
+
+    def get_options_locator_list2(self,locators_list:list)->list:
+
+        for locator in locators_list:
+            if locator["tag"]=="SELECT":
+                options_list_locator=locator["locator"].locator("option").all_inner_texts()
+                # options_list=[]
+                # for option in options_list_locator:
+                #     options_list.append({"name":option.inner_text(),
+                #                         "locator":option})
+                # locator["options"]=options_list
+                locator["options"]=options_list_locator
+                print(options_list_locator)
+            elif locator["tag"]=="TEXTAREA":
+                locator["options"]=[]
+            elif locator["tag"]=="INPUT":
+                if "aria-owns" in locator["key_values"]:
+                    #makeclick using role
+                    #self.page.get_by_role("combobox", name=locator["name"]).click()
+                    title=locator.get("name")
+                    hidden_label=self.page.locator("label:visible[for^='s2id']").filter(has_text=title)
+                    for_attribute=hidden_label.get_attribute("for")
+                    id_ul=get_id_ul(for_attribute)
+                    print(id_ul)
+                    
+                    try:
+                        combobox_locator=self.page.locator("div[class='input col-md-4 col-lg-4']").filter(has=self.page.locator(f"input:enabled[title='{title}']")).first.click()
+                        #getting id of unordered list of options with through the hidden label which contains the number in the id of the unordered list
+                        #how to compute the string
+                        #id for unordered list of results>s2-results-{number}
+                        #will obtain the number from the id of the label ,the id in the label has the form s2id_autogen{number}
+
+                    except Exception as e:
+                        print("Error al hacer click en combobox"+str(e))
+                        print("Pasando a siguiente elemento")
+                        continue
+                    #id=locator["key_values"]["aria-owns"]
+                    options_list_locator=self.page.locator(f"#{id_ul}").locator("li").all()
+                    options=[]
+                    for item in options_list_locator:
+                        options.append({"name":item.inner_text(),
+                                        "locator":item})
+                    print(id)
+                    print([x["name"] for x in options])
+                    locator["combobox"]=combobox_locator
+                    locator["options"]=options
+                    #select first option 
+                    locator["options"][0]["locator"].click()
+                elif "value" in locator["key_values"]:
+                    print("Se encontró input")
+                    locator["options"]=[]
+                    print("INPUT + value")
+            else:
+                print("puede ser imagen")
+                print(locator["tag"])
+                locator["options"]=["IMG"]
+
+        print("Se obtuvieron opciones de los locators")
+
     def test_locators_list(self,locators_list:list)->None:
         for loc in locators_list:
             print(loc["name"]+"-"+loc["tag"])
             if loc["options"]==[]:
-
                 try:
-                    loc["locator"].fill("test")
+                    if loc['name']=='Cantidad de la oferta' or loc['name']=='Precio':
+                        loc["locator"].fill("25")
+                    else:
+                        loc["locator"].fill("TEST MODAFUCKAAAA")
                 except Exception as e:
                     print("error"+str(e))
                     print("Pasando a siguiente elemento")
@@ -209,11 +291,29 @@ class multiLoaderRIP:
         
         
         for name in divs4_names:
-            divs4_locators.append({"name":name,
-                                   "locator":self.page.get_by_label(name,exact=True).first
-                                   #locator:self.page.locator()
-                                   #"tag_name":self.page.get_by_label(name,exact=True).first.evaluate("element => element.nodeName")
-                                   })
+            if "imagen" not in name.lower():
+                loc_list=self.page.get_by_label(name,exact=True).all()
+                for loc in loc_list:
+                    try:
+                        expect(loc).to_be_enabled()
+                    except:
+                        print("Locator no habilitado,se pasará al siguiente...")
+                        continue
+                    else:
+                        print("Locator habilitado")
+                        found_loc=loc
+                        break
+
+                divs4_locators.append({"name":name,
+                                    #"locator":self.page.get_by_label(name,exact=True).locator()
+                                    "locator":found_loc
+                                    #locator:self.page.locator()
+                                    #"tag_name":self.page.get_by_label(name,exact=True).first.evaluate("element => element.nodeName")
+                                    })
+                
+            else:
+                print(name)
+                print("Locators de imagen no añadidos a la lista de locators")
             
         
         
@@ -227,7 +327,7 @@ class multiLoaderRIP:
         #self.add_tag_n_attributes(divs4_locators)
         self.add_tag_n_attributes(divs4_locators)
 
-        self.get_options_locator_list(divs4_locators)
+        self.get_options_locator_list2(divs4_locators)
 
 
         #Getting options for aria-owns elements
@@ -236,11 +336,44 @@ class multiLoaderRIP:
         for loc in divs4_locators:
             print(loc["name"]+"-"+loc["tag"])
             print(loc["options"])
-
-                        
+ 
        # print(divs4_locators)
-        self.test_locators_list(divs4_locators)
         print("Se capturaron los campos obligatorios")
+        print("Llenando los campos obligatorios...")
+        self.test_locators_list(divs4_locators)
+        
+
+    def load_images(self):
+        image_locators=self.page.locator("input:enabled[type='file'][required]").all()
+        print("Cantidad de img a subir: "+str(len(image_locators)))
+        for img_loc in image_locators:
+            img_route="/Users/macbook/Downloads/test.jpeg"
+            #img_route_resized=r"C:\Users\risin\Downloads\imgTest\test_1_resized.jpg"
+            #print("Convirtiendo imagen a 1000x1000...")
+            #resize_image(img_route,img_route_resized)
+            #print("Imagen convertida")
+            print("Cargando imagen...")
+            img_loc.set_input_files(img_route)
+            print("Imagen cargada")
+
+    def fill_textbox(self):
+        textbox_loc=self.page.get_by_role('textbox').all()
+        for tb in textbox_loc:
+            try:
+                tb.fill("222")
+            except:
+                print("Not fillable")
+                print(tb.inner_text)
+
+           
+
+
+    def confirm_product(self):
+        print("Confirmando producto...")
+        self.page.get_by_role("button",name=re.compile("Presentar para su aprobación", re.IGNORECASE)).click()
+        #self.page.get_by_role("button", name=" Presentar para su aprobación").click()
+        print("Producto confirmado")
+        print("Añadiendo otro producto...")
 
 
 
@@ -483,10 +616,19 @@ class multiLoaderRIP:
 
 if __name__ == "__main__":
     RIPmloader=multiLoaderRIP(2)
-    RIPmloader.go_to_create_product()
-    RIPmloader.load_all_category()
-    #RIPmloader.load_section2_product_char()
-    RIPmloader.load_section_offer_char()
+    RIPmloader.go_to_home()
+    number_products = int(input("Set number of products:"))
+    for i in range(number_products):
+        print("Subiendo producto N-"+str(i)+"...")
+        RIPmloader.add_product()
+        RIPmloader.load_all_category()
+        #RIPmloader.load_section2_product_char()
+        #RIPmloader.fill_textbox()
+        RIPmloader.load_section_offer_char()
+        RIPmloader.load_images()
+        RIPmloader.confirm_product()
+    print("Se crearon "+str(number_products)+ " productos")
+    print('--------')
     # RPmloader.go_to_create_product()
     # print("---Paso 1: Crear Producto---")
     # RPmloader.load_product_name()
