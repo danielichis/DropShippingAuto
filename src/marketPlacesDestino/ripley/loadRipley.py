@@ -356,27 +356,12 @@ class multiLoaderRIP:
             img_loc.set_input_files(img_route)
             print("Imagen cargada")
 
-    def fill_textbox(self):
-        textbox_loc=self.page.get_by_role('textbox').all()
-        for tb in textbox_loc:
-            try:
-                tb.fill("222")
-            except:
-                print("Not fillable")
-                print(tb.inner_text)
-
-           
-
-
     def confirm_product(self):
         print("Confirmando producto...")
         self.page.get_by_role("button",name=re.compile("Presentar para su aprobación", re.IGNORECASE)).click()
         #self.page.get_by_role("button", name=" Presentar para su aprobación").click()
         print("Producto confirmado")
         print("Añadiendo otro producto...")
-
-
-
 
     def load_product_name(self):
         #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
@@ -437,41 +422,6 @@ class multiLoaderRIP:
         #self.page.locator(".btn-subcategory").first.click()
         #self.page.get_by_text("Aceite Vegetal").click()
         #print("categoria seleccionada")
-
-    
-    
-
-
-
-    # def load_all_category(self):
-
-    #     self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
-    #     while True:
-    #         missingCategories=self.load_category()
-    #         if not missingCategories:
-    #             break
-    #     print("Se cargaron todas las categorías")
-    #     self.page.wait_for_load_state("networkidle")
-
-        
-    def load_brand(self):
-        self.page.locator("div[id='inputBrand']").click()
-        brands_text=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
-        print(brands_text)
-        try:
-            brand_index = brands_text.index("GENÉRICO")
-            print(brand_index)
-        except:
-            brand_index = -1
-        self.page.locator(f"li:nth-child({brand_index+1}) > .multiselect__option").click()
-
-    def load_site(self):
-        time.sleep(1)
-        sites_list=self.page.locator("div[id='__BVID__197_']>label>span>span").all()
-        sites_list_text=self.page.locator("div[id='__BVID__197_']>label>span>span").all_inner_texts()
-        print(sites_list_text)
-        print("Seleccionando RealPlaza")
-        sites_list[4].click()
 
     def load_aditional_fields(self):
         time.sleep(2)
@@ -542,78 +492,6 @@ class multiLoaderRIP:
                 
         print("Campos obligatorios llenados")
 
-    def create_product(self):
-        self.page.get_by_role("button", name="Guardar").click()
-        self.page.get_by_role("button", name="OK").click()
-        print("Producto creado")
-        self.page.wait_for_load_state("networkidle")
-
-    def create_variant(self):
-
-        self.page.locator("[id=\"__BVID__228_\"]").fill("22") #UPC
-        self.page.get_by_label("Crear variante para el").locator("#nombreFormatterHelp").fill("eee") #nombre
-        #Precios
-        self.page.get_by_role("textbox", name="Precio regular").fill("250")
-        self.page.get_by_role("textbox", name="Precio con descuento").fill("200")
-
-        #Obteniendo fechas
-        from_date = date.today()
-        until_date=from_date+timedelta(days=5)
-        from_str=from_date.strftime("%Y-%m-%d")
-        until_str=until_date.strftime("%Y-%m-%d")
-        print("Fechas de descuento:", from_str,until_str)
-
-        #LLenando fechas
-        self.page.get_by_role("textbox", name="Descuento válido desde").fill(from_str)
-        self.page.get_by_role("textbox", name="Descuento válido hasta").fill(until_str)
-        #Medidas
-        self.page.get_by_role("textbox", name="Alto cm").fill("22")
-        self.page.get_by_role("textbox", name="Ancho cm").fill("22")
-        self.page.get_by_role("textbox", name="Largo cm").fill("22")
-        self.page.get_by_role("textbox", name="Peso gr").fill("22")
-        #Imagen
-        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
-        self.load_img()
-        #Select button 
-        self.page.get_by_label("Crear variante para el").get_by_role("button", name="Crear Variante").click()
-        self.page.wait_for_load_state("networkidle")
-        #save variant
-        self.page.get_by_role("button", name="Guardar").click()
-        self.page.get_by_role("button", name="OK").click()
-        self.page.wait_for_load_state("networkidle")
-        #storing SKU and ID of product
-        self.variant_sku=self.page.locator("td[data-label='SKU']>div").inner_text()
-        self.page.get_by_text("Datos del Producto").click()
-        self.product_id=self.page.locator("input[id='idInput']").input_value()
-        print(self.variant_sku)
-        print(self.product_id)
-        
-    def load_img(self):
-        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
-        img_route=r"C:\Users\risin\Downloads\imgTest\test2.jpg"
-        img_route_resized=r"C:\Users\risin\Downloads\imgTest\test_1_resized.jpg"
-        print("Convirtiendo imagen a 1000x1000...")
-        resize_image(img_route,img_route_resized)
-        print("Imagen convertida")
-        self.page.locator("input[type='file']").first.set_input_files(img_route_resized)
-
-    def update_inventory_number(self):
-        self.page.get_by_role("navigation").get_by_text("Inventario", exact=True).click()
-        self.page.get_by_role("link", name="Administrar Inventario").click()
-        self.page.wait_for_load_state("networkidle")
-        print("Buscando producto por ID")
-        self.page.locator("tr[role='row']").filter(has_text=self.product_id).locator("td[aria-colindex='5'] button").click()
-        #self.page.locator("tr[role='row']").all()[0].locator("td[aria-colindex='8'] button").click()
-        print("Se abrió la ventana de editar inventario")
-        print("buscando variante por SKU")
-        self.page.locator("tr[role='row']").filter(has_text=self.variant_sku).locator("td[aria-colindex='5'] span[class='inventoryTotal']").click()
-        self.page.get_by_role("textbox", name="Nuevo valor de inventario").fill("1")
-        self.page.get_by_role("button", name="Guardar").click()
-        self.page.wait_for_load_state("networkidle")
-        print("Inventario de variante actualizado a 1")
-
-    
-
 if __name__ == "__main__":
     RIPmloader=multiLoaderRIP(2)
     RIPmloader.go_to_home()
@@ -629,26 +507,4 @@ if __name__ == "__main__":
         RIPmloader.confirm_product()
     print("Se crearon "+str(number_products)+ " productos")
     print('--------')
-    # RPmloader.go_to_create_product()
-    # print("---Paso 1: Crear Producto---")
-    # RPmloader.load_product_name()
-    # RPmloader.load_all_category()
-    # RPmloader.load_aditional_fields()
-    # RPmloader.fill_mandatory_fields()
-    # RPmloader.load_description()
-    # RPmloader.load_brand()
-    # RPmloader.load_site()
-    # RPmloader.create_product()   
-    # print("Producto Creado")
-    # print("---Paso 2: Crear Variantes---")
-    # RPmloader.create_variant()
-    # print("---Variante creada---")
-    # RPmloader.update_inventory_number()
-    # print("Producto creado y variante creada")
-    # print("Regresando a la página de crear producto")
-    # RPmloader.go_to_create_product()
-    
-
-    
-#class="multiselect__element"
 
