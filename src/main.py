@@ -4,6 +4,7 @@ from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_ca
 from utils.managePaths import mp
 from DropShippingAuto.src.marketPlacesDestino.shopify.load import LoaderShopify
 from DropShippingAuto.src.marketPlacesDestino.dinners.subirInfoDinners import LoaderDinners
+from DropShippingAuto.src.marketPlacesDestino.real_plaza.loadRealPlaza import LoaderRealPlaza
 from DropShippingAuto.src.marketPlacesOrigen.amazon.downloadAmazon import get_sku_amazon_product
 from utils.requestToGAS import post_peticion
 import traceback
@@ -38,9 +39,15 @@ class amazon_mkt_peruvians:
                                   sheetProductData=None,
                                   configSheetData=self.configDataSheet,
                                   context=self.context,p=self.p)
+        # self.loaderRealPlaza=LoaderRealPlaza(dataToLoad=None,
+        #                           page=self.realPlazaPage,
+        #                           sheetProductData=None,
+        #                           configSheetData=self.configDataSheet,
+        #                           context=self.context,p=self.p)
         self.loadersFuntions={
             "DINNERS":self.load_to_dinners,
-            "SHOPIFY":self.load_to_shopify
+            "SHOPIFY":self.load_to_shopify,
+            "REAL_PLAZA":self.load_to_real_plaza
         }
     def update_loaders_data(self):
         dataAmzn=get_product_in_amazon_carpet_parsed(self.product['SKU'])
@@ -107,7 +114,6 @@ class amazon_mkt_peruvians:
             print("Error en el proceso principal")
             print(tb)
     def end(self):
-        
         self.context.close()
         self.p.stop()
 

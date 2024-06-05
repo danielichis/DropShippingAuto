@@ -79,7 +79,7 @@ class LoaderDinners():
         print(response.ok, response.status_text)
         print("Error")
     def create_new_product(self):
-        with self.page.expect_response("https://api.quickcomm.co/catalog/products",timeout=8000) as response_info:
+        with self.page.expect_response("https://api.quickcomm.co/catalog/products",timeout=12000) as response_info:
             self.page.locator("product-create button[type=submit]").click()
         response = response_info.value
         if response.ok:
@@ -91,8 +91,7 @@ class LoaderDinners():
         else:
             self.statusLoad="ERROR EN LA CARGA"
     def load_seller(self):
-        self.page.locator("//span[text()='Vendedor']//parent::div//input").click()
-        self.page.locator("//a[text()='UNALUKA INTERNACIONAL']").click()
+        self.page.locator("//span[text()='Vendedor']//parent::div//input").fill("UNALUKA INTERNACIONAL")
 
     def load_brand(self):
         self.page.locator("//span[text()='Marca']//parent::div//input").click()

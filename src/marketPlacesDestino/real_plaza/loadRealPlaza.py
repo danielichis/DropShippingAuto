@@ -1,6 +1,9 @@
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright,expect
 from utils.jsHandler import insertPropertiesToPage
-#from DropShippingAuto.src.utils.dinamySelections import search_best_option
+from random import randrange
+from datetime import date,timedelta
+from utils.managePaths import mp
+from DropShippingAuto.src.utilsDropSh.imageConverters import resize_image
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
 import json
@@ -9,12 +12,56 @@ homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
 
 
-class multiLoaderRP:
-    def __init__(self,dataToLoad):
+dataToLoad= [
+        {
+            "sku": "B07QSTJV95",
+            "status_d": "descargado correctamente",
+            "newProduct": "no",
+            "product": {
+                "estado": "Crear",
+                "SKU": "B07QSTJV95",
+                "PrecioShopify": "299.00",
+                "PrecioListaShopify": "329",
+                "PrecioDinners": "347",
+                "PrecioRealPlaza": "347",
+                "PrecioRipley": "347",
+                "PrecioMercadoLibre": "369",
+                "PrecioShopstar": "347",
+                "fila": 85
+            }
+        },
+        {
+            "sku": "B0CKYF12ZR",
+            "status_d": "descargado correctamente",
+            "newProduct": "yes",
+            "product": {
+                "estado": "Crear",
+                "SKU": "B0CKYF12ZR",
+                "PrecioShopify": "149.00",
+                "PrecioListaShopify": "164",
+                "PrecioDinners": "175",
+                "PrecioRealPlaza": "171",
+                "PrecioRipley": "175",
+                "PrecioMercadoLibre": "182",
+                "PrecioShopstar": "171",
+                "fila": 91
+            }
+        }
+    ]
+
+
+class LoaderRealPlaza:
+    def __init__(self,dataToLoad,page,context,p,sheetProductData,configSheetData):
         self.dataToLoad=dataToLoad
+        self.page=page
+        self.context=context
+        self.p=p
+        self.sheetProductData=sheetProductData
+        self.configDataSheet=configSheetData
+    def start_playwright(self):
         self.p = sync_playwright().start()
-        user_dir=r"C:\Users\Daniel\AppData\Local\Google\Chrome\User Data2"
-        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
+        user_dir=mp.get_current_chrome_profile_path()
+        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/',slow_mo=50)
         self.page=self.browser.new_page()
     
     def go_to_create_product(self):
@@ -37,45 +84,267 @@ class multiLoaderRP:
                 "value":"23434"
             }
         insertPropertiesToPage("div[class='ql-editor ql-blank']",properties,self.page)
-    def load_brand(self):
-        self.page.locator("div[id='inputBrand']").click()
-        brands=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
-        print(brands)
+        print("Se insertó descripción")
 
-
-    def load_category(self):
-        self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
+    def load_category(self)->bool:
         #getting the list of categories
+        #self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
+        
         time.sleep(1)
-        categoryListLocator=self.page.locator("div[class='list-group']>div[class='list-group-item']").all()
+
+        try:
+            categoryListLocator=self.page.locator("div[class='list-group']>div[class='list-group-item']").all()
+        except:
+            print("Ya no hay más categorías por seleccionar")
+            return False
+            
         categoryList=[]
         
         for category in categoryListLocator:
-           categoryList.append({"name":category.locator("span").inner_text(),
-                                "button":category.locator("button")})
+            try:
+                button=category.locator("button[class='btn-subcategory']")
+            except:
+                button=None
+
+            categoryList.append({"name":category.locator("span").inner_text(),
+                                "button":button})
         print(categoryList)
         #example
-        self.page.locator(".btn-subcategory").first.click()
-        self.page.locator(".btn-subcategory").first.click()
-        self.page.get_by_text("Aceite Vegetal").click()
-        print("categoria seleccionada")
+
+        #getting random number
+        ##Use embeddings function to select the best category
+        #categoryList=search_best_option(categoryList)
+        categNumb=randrange(0,len(categoryList))
+        print(categNumb)
+        #selecting the category
+
+        try:
+            categoryList[categNumb]["button"].click(timeout=2000)
+        except:
+            self.page.get_by_text(categoryList[categNumb]["name"],exact=True).click()
+            print("Se llegó al último nivel de dicha categoría")
+            print("Categoria seleccionada:"+categoryList[categNumb]["name"])
+            return False
+    
+        print("Categoria seleccionada:"+categoryList[categNumb]["name"])
+        return True
+        #self.page.locator(".btn-subcategory").first.click()
+        #self.page.locator(".btn-subcategory").first.click()
+        #self.page.get_by_text("Aceite Vegetal").click()
+        #print("categoria seleccionada")
+
+
+    def load_all_category(self):
+
+        self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
+        while True:
+            missingCategories=self.load_category()
+            if not missingCategories:
+                break
+        print("Se cargaron todas las categorías")
+        self.page.wait_for_load_state("networkidle")
+        # #example
+        # #categoryList[0]["button"].click()
+        # self.page.locator(".btn-subcategory").first.click()
+        # self.page.locator(".btn-subcategory").first.click()
+        # self.page.get_by_text("Aceite Vegetal").click()
+        # print("categoria seleccionada")
         
+    def load_brand(self):
+        self.page.locator("div[id='inputBrand']").click()
+        brands_text=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
+        print(brands_text)
+        try:
+            brand_index = brands_text.index("GENÉRICO")
+            print(brand_index)
+        except:
+            brand_index = -1
+        self.page.locator(f"li:nth-child({brand_index+1}) > .multiselect__option").click()
 
-
-    def load_aditional_fields(self):
+    def load_site(self):
         time.sleep(1)
-        aditional_fields=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
-        print(aditional_fields)
-        print("Se imprimieron los campos adicionales")
+        sites_list=self.page.locator("div[id='__BVID__206_']>label>span>span").all()
+        #select all sites
+        for site in sites_list:
+            site.click()
+        # sites_list_text=self.page.locator("div[id='__BVID__206_']>label>span>span").all_inner_texts()
+        # print(sites_list_text)
+        # print("Seleccionando RealPlaza")
+        # sites_list[4].click()
 
-
-#    def load_all_products(self):
-#        loadDinners=LoaderDinners(self.dataToLoad)
-#        for product in self.dataToLoad:
-#            self.load_main_dinners(product)
-
-
+    def get_additional_fields(self):
+        time.sleep(2)
+        expect(self.page.locator("div[class='row mt-3 attr-row']").first).not_to_be_empty()
+        additional_fields_locator=self.page.locator("div[class='row mt-3 attr-row']").all()
+        additional_fields_text=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
+        additional_fields=[]
         
+        for additional_field in additional_fields_locator:
+
+            if len(additional_field.locator("div[role='alert']").all())>0:
+                mandatory=True
+            else:
+                mandatory=False
+
+            type=additional_field.locator("input").first.get_attribute("type")
+            if type!="text" or type!="number":
+                #options=additional_field.locator("input span").all_inner_texts()
+                options=additional_field.locator("span span").all_inner_texts()
+            else:
+                options=[]
+            name=additional_field.locator("legend").inner_text()
+            additional_fields.append({"name":name,
+                                      "mandatory":mandatory,
+                                      "type":type,
+                                      "options":options,
+                                      "fieldObject":additional_field})
+            
+        mandatory_fields=[field for field in additional_fields if field["mandatory"]==True]
+        
+        print("Campos adicionales " + str(len(additional_fields)))
+        print(additional_fields)
+        print("-------------------")
+
+        print("Campos obligatorios " + str(len(mandatory_fields)))
+        print(mandatory_fields)
+        print("-------------------")
+        #storing mandatory and additional fields on the object
+        self.mandatory_fields=mandatory_fields
+        self.additional_fields=additional_fields
+    
+    def load_additional_fields(self):
+        pass
+    def fill_mandatory_fields(self):
+        
+        for field in self.mandatory_fields:
+            type=field["type"]
+            
+            if type=="text":
+                field["fieldObject"].locator("input").fill("test")
+            elif type=="number":
+                field["fieldObject"].locator("input").fill("2")
+            elif type=="checkbox":
+                #field["fieldObject"].locator("input").first().check()
+                for check_label in field["options"]:
+                    print(check_label)
+                    #field["fieldObject"].locator("input").all()[0].check()
+                    #field["fieldObject"].get_by_label(check_label,exact=True).check()
+                    field["fieldObject"].get_by_text(check_label,exact=True).first.click()
+            elif type=="radio":
+                #field["fieldObject"].locator("input").first().check()
+                radio_label=label=field["options"][0]
+                print(radio_label)
+                #field["fieldObject"].locator("input").all()[0].check()
+                #field["fieldObject"].get_by_text(radio_label,exact=True).click()
+                field["fieldObject"].get_by_text(radio_label,exact=True).first.click()
+            else:
+                print(type)
+                field["fieldObject"].locator("input").fill("test")
+                
+        print("Campos obligatorios llenados")
+
+    def create_product(self):
+        self.page.get_by_role("button", name="Guardar").click()
+        self.page.get_by_role("button", name="OK").click()
+        print("Producto creado")
+        self.page.wait_for_load_state("networkidle")
+
+    def create_variant(self):
+
+        self.page.locator("#__BVID__237_").fill("22") #UPC
+        self.page.get_by_label("Crear variante para el").locator("#nombreFormatterHelp").fill("eee") #nombre
+        #Precios
+        self.page.get_by_role("textbox", name="Precio regular").fill("250")
+        self.page.get_by_role("textbox", name="Precio con descuento").fill("200")
+
+        #Obteniendo fechas
+        from_date = date.today()
+        until_date=from_date+timedelta(days=5)
+        from_str=from_date.strftime("%Y-%m-%d")
+        until_str=until_date.strftime("%Y-%m-%d")
+        from_day_str=from_date.strftime("%#d")
+        until_day_str=until_date.strftime("%#d")
+        print("Fechas de descuento:", from_str,until_str)
+        print("dias:",from_day_str,until_day_str)
+        #LLenando fechas
+        #solve later
+        #self.page.get_by_role("textbox", name="Descuento valido desde").fill(from_str)
+        #self.page.get_by_role("textbox", name="Descuento válido hasta").fill(until_str)
+        #Llenando fechas 2
+        self.page.get_by_label("Descuento válido desde").get_by_role("textbox").click()
+        self.page.locator(f"td[title='{from_str}']").first.click()
+        self.page.get_by_label("Descuento válido hasta").get_by_role("textbox").click()
+        self.page.locator(f"td[title='{until_str}']").first.click()
+        #Medidas
+        self.page.get_by_role("textbox", name="Alto cm").fill("22")
+        self.page.get_by_role("textbox", name="Ancho cm").fill("22")
+        self.page.get_by_role("textbox", name="Largo cm").fill("22")
+        self.page.get_by_role("textbox", name="Peso gr").fill("22")
+        #Imagen
+        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
+        self.load_img()
+        #Select button 
+        self.page.get_by_label("Crear variante para el").get_by_role("button", name="Crear Variante").click()
+        self.page.wait_for_load_state("networkidle")
+        #save variant
+        self.page.get_by_role("button", name="Guardar").click()
+        self.page.get_by_role("button", name="OK").click()
+        self.page.wait_for_load_state("networkidle")
+        #storing SKU and ID of product
+        self.variant_sku=self.page.locator("td[data-label='SKU']>div").inner_text()
+        self.page.get_by_text("Datos del Producto").click()
+        self.product_id=self.page.locator("input[id='idInput']").input_value()
+        print("SKU del producto creado: "+self.variant_sku)
+        print("ID del producto creado: "+ self.product_id)
+        
+    def load_img(self):
+        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
+        img_route=r"C:\UnalukaBots\DropShippingAuto\src\marketPlacesOrigen\amazon\skus_Amazon\B0B92Y18GT\images\61U220djaVL._SL1080_.jpg"
+        img_route_resized=r"C:\UnalukaBots\DropShippingAuto\src\marketPlacesOrigen\amazon\skus_Amazon\B0B92Y18GT\images\61U220djaVL._SL1080_resized.jpg"
+        print("Convirtiendo imagen a 1000x1000...")
+        resize_image(img_route,img_route_resized)
+        print("Imagen convertida")
+        self.page.locator("input[type='file']").first.set_input_files(img_route_resized)
+
+    def update_inventory_number(self):
+        self.page.get_by_role("navigation").get_by_text("Inventario", exact=True).click()
+        self.page.get_by_role("link", name="Administrar Inventario").click()
+        self.page.wait_for_load_state("networkidle")
+        print("Buscando producto por ID")
+        self.page.locator("tr[role='row']").filter(has_text=self.product_id).locator("td[aria-colindex='5'] button").click()
+        #self.page.locator("tr[role='row']").all()[0].locator("td[aria-colindex='8'] button").click()
+        print("Se abrió la ventana de editar inventario")
+        print("buscando variante por SKU")
+        self.page.locator("tr[role='row']").filter(has_text=self.variant_sku).locator("td[aria-colindex='5'] span[class='inventoryTotal']").click()
+        self.page.get_by_role("textbox", name="Nuevo valor de inventario").fill("1")
+        self.page.get_by_role("button", name="Guardar").click()
+        self.page.wait_for_load_state("networkidle")
+        print("Inventario de variante actualizado a 1")
+    def end_playwright(self):
+        self.browser.close()
+        self.p.stop()
+        print("Playwright cerrado")
+    def load_main_real_plaza(self):
+        self.go_to_create_product()
+        print("---Paso 1: Crear Producto---")
+        self.load_product_name()
+        self.load_all_category()
+        self.get_additional_fields()
+        self.load_additional_fields()
+        self.fill_mandatory_fields()
+        self.load_description()
+        self.load_brand()
+        self.load_site()
+        self.create_product()   
+        print("Producto Creado")
+        print("---Paso 2: Crear Variantes---")
+        self.create_variant()
+        print("---Variante creada---")
+        self.update_inventory_number()
+        print("Producto creado y variante creada")
+        print("Regresando a la página de crear producto")
+        self.go_to_create_product()
+        self.end_playwright()    
 class LoaderRP:
     def __init__(self,dataToLoad):
         self.dataToLoad=dataToLoad
@@ -118,15 +387,7 @@ class LoaderRP:
 
 
 if __name__ == "__main__":
-    RPmloader=multiLoaderRP(2)
-    RPmloader.go_to_create_product()
-    RPmloader.load_product_name()
-    RPmloader.load_category()
-    RPmloader.load_aditional_fields()
-    RPmloader.load_brand()
-    RPmloader.load_description()
-    print("terminado")
-
-    
-#class="multiselect__element"
+    RPmloader=LoaderRealPlaza(2)
+    RPmloader.start_playwright()
+    RPmloader.load_main_real_plaza()
 
