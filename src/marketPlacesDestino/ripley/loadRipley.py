@@ -5,7 +5,7 @@ from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
 #from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
 from utils.managePaths import mp
-from StringHandling import extract_number_of_for,get_id_ul
+from StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator
 import json
 import time
 homeRipley="https://ripleyperu-prod.mirakl.net/login"
@@ -22,6 +22,7 @@ class multiLoaderRIP:
         user_dir=mp.get_current_chrome_profile_path()
         self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
         self.page=self.browser.new_page()
+
     def to_login(self):
         print("Iniciando sesion...")
         user_name="mkpinter@unaluka.com"
@@ -179,14 +180,14 @@ class multiLoaderRIP:
 
         for locator in locators_list:
             if locator["tag"]=="SELECT":
-                options_list_locator=locator["locator"].locator("option").all_inner_texts()
-                # options_list=[]
-                # for option in options_list_locator:
-                #     options_list.append({"name":option.inner_text(),
-                #                         "locator":option})
-                # locator["options"]=options_list
-                locator["options"]=options_list_locator
-                print(options_list_locator)
+                options_list_locator=locator["locator"].locator("option").all()
+                options_list=[]
+                for option in options_list_locator:
+                    options_list.append({"name":option.inner_text(),
+                                         "locator":option})
+                locator["options"]=options_list
+                print([x["name"] for x in options_list])
+
             elif locator["tag"]=="TEXTAREA":
                 locator["options"]=[]
             elif locator["tag"]=="INPUT":
@@ -198,9 +199,9 @@ class multiLoaderRIP:
                     for_attribute=hidden_label.get_attribute("for")
                     id_ul=get_id_ul(for_attribute)
                     print(id_ul)
-                    
                     try:
-                        combobox_locator=self.page.locator("div[class='input col-md-4 col-lg-4']").filter(has=self.page.locator(f"input:enabled[title='{title}']")).first.click()
+                        combobox_locator=self.page.locator("div[class='input col-md-4 col-lg-4']").filter(has=self.page.locator(f"input:enabled[title='{title}']")).first
+                        combobox_locator.click()
                         #getting id of unordered list of options with through the hidden label which contains the number in the id of the unordered list
                         #how to compute the string
                         #id for unordered list of results>s2-results-{number}
@@ -218,10 +219,12 @@ class multiLoaderRIP:
                                         "locator":item})
                     print(id)
                     print([x["name"] for x in options])
-                    locator["combobox"]=combobox_locator
+                    #locator["combobox"]=combobox_locator
                     locator["options"]=options
                     #select first option 
                     locator["options"][0]["locator"].click()
+                    #update locator with combobox locator
+                    locator["locator"]=combobox_locator
                 elif "value" in locator["key_values"]:
                     print("Se encontró input")
                     locator["options"]=[]
@@ -234,9 +237,10 @@ class multiLoaderRIP:
         print("Se obtuvieron opciones de los locators")
 
     def test_locators_list(self,locators_list:list)->None:
+
         for loc in locators_list:
             print(loc["name"]+"-"+loc["tag"])
-            if loc["options"]==[]:
+            if len(loc["options"])==0:
                 try:
                     if loc['name']=='Cantidad de la oferta' or loc['name']=='Precio':
                         loc["locator"].fill("25")
@@ -246,11 +250,18 @@ class multiLoaderRIP:
                     print("error"+str(e))
                     print("Pasando a siguiente elemento")
                     continue
-            elif loc["options"][0]=="IMG":
-                print("Se subió imagen")
-                #loc["locator"].set_input_files(r"C:\Users\risin\Downloads\imgTest\test2.jpg")
             else:
-                print("Not a fillable element")
+                categNumb=randrange(0,len(loc["options"]))
+                print(categNumb)
+                if loc["tag"]=="SELECT":
+                    option_label=loc["options"][categNumb]["name"]
+                    loc["locator"].select_option(label=option_label)
+                elif loc["tag"]=="INPUT":
+                    loc["locator"].click()
+                    loc["options"][categNumb]["locator"].click()
+                print("Element selected")
+
+        print("Se seleccionaron elementos")   
         # for loc in locators_list:
         #     try:
         #         loc["locator"].fill("test",timeout=3000)
@@ -289,17 +300,7 @@ class multiLoaderRIP:
         for name in divs4_names:
             if "imagen" not in name.lower():
                 loc_list=self.page.get_by_label(name,exact=True).all()
-                for loc in loc_list:
-                    try:
-                        expect(loc).to_be_enabled()
-                    except:
-                        print("Locator no habilitado,se pasará al siguiente...")
-                        continue
-                    else:
-                        print("Locator habilitado")
-                        found_loc=loc
-                        break
-
+                found_loc=get_first_enabled_locator(loc_list)
                 divs4_locators.append({"name":name,
                                     #"locator":self.page.get_by_label(name,exact=True).locator()
                                     "locator":found_loc
@@ -343,13 +344,13 @@ class multiLoaderRIP:
         image_locators=self.page.locator("input:enabled[type='file'][required]").all()
         print("Cantidad de img a subir: "+str(len(image_locators)))
         for img_loc in image_locators:
-            img_route="/Users/macbook/Downloads/test.jpeg"
+            img_route_mac="/Users/macbook/Downloads/test.jpeg"
             #img_route_resized=r"C:\Users\risin\Downloads\imgTest\test_1_resized.jpg"
             #print("Convirtiendo imagen a 1000x1000...")
             #resize_image(img_route,img_route_resized)
             #print("Imagen convertida")
             print("Cargando imagen...")
-            img_loc.set_input_files(img_route)
+            img_loc.set_input_files(img_route_mac)
             print("Imagen cargada")
 
     def confirm_product(self):
@@ -491,7 +492,8 @@ class multiLoaderRIP:
 if __name__ == "__main__":
     RIPmloader=multiLoaderRIP(2)
     RIPmloader.go_to_home()
-    number_products = int(input("Set number of products:"))
+    #number_products = int(input("Set number of products:"))
+    number_products=1
     for i in range(number_products):
         print("Subiendo producto N-"+str(i)+"...")
         RIPmloader.add_product()
