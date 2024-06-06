@@ -15,7 +15,7 @@ from datetime import date,timedelta
 #from img_sizer1000x1000 import resize_image
 
 
-class multiLoaderRIP:
+class LoaderRipley:
     def __init__(self,dataToLoad):
         self.dataToLoad=dataToLoad
         self.p = sync_playwright().start()
@@ -237,20 +237,26 @@ class multiLoaderRIP:
         print("Se obtuvieron opciones de los locators")
 
     def test_locators_list(self,locators_list:list)->None:
+        #Separating list in fillable and options
+        self.fields_fillable=[]
+        self.fields_nonfillable=[]
 
         for loc in locators_list:
             print(loc["name"]+"-"+loc["tag"])
             if len(loc["options"])==0:
                 try:
+                    self.fields_fillable.append(loc)
                     if loc['name']=='Cantidad de la oferta' or loc['name']=='Precio':
                         loc["locator"].fill("25")
                     else:
                         loc["locator"].fill("TEST MODAFUCKAAAA")
+                        
                 except Exception as e:
                     print("error"+str(e))
                     print("Pasando a siguiente elemento")
                     continue
             else:
+                self.fields_nonfillable.append(loc)
                 categNumb=randrange(0,len(loc["options"]))
                 print(categNumb)
                 if loc["tag"]=="SELECT":
@@ -352,6 +358,17 @@ class multiLoaderRIP:
             print("Cargando imagen...")
             img_loc.set_input_files(img_route_mac)
             print("Imagen cargada")
+
+    def print_fields(self):
+        print("Fillable Fields")
+        print([x["name"] for x in self.fields_fillable])
+        print("-------------------")
+        print("Nonfillable Fields")
+        for field in self.fields_nonfillable:
+            print(field["name"])
+            print([x["name"] for x in field["options"]])
+        print("-------------------")
+
 
     def confirm_product(self):
         print("Confirmando producto...")
@@ -490,7 +507,7 @@ class multiLoaderRIP:
         print("Campos obligatorios llenados")
 
 if __name__ == "__main__":
-    RIPmloader=multiLoaderRIP(2)
+    RIPmloader=LoaderRipley(2)
     RIPmloader.go_to_home()
     #number_products = int(input("Set number of products:"))
     number_products=1
@@ -502,6 +519,7 @@ if __name__ == "__main__":
         #RIPmloader.fill_textbox()
         RIPmloader.load_section_offer_char()
         RIPmloader.load_images()
+        RIPmloader.print_fields()
         RIPmloader.confirm_product()
     print("Se crearon "+str(number_products)+ " productos")
     print('--------')
