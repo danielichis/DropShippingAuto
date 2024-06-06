@@ -79,6 +79,10 @@ class LoaderShopify:
         with open("DropShippingAuto/Responsedata_load_shopify.json","w",encoding="utf-8") as json_file:
             json.dump(responseLoad,json_file,indent=4,ensure_ascii=False)
         self.responseShopifyLoad=responseLoad
+    def load_provider(self):
+        self.page.locator("input[name='vendor']").click()
+        list_providers=self.page.locator("ul[role='listbox'] li").all_inner_texts()
+
     def load_sku(self):
 
         if self.dataToLoad['Detalles Tecnicos']!={}:
@@ -130,6 +134,7 @@ class LoaderShopify:
             products.first.click(timeout=3000)
         self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("STOCK")
         abaoutProduct=dc.dict_to_string(self.dataToLoad['Acerca del producto'])
+
         customFrame.locator("div[class='fr-element fr-view']").fill(abaoutProduct)
         baseUrl="https://admin.shopify.com/store/unaluka/products/"
         currentUrl=self.page.url
