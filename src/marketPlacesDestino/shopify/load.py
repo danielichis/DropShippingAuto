@@ -5,6 +5,7 @@ import traceback
 from DropShippingAuto.src.marketPlacesDestino.shopify.interfaces import productosShopify as pshopy
 from DropShippingAuto.src.marketPlacesDestino.shopify.interfaces import acfMetafields as acm
 from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
+from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_carpet_parsed
 from DropShippingAuto.src.utilsDropSh.managePaths import mp
 from DropShippingAuto.src.utilsDropSh.manipulateDicts import dc
 from utils.embeddings.embeding import get_top_n_match
@@ -81,7 +82,19 @@ class LoaderShopify:
         self.responseShopifyLoad=responseLoad
     def load_provider(self):
         self.page.locator("input[name='vendor']").click()
-        list_providers=self.page.locator("ul[role='listbox'] li").all_inner_texts()
+        list_providers=self.page.locator("div[id=':rgp:'] ul>li>div>div>div").all_inner_texts()
+        if self.dataToLoad['Marca']!="No especificado":
+            provider=self.dataToLoad['Marca']
+            if provider in list_providers:
+                #page.get_by_label('Choose a color').select_option(label='Blue')
+                #SELECT THE OPTION IN THE LIST
+                pass
+            else:
+                self.page.locator("input[name='vendor']").fill("GENERICO")
+        else:
+            self.page.locator("input[name='vendor']").fill("GENERICO")
+        
+        
 
     def load_sku(self):
 
