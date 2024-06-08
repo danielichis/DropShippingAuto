@@ -1,4 +1,5 @@
 import re
+from playwright.sync_api import sync_playwright,expect
 
 def extract_number_of_for(for_id:str)->str:
     pattern = r'autogen(\d+)'
@@ -17,4 +18,15 @@ def get_id_ul(for_id:str):
     ul_id='select2-results-'+ul_number
     return ul_id
 
+def get_first_enabled_locator(locators_list:list):
+    for loc in locators_list:
+        try:
+            expect(loc).to_be_enabled()
+        except:
+            print("Locator no habilitado,se pasará al siguiente...")
+            continue
+        else:
+            print("Locator habilitado")
+            found_loc=loc
+            return found_loc
 
