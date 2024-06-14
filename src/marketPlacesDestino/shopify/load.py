@@ -24,6 +24,7 @@ class LoaderShopify:
         self.p=p
         self.sheetProductData=sheetProductData
         self.configDataSheet=configSheetData
+        self.status="ERROR AL CARGAR"
     def load_descriptions(self):
         descs=self.dataToLoad['descripciones']
         if type(descs)!=dict:
@@ -79,7 +80,6 @@ class LoaderShopify:
         except Exception as e:
             tb=traceback.format_exc()
             url=""
-            self.status="ERROR AL CARGAR"
         responseLoad={
             "sku":self.dataToLoad['sku'],
             "status":self.status,
