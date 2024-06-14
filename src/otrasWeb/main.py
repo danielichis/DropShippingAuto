@@ -1,7 +1,0 @@
-
-list="Meta Quest Pro es un sistema de realidad virtual que desbloquea nuevas perspectivas sobre cómo trabajamos, creamos y colaboramos, para que puedas ir más allá de lo que anteriormente era posible. Un auricular completamente reinventado es más delgado y más equilibrado para una comodidad duradera. El avance de alta resolución de realidad mixta utiliza sensores a todo color para permitirte ver e interactuar con el mundo físico que te rodea, incluso mientras te conectas, trabajas y juegas en espacios virtuales. Múltiples pantallas de tamaño de habitación te permiten saltar entre tareas para hacer más, más fácilmente. Conéctate mejor con amigos o colabora con compañeros como nunca antes con expresiones de avatar en tiempo real que reflejan tus auténticas reacciones faciales. Los controladores intuitivos y rediseñados dispensan anillos de seguimiento, utilizando cámaras de seguimiento automático para capturar un mayor rango de movimiento y controles de motor fino para traducir operaciones detalladas de los dedos como escribir y dibujar en realidad virtual. La retroalimentación háptica multipunto avanzada hace que las interacciones virtuales se sientan más reales. Solo para edades de 13 años en adelante.".split(".")
-# for l in list:
-#     if l!="":
-#         print(l)
-lines=[x+"." for x in list if x!=""]
-print(lines)
