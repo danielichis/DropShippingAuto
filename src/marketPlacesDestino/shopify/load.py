@@ -104,13 +104,13 @@ class LoaderShopify:
             if self.dataToLoad['Marca']!="No especificado":
                 provider=self.dataToLoad['Marca']
                 if provider in list_providers:
-                    self.page.locator(ulElementSelector).all()[0].get_by_label(provider).click()
+                    self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
                 else:
-                    self.page.locator(ulElementSelector).all()[0].get_by_label(wildcardBrand).click()
+                    self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
             else:
-                self.page.locator(ulElementSelector).all()[0].get_by_label(wildcardBrand).click()
+                self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
         else:
-            self.page.locator(ulElementSelector).get_by_label(wildcardBrand).click()
+            self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
