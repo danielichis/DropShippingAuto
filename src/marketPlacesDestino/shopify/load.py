@@ -77,6 +77,7 @@ class LoaderShopify:
         try:
             url=self.load_sub_main_shopify()
             tb="ok"
+            self.status="CARGADO CORRECTAMENTE"
         except Exception as e:
             tb=traceback.format_exc()
             url=""
@@ -187,7 +188,6 @@ class LoaderShopify:
         currentUrl=self.page.url
         codeProduct=re.findall(r"\d+",currentUrl)[0]
         print(f"producto {self.dataToLoad['sku']} subido a shopify")
-        self.status="CARGADO CORRECTAMENTE"
         self.finalUrlCreatedProduct=baseUrl+codeProduct
     def load_sub_main_shopify(self):
         self.load_title()
