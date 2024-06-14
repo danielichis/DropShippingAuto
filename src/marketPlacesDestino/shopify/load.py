@@ -104,11 +104,11 @@ class LoaderShopify:
             if self.dataToLoad['Marca']!="No especificado":
                 provider=self.dataToLoad['Marca']
                 if provider in list_providers:
-                    self.page.locator(ulElementSelector).get_by_label(provider).click()
+                    self.page.locator(ulElementSelector).all()[0].get_by_label(provider).click()
                 else:
-                    self.page.locator(ulElementSelector).get_by_label(wildcardBrand).click()
+                    self.page.locator(ulElementSelector).all()[0].get_by_label(wildcardBrand).click()
             else:
-                self.page.locator(ulElementSelector).get_by_label(wildcardBrand).click()
+                self.page.locator(ulElementSelector).all()[0].get_by_label(wildcardBrand).click()
         else:
             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).click()
     def load_title(self):
