@@ -9,8 +9,8 @@ import re
 #read csv file
 
 def sku_folder(sku):
-    return os.path.join(mp.get_current_path(1),"marketPlacesOrigen\\amazon\\skus_Amazon",sku)
-
+    #return os.path.join(mp.get_current_path(1),"marketPlacesOrigen\\amazon\\skus_Amazon",sku)
+    return os.path.join(mp.get_current_path(1),"marketPlacesOrigen/amazon/skus_Amazon",sku)
 def get_product_in_amazon_carpet_parsed(product_sku):
     skuFolder=sku_folder(product_sku)
     dataJsonPath=skuFolder+"/data.json"

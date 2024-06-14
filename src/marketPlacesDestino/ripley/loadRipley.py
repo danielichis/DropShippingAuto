@@ -1,28 +1,51 @@
+import traceback
 from playwright.sync_api import sync_playwright,expect
+from utils.embeddings.embeding import get_best_similarity_option
 from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
-#from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
+from utils.dinamicMassivArgsExtractions_rip import get_dinamic_args_extraction,list_attributes_ff_in_json,list_attributes_nff_in_json,get_dinamic_args_extraction2,list_attributes_fields_in_json,get_dinamic_answer
 from utils.managePaths import mp
-from StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator
+from DropShippingAuto.src.marketPlacesDestino.ripley.StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator,keyboard_delete_text,extract_words_regex
 import json
 import time
-homeRipley="https://ripleyperu-prod.mirakl.net/login"
 import re
 from random import randrange
 from datetime import date,timedelta
+from PIL import Image
+
 #from img_sizer1000x1000 import resize_image
 
+from DropShippingAuto.src.main import amazon_mkt_peruvians
+
+
+homeRipley="https://ripleyperu-prod.mirakl.net/login"
+market_dashboard='https://ripleyperu-prod.mirakl.net/marketplace-dashboard/'
 
 class LoaderRipley:
-    def __init__(self,dataToLoad):
-        self.dataToLoad=dataToLoad
-        self.p = sync_playwright().start()
-        user_dir=mp.get_current_chrome_profile_path()
-        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
-        self.page=self.browser.new_page()
+    # def __init__(self,dataToLoad):
+    #     self.dataToLoad=dataToLoad
+    #     self.p = sync_playwright().start()
+    #     user_dir=mp.get_current_chrome_profile_path()
+    #     self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
+    #     self.page=self.browser.new_page()
 
+    def __init__(self,dataToLoad,page,context,p,sheetProductData,configSheetData):
+        self.dataToLoad=dataToLoad
+        self.page=page
+        self.context=context
+        self.p=p
+        self.sheetProductData=sheetProductData
+        self.configDataSheet=configSheetData
+
+    def start_playwright(self):
+        #self.p = sync_playwright().start()
+        #user_dir=mp.get_current_chrome_profile_path()
+        #self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/',slow_mo=50)
+        #self.page=self.browser.new_page()
+        pass
+        
     def to_login(self):
         print("Iniciando sesion...")
         user_name="mkpinter@unaluka.com"
@@ -36,37 +59,68 @@ class LoaderRipley:
     def go_to_home(self):
         self.page.goto(homeRipley)
         self.to_login()
-        self.page.get_by_text("Añadir una oferta").click()
+        self.page.get_by_role("link", name="Añadir una oferta").click()
+        
+        
 
     def add_product(self):
         self.page.get_by_role("link", name="+ Crear un producto").click()
         print("pagina cargada")
 
-    def make_category_list(self)->list:
+    def select_category_fc_n_embbedings(self,category_dict:dict)->int:
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        cat_options_names=[option["name"] for option in category_dict["options"]]
+        category_name=category_dict["name"]
+        category_list=[category_dict]
+        #Using Function Calling OpenAI API
+        category_selected=get_dinamic_args_extraction2(options_type='options_1',content_product=str(contentProduct),fieldsFromMarketPlace=category_list)
+        print(category_selected)
+        funcCallingValue=category_selected[category_name]
+        print("Valor retornado con Function Calling : "+funcCallingValue)
+        #Using value returned from Function Calling to use Embeddings
+        optionToSelect=get_best_similarity_option(cat_options_names,funcCallingValue)
+        print("Categoría retornada con Embeddings :"+optionToSelect)
+        #finding the index of the value returned from the embeddings
+        categNumb=cat_options_names.index(optionToSelect)
+        return categNumb
+
+
+    def make_category_dict(self,category_div_order:int)->list:
         categories_list_locator=self.page.locator("div[class='select2-result-label']").all()
         categories_list=[]
         for category in categories_list_locator:
             categories_list.append({"name":category.inner_text(),"locator":category})
 
+        if category_div_order==0:
+            category_label="Categoría"
+        else:
+            category_label="Subcategoría "+str(category_div_order)
+
+        category_dict={"name":category_label,"options":categories_list}
+
         print(categories_list)
-        return categories_list
+        print(category_dict)
+        return category_dict
 
     def load_all_category(self):
-
         cat_num=0
         while(True):
             next_locator=self.page.locator("div[id='next"+str(cat_num)+"']")
             try:
-                next_locator.locator("div[class='input col-md-4 col-lg-4']").click(timeout=3000)
-                categories_list=self.make_category_list()
-                
+                next_locator.locator("div[class='input col-md-4 col-lg-4']").click(timeout=4000)
+                category_dict=self.make_category_dict(cat_num)
+                categories_list=category_dict["options"]
+                #Using embeddings to select the best category
+                categNumb=self.select_category_fc_n_embbedings(category_dict)
+                ####
                 #Select a random category
-                categNumb=randrange(0,len(categories_list))
+                #categNumb=randrange(0,len(categories_list))
                 print(categNumb)
                 categories_list[categNumb]["locator"].click()
                 print("Categoria seleccionada")
                 cat_num+=1
-            except:
+            except Exception as e:
+                print(e)
                 print("No hay más categorías por seleccionar")
                 break
         self.page.wait_for_load_state("networkidle")
@@ -75,36 +129,7 @@ class LoaderRipley:
 
         print("Se cargaron todas las categorías")
         
-
-    def load_section2_product_char(self):
-
-        divs2_names=self.page.locator("div[id='productCreationForm'] div[id*='productCreationFormField'][style='display:block'] label[class='required']").all_inner_texts()
-        divs2_locators=[]
-        
-        for name in divs2_names:
-            divs2_locators.append({"name":name,
-                                   "locator":self.page.get_by_label(name,exact=True).first,
-                                   #"tag_name":self.page.get_by_label(name,exact=True).first.evaluate("element => element.tagName")
-                                   })
-
-        print("Campos de la sección 2")
-        print(divs2_names)
-        print(divs2_locators)
-
-        for loc in divs2_locators:
-
-            try:
-                loc["locator"].fill("test",timeout=3000)
-            except Exception as e:
-                print(e)
-                print("Not a fillable element")
-                continue
-
-
-        print("Se imprimieron los nombres de la seccion Caracteristicas del Producto")
-    
     def add_tag_n_attributes(self,locators_list:list)->list:
-
         for loc in locators_list:
             try:
                 tag=loc["locator"].evaluate("element => element.nodeName",timeout=3000)
@@ -112,18 +137,13 @@ class LoaderRipley:
             except:
                 tag="Not found"
                 attributes=[]
-            
             key_values={}
-            
             for attribute in attributes:
                 key_values[attribute]=loc["locator"].evaluate(f"element => element.getAttribute('{attribute}')")    
-            
             loc["tag"]=tag
             loc["key_values"]=key_values
-
             print(loc["name"]+"-"+loc["tag"])
             print(loc["key_values"])
-
         print("Se obtuvieron el tag y los atributos de los locators")
 
         
@@ -176,6 +196,28 @@ class LoaderRipley:
         print("Se obtuvieron opciones de los locators")
 
 
+    def get_new_options_from_combobox(self,combobox_locator,cgpt_answer:str='d'):
+        print("Obteniendo nuevas opciones de combobox...")
+        id_ul=combobox_locator["options_id"]
+        print(id_ul)
+        self.page.keyboard.type(cgpt_answer,delay=100)
+        time.sleep(2)
+        
+        options_list_locator=self.page.locator(f"#{id_ul}").locator("li").all()
+        print(options_list_locator)
+        #combobox_locator["locator"].click()
+
+        new_options=[]
+        for item in options_list_locator:
+            new_options.append({"name":item.inner_text(),
+                                "locator":item})
+            
+        combobox_locator["options"]=new_options
+        print([x["name"] for x in new_options])
+        print("Opciones obtenidas")
+        
+
+
     def get_options_locator_list2(self,locators_list:list)->list:
 
         for locator in locators_list:
@@ -195,13 +237,24 @@ class LoaderRipley:
                     #makeclick using role
                     #self.page.get_by_role("combobox", name=locator["name"]).click()
                     title=locator.get("name")
-                    hidden_label=self.page.locator("label:visible[for^='s2id']").filter(has_text=title)
+                    hidden_label=self.page.locator("label:visible[for^='s2id']").filter(has_text=title).first
                     for_attribute=hidden_label.get_attribute("for")
                     id_ul=get_id_ul(for_attribute)
                     print(id_ul)
                     try:
                         combobox_locator=self.page.locator("div[class='input col-md-4 col-lg-4']").filter(has=self.page.locator(f"input:enabled[title='{title}']")).first
                         combobox_locator.click()
+                        #cgpt_answer="d"
+                        #self.page.keyboard.type(cgpt_answer,delay=200)
+                        #time.sleep(2)
+                        time.sleep(1)
+                        self.page.wait_for_load_state("networkidle")
+                        options_list_locator=self.page.locator(f"#{id_ul}").locator("li").all()
+
+                        options=[]
+                        for item in options_list_locator:
+                            options.append({"name":item.inner_text(),
+                                            "locator":item})
                         #getting id of unordered list of options with through the hidden label which contains the number in the id of the unordered list
                         #how to compute the string
                         #id for unordered list of results>s2-results-{number}
@@ -212,19 +265,19 @@ class LoaderRipley:
                         print("Pasando a siguiente elemento")
                         continue
                     #id=locator["key_values"]["aria-owns"]
-                    options_list_locator=self.page.locator(f"#{id_ul}").locator("li").all()
-                    options=[]
-                    for item in options_list_locator:
-                        options.append({"name":item.inner_text(),
-                                        "locator":item})
+
+
                     print(id)
                     print([x["name"] for x in options])
                     #locator["combobox"]=combobox_locator
+                    locator["options_id"]=id_ul
                     locator["options"]=options
                     #select first option 
                     locator["options"][0]["locator"].click()
                     #update locator with combobox locator
                     locator["locator"]=combobox_locator
+                    #2ND click to close the combobox
+                    #combobox_locator.click()
                 elif "value" in locator["key_values"]:
                     print("Se encontró input")
                     locator["options"]=[]
@@ -264,6 +317,13 @@ class LoaderRipley:
                     loc["locator"].select_option(label=option_label)
                 elif loc["tag"]=="INPUT":
                     loc["locator"].click()
+                    #cgpt_answer="something"
+                    #self.page.keyboard.type(cgpt_answer,delay=150)
+    #                   page1.get_by_role("link", name="100%").click()
+    # page1.get_by_role("option", name="1976 NATURAL PRODUCTS").click()
+    # page1.get_by_role("link", name="1976 NATURAL PRODUCTS").click()
+    # page1.get_by_role("combobox", name="Marca").fill("er")
+    # page1.get_by_role("option", name="29 SUPER FOODS").click()
                     loc["options"][categNumb]["locator"].click()
                 print("Element selected")
 
@@ -278,29 +338,91 @@ class LoaderRipley:
         #         continue   
 
 
+    def test_locators_list2(self,locators_list:list)->None:
+        #Separating list in fillable and options
+        self.fields_fillable=[]
+        self.fields_nonfillable=[]
+
+        for loc in locators_list:
+            print(loc["name"]+"-"+loc["tag"])
+            if len(loc["options"])>0:
+                self.fields_nonfillable.append(loc)
+                categNumb=randrange(0,len(loc["options"]))
+                print(categNumb)
+                if loc["tag"]=="SELECT":
+                    option_label=loc["options"][categNumb]["name"]
+                    loc["locator"].select_option(label=option_label)
+                elif loc["tag"]=="INPUT":
+                    loc["locator"].click()
+                    #cgpt_answer="something"
+                    #self.page.keyboard.type(cgpt_answer,delay=150)
+    #                   page1.get_by_role("link", name="100%").click()
+    # page1.get_by_role("option", name="1976 NATURAL PRODUCTS").click()
+    # page1.get_by_role("link", name="1976 NATURAL PRODUCTS").click()
+    # page1.get_by_role("combobox", name="Marca").fill("er")
+    # page1.get_by_role("option", name="29 SUPER FOODS").click()
+                    loc["options"][categNumb]["locator"].click()
+                print("Element selected")
+            else:
+                try:
+                    
+                    if loc['name']=='Cantidad de la oferta':
+                        loc["locator"].fill("0")
+                    elif loc['name']=='Precio':
+                        loc["locator"].fill("1")
+                    #elif loc['name']=='Nombre':
+                    #    loc['name']='Nombre,máximo 129 caracteres'    
+                    else:
+                        loc["locator"].fill("TEST MODAFUCKAAAA")
+
+                    self.fields_fillable.append(loc)
+                        
+                except Exception as e:
+                    print("error"+str(e))
+                    print("Pasando a siguiente elemento")
+                    continue
+
+        print("Se seleccionaron elementos")   
+
+
+    def split_required_fields(self)->None:
+        #Separating list in fillable and non fillable fields
+        locators_list=self.required_fields
+        print("////////////")
+        print("Separando campos a llenar en con y sin opciones...")
+        self.fields_fillable=[]
+        self.fields_nonfillable=[]
+
+        for loc in locators_list:
+            print(loc["name"]+"-"+loc["tag"])
+            if len(loc["options"])>0:
+                print("Campo sin opciones")
+                self.fields_nonfillable.append(loc)
+            else:
+                print("Campo con opciones")
+                self.fields_fillable.append(loc)
+
+        print("Se separaron los campos a llenar en campos con opciones y campos sin opciones")
+        print("////////////")   
+
         
-    def load_section_offer_char(self):
+    def get_all_required_fields(self):
 
-        #self.page.get_by_label("Marca",exact=True).first.click()
-        #print("Se hizo click en la marca")
-
-        #divs4_names=self.page.locator("div[id='ui-id-0'] div[id^='variantFormField-ui-id-0'][style='display:block'] label[class='required']").all_inner_texts()
-        #divs4_names=self.page.locator("div[style='display:block'] label[class='required']").all_inner_texts()
         divs4_names=self.page.locator("label:visible[class='required']").all_inner_texts()
         divs4_loc=self.page.locator("label:visible[class='required']").all()
         divs4_locators=[]
         print(divs4_names)
         print(len(divs4_names))
 
-        divs42_locators=[]
-        for loc in divs4_loc:
-            divs42_locators.append({"name":loc.inner_text(),
-                                    "for":loc.get_attribute("for"),
-                                    "locator":self.page.locator("#"+loc.get_attribute("for")),
-                                  })
+        # divs42_locators=[]
+        # for loc in divs4_loc:
+        #     divs42_locators.append({"name":loc.inner_text(),
+        #                             "for":loc.get_attribute("for"),
+        #                             "locator":self.page.locator("#"+loc.get_attribute("for")),
+        #                           })
             
 
-        print(divs42_locators)
+        # print(divs42_locators)
         
         
         for name in divs4_names:
@@ -332,9 +454,7 @@ class LoaderRipley:
 
         self.get_options_locator_list2(divs4_locators)
 
-
         #Getting options for aria-owns elements
-
         print("Imprimiendo opciones...")
         for loc in divs4_locators:
             print(loc["name"]+"-"+loc["tag"])
@@ -342,24 +462,36 @@ class LoaderRipley:
  
        # print(divs4_locators)
         print("Se capturaron los campos obligatorios")
-        print("Llenando los campos obligatorios...")
-        self.test_locators_list(divs4_locators)
-        
+        #print("Llenando los campos obligatorios...")
+        #self.test_locators_list2(divs4_locators)
+        self.required_fields=divs4_locators
 
+    def resizing_images(self):
+        pass
+
+ 
     def load_images(self):
-        image_locators=self.page.locator("input:enabled[type='file'][required]").all()
-        print("Cantidad de img a subir: "+str(len(image_locators)))
-        for img_loc in image_locators:
-            img_route_mac="/Users/macbook/Downloads/test.jpeg"
-            #img_route_resized=r"C:\Users\risin\Downloads\imgTest\test_1_resized.jpg"
-            #print("Convirtiendo imagen a 1000x1000...")
-            #resize_image(img_route,img_route_resized)
-            #print("Imagen convertida")
-            print("Cargando imagen...")
-            img_loc.set_input_files(img_route_mac)
-            print("Imagen cargada")
+        image_locators=self.page.locator("input:enabled[type='file']").all()
+        number_loadable_images=min(len(self.dataToLoad["imagesPath"]),len(image_locators))
+        print("Cantidad de img a subir: "+str(number_loadable_images))
+        for i in range(number_loadable_images):
+            # ripleyCustomSize=(750,555)
+            # print("Redimensionando imagen a :"+str(ripleyCustomSize)+"...")
 
-    def print_fields(self):
+            # ripImg=
+            # userImage = Image.open(f"./Images/UsersImages/001.png")
+            # userImage = userImage.resize(size) ### EDITED LINE
+            # userImage.show()
+            
+            print("Cargando imagen "+str(i+1)+"...")
+            if i<2:
+                image_locators[i].set_input_files(self.dataToLoad["imagesPath"][0])
+            else:
+                image_locators[i].set_input_files(self.dataToLoad["imagesPath"][i])
+            print("Imagen cargada")
+        print("Se cargaron todas las imágenes")
+
+    def print_split_fields(self):
         print("Fillable Fields")
         print([x["name"] for x in self.fields_fillable])
         print("-------------------")
@@ -373,154 +505,285 @@ class LoaderRipley:
     def confirm_product(self):
         print("Confirmando producto...")
         self.page.get_by_role("button",name=re.compile("Presentar para su aprobación", re.IGNORECASE)).click()
-        #self.page.get_by_role("button", name=" Presentar para su aprobación").click()
         print("Producto confirmado")
         print("Añadiendo otro producto...")
 
-    def load_product_name(self):
-        #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
-        self.page.get_by_role("textbox", name="Nombre").fill("productName")
-
     def load_description(self):
-        #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
-        properties={
-                "name":"description1",
-                "value":"23434"
-            }
-        #insertPropertiesToPage("div[class='ql-editor ql-blank']",properties,self.page)
-        print("Se insertó descripción")
+        description=self.dataToLoad['descripciones']
+        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
+        insertPropertiesToPage("#productAndOffersCommand-attributeValuesFormCommand-1103",description,self.page)
+        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").press("Enter")
+        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").type("---")
+        print("Descripción cargada")
 
-    def load_category(self)->bool:
-        #getting the list of categories
-        #self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
-        
-        time.sleep(1)
+    def load_package_dimensions(self,alto:int,ancho:int,largo:int):
+        print("Cargando dimensiones del paquete...")
+        self.page.get_by_role("textbox", name="alto empaque *").fill(str(alto))
+        self.page.get_by_role("textbox", name="ancho empaque *").fill(str(ancho))
+        self.page.get_by_role("textbox", name="largo empaque *").fill(str(largo))
 
-        try:
-            categoryListLocator=self.page.locator("div[class='list-group']>div[class='list-group-item']").all()
-        except:
-            print("Ya no hay más categorías por seleccionar")
-            return False
+        print("Dimensiones del paquete cargadas")
+
+
+    def fill_fillable_fields(self):
+        self.static_filled_fields=['Descripcion','Precio','largo empaque','alto empaque','ancho empaque']
+        print("Llenando campos sin opciones con información del producto...")
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        dimArgs=get_dinamic_args_extraction2(options_type="options_0",content_product=str(contentProduct),fieldsFromMarketPlace=self.fields_fillable)
+        print(dimArgs)
+        for field in self.fields_fillable:
+            textField=field["name"]
             
-        categoryList=[]
-        
-        for category in categoryListLocator:
-            try:
-                button=category.locator("button[class='btn-subcategory']")
-            except:
-                button=None
-
-            categoryList.append({"name":category.locator("span").inner_text(),
-                                "button":button})
-        print(categoryList)
-        #example
-
-        #getting random number
-        ##Use embeddings function to select the best category
-        #categoryList=search_best_option(categoryList)
-        categNumb=randrange(0,len(categoryList))
-        print(categNumb)
-        #selecting the category
-
-        try:
-            categoryList[categNumb]["button"].click(timeout=2000)
-        except:
-            self.page.get_by_text(categoryList[categNumb]["name"],exact=True).click()
-            print("Se llegó al último nivel de dicha categoría")
-            print("Categoria seleccionada:"+categoryList[categNumb]["name"])
-            return False
-    
-        print("Categoria seleccionada:"+categoryList[categNumb]["name"])
-        return True
-        #self.page.locator(".btn-subcategory").first.click()
-        #self.page.locator(".btn-subcategory").first.click()
-        #self.page.get_by_text("Aceite Vegetal").click()
-        #print("categoria seleccionada")
-
-    def load_aditional_fields(self):
-        time.sleep(2)
-        expect(self.page.locator("div[class='row mt-3 attr-row']").first).not_to_be_empty()
-        additional_fields_locator=self.page.locator("div[class='row mt-3 attr-row']").all()
-        additional_fields_text=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
-        additional_fields=[]
-        
-        for additional_field in additional_fields_locator:
-
-            if len(additional_field.locator("div[role='alert']").all())>0:
-                mandatory=True
+            if textField in self.static_filled_fields:
+                print(f"Campo {textField}  se llenó sin uso de la API")
+                print("Pasando a siguiente campo")
+                continue
+            elif textField=='Nombre':
+                valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Nombre,en máximo 129 caracteres")
+            elif textField=='Descripción Corta':
+                print("generando Descripcion corta...")
+                valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta ,en máximo 180 caracteres")
+            elif textField=='Cantidad de la oferta':
+                valueField='0'
+            elif textField=='Peso':
+                valueField=dimArgs['Peso'] if dimArgs['Peso']!="" or dimArgs['Peso']!="No Especifica" else "33"
+            elif textField=='Precio':
+                #valueField=self.load_base_price()
+                continue
             else:
-                mandatory=False
-
-            type=additional_field.locator("input").first.get_attribute("type")
-            if type!="text" or type!="number":
-                #options=additional_field.locator("input span").all_inner_texts()
-                options=additional_field.locator("span span").all_inner_texts()
-            else:
-                options=[]
-            name=additional_field.locator("legend").inner_text()
-            additional_fields.append({"name":name,
-                                      "mandatory":mandatory,
-                                      "type":type,
-                                      "options":options,
-                                      "fieldObject":additional_field})
+                valueField=dimArgs[textField]
+                if valueField=="":
+                    print("Llenando campo porque se retornó vacío : "+textField)
+                    #print("Generando valor para porque está vacío:"+textField)
+                    #valueField=self.generate_dinamic_answer(textField)
+                    valueField="No especificado"
             
-        mandatory_fields=[field for field in additional_fields if field["mandatory"]==True]
-        
-        print("Campos adicionales " + str(len(additional_fields)))
-        print(additional_fields)
-        print("-------------------")
+            field["locator"].fill(valueField)
+            print("Se llenó :" + field["name"])#+"-"+valueField)
+        print("Campos sin opciones llenados")
 
-        print("Campos obligatorios " + str(len(mandatory_fields)))
-        print(mandatory_fields)
-        print("-------------------")
-        #storing mandatory and additional fields on the object
-        self.mandatory_fields=mandatory_fields
-        self.additional_fields=additional_fields
+    def fill_nonfillable_fields(self):
+        print("Llenando campos con opciones con información del producto...")
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        dimArgs=get_dinamic_args_extraction2(options_type="options_1",content_product=str(contentProduct),fieldsFromMarketPlace=self.fields_nonfillable)
+        print(dimArgs)
 
-    def fill_mandatory_fields(self):
-        
-        for field in self.mandatory_fields:
-            type=field["type"]
-            
-            if type=="text":
-                field["fieldObject"].locator("input").fill("test")
-            elif type=="number":
-                field["fieldObject"].locator("input").fill("2")
-            elif type=="checkbox":
-                #field["fieldObject"].locator("input").first().check()
-                for check_label in field["options"]:
-                    print(check_label)
-                    #field["fieldObject"].locator("input").all()[0].check()
-                    #field["fieldObject"].get_by_label(check_label,exact=True).check()
-                    field["fieldObject"].get_by_text(check_label,exact=True).first.click()
-            elif type=="radio":
-                #field["fieldObject"].locator("input").first().check()
-                radio_label=label=field["options"][0]
-                print(radio_label)
-                #field["fieldObject"].locator("input").all()[0].check()
-                #field["fieldObject"].get_by_text(radio_label,exact=True).click()
-                field["fieldObject"].get_by_text(radio_label,exact=True).first.click()
+        for field in self.fields_nonfillable:
+            textField=field["name"]
+            valueField=dimArgs[textField]
+            print("Llenando campo :"+textField)
+            print(valueField)
+
+            if field["tag"]=="SELECT":
+                option_label=valueField
+                field["locator"].select_option(label=option_label)
+            elif field["tag"]=="INPUT":
+
+                field["locator"].click()
+                try:
+                    self.get_new_options_from_combobox(field,cgpt_answer=valueField)
+                    if len(field["options"])==1:
+                        if field["options"][0]["name"]=="No se encontraron resultados":
+                            print("No se encontraron resultados")
+                            keyboard_delete_text(self.page,valueField)
+
+                            if textField=="Marca":
+                                self.page.keyboard.type("unaluka")
+                            else:
+                                valueField_words=extract_words_regex(valueField)
+                                self.page.keyboard.type(valueField_words[0])
+                                #Sinonimos
+                                #buscar de nuevo
+                                #bucle,funcion recursiva quizás
+                                pass
+                            self.page.wait_for_load_state("networkidle")
+                            time.sleep(2)
+                            self.page.keyboard.press("Enter")
+                        else:
+                            self.page.wait_for_load_state("networkidle")
+                            time.sleep(2)
+                            self.page.keyboard.press("Enter")
+                    else:
+                        print("Se encontraron resultados")
+                        optionToSelect=get_best_similarity_option([x["name"] for x in field["options"]],valueField)
+                        print(optionToSelect)
+                        categNumb=[x["name"] for x in field["options"]].index(optionToSelect)
+                        field["options"][categNumb]["locator"].click()
+                    #capture_options
+                    #if options=No se encontraron resultados
+                    #select unaluka ,for marca
+                    #other cases 
+                    #select first option with embeddings 
+                except Exception as e:
+                    print("ERROR INTERNO "+str(e))
+                    self.page.keyboard.press("Enter")
+
+        print("Campos con opciones llenados")
+
+
+
+    def fill_nonfillable_fields2(self):
+        print("Llenando campos con opciones con información del producto...")
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        dimArgs=get_dinamic_args_extraction2(options_type="options_1",content_product=str(contentProduct),fieldsFromMarketPlace=self.fields_nonfillable)
+        print(dimArgs)
+
+        for field in self.fields_nonfillable:
+            textField=field["name"]
+            valueField=dimArgs[textField]
+            print("Llenando campo :"+textField)
+            print(valueField)
+            if field["tag"]=="SELECT":
+                option_label=valueField
+                try:
+                    field["locator"].select_option(label=option_label)
+                except:
+                    if textField=="Condición":
+                        print("No se encontró información respecto a la condición del producto")
+                        print("Seleccionando <<Nuevo>> como opción por defecto")
+                        option_label="Nuevo"
+                        field["locator"].select_option(label=option_label)                    
+                    else:
+                        print("Error al seleccionar opción tipo select : "+textField )
+                        print("Pasando a siguiente campo")
+                        continue
+            elif field["tag"]=="INPUT":
+                field["locator"].click()
+                try:
+                    self.search_best_option_combobox(field,textField,valueField)
+                except Exception as e:
+                    print("ERROR INTERNO "+str(e))
+                    self.page.keyboard.press("Enter")
+
+        print("Campos con opciones llenados")
+
+
+    def search_best_option_combobox(self,combobox_locator,textField:str,valueField:str)->str:
+
+        field=combobox_locator   
+        self.get_new_options_from_combobox(field,cgpt_answer=valueField)
+        if len(field["options"])==1:
+            if field["options"][0]["name"]=="No se encontraron resultados":
+                print("No se encontraron resultados")
+                keyboard_delete_text(self.page,valueField)
+                print("Seleccionando opciones por defecto...")
+                if textField=="Marca":
+                    self.page.keyboard.type("unaluka")
+                    self.page.wait_for_load_state("networkidle")
+                    time.sleep(2)
+                    self.page.keyboard.press("Enter")
+                if textField=="Color":
+                    self.page.keyboard.type("Multicolor")
+                    self.page.wait_for_load_state("networkidle")
+                    time.sleep(2)
+                    self.page.keyboard.press("Enter")
+                else:
+                    valueField_words=extract_words_regex(valueField)
+                    #self.page.keyboard.type(valueField_words[0])
+                    #recursive
+                    self.search_best_option_combobox(field,textField,valueField_words[0])
+                    #Sinonimos
+                    #buscar de nuevo
+                    #bucle,funcion recursiva quizás 
             else:
-                print(type)
-                field["fieldObject"].locator("input").fill("test")
-                
-        print("Campos obligatorios llenados")
+                self.page.wait_for_load_state("networkidle")
+                time.sleep(2)
+                self.page.keyboard.press("Enter")
+        else:
+            print("Se encontraron resultados")
+            options_name_list=[x["name"] for x in field["options"]]
+            optionToSelect=get_best_similarity_option(options_name_list,valueField)
+            print("opcion seleccionada : "+ optionToSelect)
+            categNumb=options_name_list.index(optionToSelect)
+            field["options"][categNumb]["locator"].click()
+            self.page.wait_for_load_state("networkidle")
+            self.page.wait_for_load_state("domcontentloaded")
+            self.page.wait_for_load_state("load")
+            time.sleep(2)
+ 
+    def raise_test_error(self):
+        raise Exception("Test Error)")
+
+
+    def generate_dinamic_answer(self,field_to_gen:str)->str:
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        #print(contentProduct)
+        generated_field=get_dinamic_answer(content_product=str(contentProduct),field_to_generate=field_to_gen)
+        print("--------------")
+        print(field_to_gen+' : '+generated_field)
+        print("--------------")
+        #return {"name":field_to_gen,"value":generated_field}
+        return generated_field
+        
+    def load_base_price(self):
+        base_price=str(self.sheetProductData['PRECIO LISTA MARKETPLACE'])
+        self.page.get_by_label("Precio", exact=True).fill(base_price)
+        
+    def load_special_price(self):
+        special_price=str(self.sheetProductData['PRECIO FINAL MARKETPLACE'])
+        self.page.get_by_label("Precio con descuento").fill(special_price)
+
+    def load_sku(self):
+        number_products=1
+        for i in range(number_products):
+            print("Subiendo producto N-"+str(i)+"...")
+            self.add_product()
+            self.load_all_category()
+            #self.get_all_required_fields()
+            #self.split_required_fields()
+            self.load_description()
+            self.load_images()
+            self.load_base_price()
+            self.load_special_price()
+            self.load_package_dimensions(30,36,16)
+            self.print_split_fields()
+            self.fill_fillable_fields()
+            self.fill_nonfillable_fields2()
+            #self.generate_dinamic_answer("Descripción")
+            #self.generate_dinamic_answer("Descripción corta")
+            #self.raise_test_error()
+            self.confirm_product()
+        print("Se crearon "+str(number_products)+ " productos")
+        print('--------')
+
+    def load_main_ripley(self):
+        try: 
+            self.load_sku()   
+        except Exception as e:
+            tb=traceback.format_exc()
+            print("Error:"+str(e))
+            print(str(tb))
+            print("Error al cargar producto")
+            print("Retornando a la página principal...")
+            self.page.goto(market_dashboard)
+            print("Cargando otro producto...")
+
+
 
 if __name__ == "__main__":
-    RIPmloader=LoaderRipley(2)
-    RIPmloader.go_to_home()
+
+    with open("dataToDownloadAndLoad.json","r") as f:
+        sheetData=json.load(f)
+    print("cargando productosSS")
+    amp=amazon_mkt_peruvians(sheetData)
+    #amp.main_process()
+
+
+    RIPloader=LoaderRipley(2)
+    RIPloader.start_playwright()
+    RIPloader.go_to_home()
     #number_products = int(input("Set number of products:"))
     number_products=1
     for i in range(number_products):
         print("Subiendo producto N-"+str(i)+"...")
-        RIPmloader.add_product()
-        RIPmloader.load_all_category()
+        RIPloader.add_product()
+        RIPloader.load_all_category()
         #RIPmloader.load_section2_product_char()
         #RIPmloader.fill_textbox()
-        RIPmloader.load_section_offer_char()
-        RIPmloader.load_images()
-        RIPmloader.print_fields()
-        RIPmloader.confirm_product()
+        RIPloader.load_section_offer_char()
+        RIPloader.load_images()
+        RIPloader.print_split_fields()
+        RIPloader.confirm_product()
     print("Se crearon "+str(number_products)+ " productos")
     print('--------')
 

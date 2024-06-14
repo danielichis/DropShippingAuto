@@ -12,6 +12,8 @@ import json
 import time
 import re
 
+from DropShippingAuto.src.marketPlacesDestino.ripley.loadRipley import LoaderRipley
+
 class amazon_mkt_peruvians:
     def __init__(self,sheetData=None):
         self.sheetData=sheetData
@@ -24,10 +26,13 @@ class amazon_mkt_peruvians:
         self.amazonPage=self.context.pages[0]
         self.shopifyPage=self.context.new_page()
         self.dinnersPage=self.context.new_page()
+        self.ripleyPage=self.context.new_page()
     def start_pages(self):
         self.go_to_amazon()
         #self.go_to_shopify()
         #self.go_to_dinners()
+        self.go_to_ripley()
+
     def set_loaders(self):
         self.loaderDinner=LoaderDinners(dataToLoad=None,
                                   page=self.dinnersPage,
@@ -39,22 +44,47 @@ class amazon_mkt_peruvians:
                                   sheetProductData=None,
                                   configSheetData=self.configDataSheet,
                                   context=self.context,p=self.p)
+        
+#################  add to main flow      
+        self.loaderRipley=LoaderRipley(dataToLoad=None,
+                                  page=self.ripleyPage,
+                                  sheetProductData=None,
+                                  configSheetData=self.configDataSheet,
+                                  context=self.context,
+                                  p=self.p)
+        
+#################        
         # self.loaderRealPlaza=LoaderRealPlaza(dataToLoad=None,
         #                           page=self.realPlazaPage,
         #                           sheetProductData=None,
         #                           configSheetData=self.configDataSheet,
         #                           context=self.context,p=self.p)
-        self.loadersFuntions={
+        self.loadersFunctions={
             "DINNERS":self.load_to_dinners,
             "SHOPIFY":self.load_to_shopify,
-            "REAL_PLAZA":self.load_to_real_plaza
+            "REAL_PLAZA":self.load_to_real_plaza,
+            #######
+            "RIPLEY":self.load_to_ripley
+            #######
         }
     def update_loaders_data(self):
         dataAmzn=get_product_in_amazon_carpet_parsed(self.product['SKU'])
         self.loaderDinner.dataToLoad=dataAmzn
         self.loaderShopify.dataToLoad=dataAmzn
+
+        #####
+        self.loaderRipley.dataToLoad=dataAmzn
+        #####
+
         self.loaderDinner.sheetProductData=self.product
         self.loaderShopify.sheetProductData=self.product
+
+        ####
+        self.loaderRipley.sheetProductData=self.product
+        ####
+   
+
+
     def get_sheet_data(self):
         if self.sheetData ==None:
             print("No sheet data, leyendo localmente")
@@ -95,6 +125,18 @@ class amazon_mkt_peruvians:
     def load_to_real_plaza(self):
         pass
 
+######################add to main flow####
+
+    def go_to_ripley(self):
+        self.loaderRipley.start_playwright()
+        self.loaderRipley.go_to_home()
+
+    def load_to_ripley(self):
+        self.ripleyPage.bring_to_front()  
+        self.loaderRipley.load_main_ripley()  
+
+#######################
+
     def main_process(self):
         self.set_loaders()
         self.start_pages()
@@ -107,7 +149,7 @@ class amazon_mkt_peruvians:
                     self.download_amazon()
                     self.update_loaders_data()
                 print(f"cargando productos...")
-                #self.loadersFuntions[product['MARKETPLACE']]()
+                self.loadersFunctions[product['MARKETPLACE']]()
         except Exception as e:
             tb=traceback.format_exc()
             self.end()

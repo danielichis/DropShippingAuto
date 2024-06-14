@@ -30,3 +30,30 @@ def get_first_enabled_locator(locators_list:list):
             found_loc=loc
             return found_loc
 
+def keyboard_delete_text(page,word_to_erase:str):
+    page.keyboard.down("Shift")
+    for i in range(len(word_to_erase)):
+        page.keyboard.press("ArrowLeft")
+    page.keyboard.up("Shift")
+    page.keyboard.press("Backspace")
+
+
+def extract_words_regex(text:str):
+    # Define the string to search
+    pattern = r'\b\w+\s*\b'
+    # Search for the pattern in the phrase
+    match = re.findall(pattern, text)
+    # Print the matches
+    #print(match)
+    return match
+
+
+
+if __name__ == "__main__":
+    extract_words_regex("taza de cafe")
+ 
+
+
+
+
+
