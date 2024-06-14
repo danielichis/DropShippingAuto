@@ -154,35 +154,21 @@ class LoaderShopify:
         if response.ok:
             pass
         else:
-            self.status="ERROR AL CARGAR,NO SE PUDO CARGAR LOS CUSTOM FIELDS"
+            self.status="ERROR AL CARGAR,NO SE PUDO CARGAR LA PAGINA DE LOS CUSTOM FIELDS"
             raise Exception("Error al cargar la pagina de custom fields")
-            
         print("cargando custom fields")
-        # self.page.goto("https://admin.shopify.com/store/unaluka/apps/arena-custom-fields/products_editor")
-        # customFrame=self.page.frame_locator("iframe[title='ACF: Metafields Custom Fields']")
-        # customFrame.locator(acm.cajaBuscadorProductosActivos.selector).fill(self.dataToLoad["titulo"].replace('"',""))
-        # time.sleep(3)
-        # try:
-        #     customFrame.locator(acm.botonBuscarProducto.selector).click(timeout=3000)
-        #     products=customFrame.locator(acm.listaProductoParaEditar.selector)
-        #     products.first.click(timeout=3000)
-        # except:
-        #     time.sleep(2)
-        #     customFrame.locator(acm.botonBuscarProducto.selector).click(timeout=3000)
-        #     products=customFrame.locator(acm.listaProductoParaEditar.selector)
-        #     products.first.click(timeout=3000)
     def load_custom_fields(self):
         self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("STOCK")
-        #insertPropertiesToPage("div[class='fr-element fr-view']",self.dataToLoad['descripciones'],self.page)
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
         descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(descriptions)
-        #self.page.locator("button:has-text('Save')").click()
-        #self.page.locator("//button/span[text()='Save']").click()
-        self.page.locator("//button/span[text()='Save']").all()[0].click()
-        #self.page.evaluate("document.querySelectorAll('span.Polaris-Button__Text')[5].click()")
+        frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['Breve resumen para vender'])
+        try:
+            self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=8000)
+        except:
+            frame_locator.locator("div[class='fr-element fr-view']").press("Enter")
+            self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=5000)
         baseUrl="https://admin.shopify.com/store/unaluka/products/"
         currentUrl=self.page.url
         codeProduct=re.findall(r"\d+",currentUrl)[0]
