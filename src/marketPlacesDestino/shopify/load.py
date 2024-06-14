@@ -57,7 +57,6 @@ class LoaderShopify:
 
     def select_shopify_collections(self):
         amazonDatSku=self.dataToLoad
-        self.page.get_by_role("combobox", name="Proveedor").fill("unaluka")
         self.page.locator("input[id='CollectionsAutocompleteField1']").click()
         currentCollections=self.page.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
         TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
