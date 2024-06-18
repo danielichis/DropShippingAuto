@@ -14,6 +14,8 @@ import re
 from random import randrange
 from datetime import date,timedelta
 from PIL import Image
+from utils.manipulateDicts import dictConverter
+import os
 
 #from img_sizer1000x1000 import resize_image
 
@@ -61,8 +63,6 @@ class LoaderRipley:
         self.to_login()
         self.page.get_by_role("link", name="Añadir una oferta").click()
         
-        
-
     def add_product(self):
         self.page.get_by_role("link", name="+ Crear un producto").click()
         print("pagina cargada")
@@ -466,28 +466,46 @@ class LoaderRipley:
         #self.test_locators_list2(divs4_locators)
         self.required_fields=divs4_locators
 
-    def resizing_images(self):
-        pass
+    def resizing_images(self)->list:
+        ripleyCustomSize=(750,555)
+        imgDirectory=os.path.dirname(self.dataToLoad["imagesPath"][0])
+        ripleyFolderDir=os.path.join(imgDirectory,"ripley750x555")
+        resizedImgPaths=[]
+        os.makedirs(ripleyFolderDir,exist_ok=True)
+        print(imgDirectory)
+        for i,resizedImg in enumerate(self.dataToLoad["imagesPath"]):
+            print("Redimensionando imagen : "+resizedImg+str(i+1))
+            ripImg=Image.open(resizedImg)
+            ripImg.thumbnail(ripleyCustomSize,Image.Resampling.LANCZOS)
+            #ripImg=ripImg.resize(ripleyCustomSize)
+            ripley_image_path=os.path.join(ripleyFolderDir,f"resizedImg_ripley_{i}.jpg")
+            ripImg.save(ripley_image_path)
+            print("Imagen redimensionada"+str(i+1))
+        print("Se redimensionaron imágenes")
+
+        #get routes of resized images
+        for image in os.listdir(ripleyFolderDir):
+            if os.path.splitext(image)[1] == '.jpg':
+                resizedImgPaths.append(os.path.join(ripleyFolderDir,image))
+
+        print(resizedImgPaths)
+        return resizedImgPaths
+
+        
 
  
     def load_images(self):
+        print("Redimensionando imágenes...")
+        resizedImgPaths=self.resizing_images()
         image_locators=self.page.locator("input:enabled[type='file']").all()
-        number_loadable_images=min(len(self.dataToLoad["imagesPath"]),len(image_locators))
+        number_loadable_images=min(len(resizedImgPaths),len(image_locators))
         print("Cantidad de img a subir: "+str(number_loadable_images))
-        for i in range(number_loadable_images):
-            # ripleyCustomSize=(750,555)
-            # print("Redimensionando imagen a :"+str(ripleyCustomSize)+"...")
-
-            # ripImg=
-            # userImage = Image.open(f"./Images/UsersImages/001.png")
-            # userImage = userImage.resize(size) ### EDITED LINE
-            # userImage.show()
-            
+        for i in range(number_loadable_images):            
             print("Cargando imagen "+str(i+1)+"...")
             if i<2:
-                image_locators[i].set_input_files(self.dataToLoad["imagesPath"][0])
+                image_locators[i].set_input_files(resizedImgPaths[0])
             else:
-                image_locators[i].set_input_files(self.dataToLoad["imagesPath"][i])
+                image_locators[i].set_input_files(resizedImgPaths[i])
             print("Imagen cargada")
         print("Se cargaron todas las imágenes")
 
@@ -510,10 +528,10 @@ class LoaderRipley:
 
     def load_description(self):
         description=self.dataToLoad['descripciones']
-        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
-        insertPropertiesToPage("#productAndOffersCommand-attributeValuesFormCommand-1103",description,self.page)
-        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").press("Enter")
-        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").type("---")
+        description_str=dictConverter().dict_to_string(description)
+        #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
+        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill(description_str)
+        #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").type("---")
         print("Descripción cargada")
 
     def load_package_dimensions(self,alto:int,ancho:int,largo:int):
@@ -539,14 +557,14 @@ class LoaderRipley:
                 print("Pasando a siguiente campo")
                 continue
             elif textField=='Nombre':
-                valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Nombre,en máximo 129 caracteres")
+                    valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Nombre resumido en máximo 129 caracteres incluyendo espacios en blanco")
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
-                valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta ,en máximo 180 caracteres")
+                valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
             elif textField=='Cantidad de la oferta':
                 valueField='0'
             elif textField=='Peso':
-                valueField=dimArgs['Peso'] if dimArgs['Peso']!="" or dimArgs['Peso']!="No Especifica" else "33"
+                valueField=dimArgs['Peso'] #if dimArgs['Peso']!="" or dimArgs['Peso']!="No Especifica" else "33"
             elif textField=='Precio':
                 #valueField=self.load_base_price()
                 continue
@@ -661,6 +679,7 @@ class LoaderRipley:
     def search_best_option_combobox(self,combobox_locator,textField:str,valueField:str)->str:
 
         field=combobox_locator   
+        print("campo recibido : "+textField)
         self.get_new_options_from_combobox(field,cgpt_answer=valueField)
         if len(field["options"])==1:
             if field["options"][0]["name"]=="No se encontraron resultados":
@@ -672,7 +691,7 @@ class LoaderRipley:
                     self.page.wait_for_load_state("networkidle")
                     time.sleep(2)
                     self.page.keyboard.press("Enter")
-                if textField=="Color":
+                elif textField=="Color":
                     self.page.keyboard.type("Multicolor")
                     self.page.wait_for_load_state("networkidle")
                     time.sleep(2)
@@ -702,7 +721,20 @@ class LoaderRipley:
             time.sleep(2)
  
     def raise_test_error(self):
-        raise Exception("Test Error)")
+        raise Exception("--------<<<<Test Error>>>>----------")
+
+    def load_offer_settings(self):
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        print(contentProduct["sku"])
+        #filling offer sku field
+        self.page.get_by_label("SKU de oferta").fill(contentProduct["sku"])
+        #filling offer periods until 2028
+        self.page.get_by_label("Período de descuento").click()
+        self.page.get_by_role("button", name="Hoy").click()
+        self.page.get_by_role("button", name="Cerrar").click()
+        self.page.locator("#ui-id-0runningPricing-discountValidityInterval-end").fill("31/12/2028 00:00")
+        self.page.get_by_role("button", name="Cerrar").click()
+        print("Se llenaron los parámetros de la oferta")
 
 
     def generate_dinamic_answer(self,field_to_gen:str)->str:
@@ -729,8 +761,9 @@ class LoaderRipley:
             print("Subiendo producto N-"+str(i)+"...")
             self.add_product()
             self.load_all_category()
-            #self.get_all_required_fields()
-            #self.split_required_fields()
+            self.get_all_required_fields()
+            self.split_required_fields()
+            self.load_offer_settings()
             self.load_description()
             self.load_images()
             self.load_base_price()
@@ -741,8 +774,9 @@ class LoaderRipley:
             self.fill_nonfillable_fields2()
             #self.generate_dinamic_answer("Descripción")
             #self.generate_dinamic_answer("Descripción corta")
-            #self.raise_test_error()
-            self.confirm_product()
+            print("//////////////////Producto cargado////////////////////////")
+            self.raise_test_error()
+            #self.confirm_product()
         print("Se crearon "+str(number_products)+ " productos")
         print('--------')
 
@@ -756,6 +790,7 @@ class LoaderRipley:
             print("Error al cargar producto")
             print("Retornando a la página principal...")
             self.page.goto(market_dashboard)
+            self.page.get_by_role("link", name="Añadir una oferta").click()
             print("Cargando otro producto...")
 
 

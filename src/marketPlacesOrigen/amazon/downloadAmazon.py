@@ -109,6 +109,11 @@ def img_down(links,skuFolder):
             imagePath=os.path.join(skuImageFolder,sku)
             with open(imagePath , "wb") as f:
                 image.save(f , "JPEG")
+
+    #####create directory for ripley -add To MAIN
+    #ripleyImageFolder=os.path.join(skuImageFolder,"ripley750x555")
+    #os.makedirs(ripleyImageFolder)
+    ######
 def get_comparitions(pw_page):
     rows=pw_page.query_selector_all("table[id='HLCXComparisonTable'] tr[class='comparison_other_attribute_row']")
     comparisonDict={}

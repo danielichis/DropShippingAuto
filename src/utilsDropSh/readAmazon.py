@@ -76,8 +76,13 @@ def get_images_paths(product):
     imagesPath=os.path.join(skuFolder,"images")
     print(imagesPath)
     for image in os.listdir(imagesPath):
-        imagesPaths.append(os.path.join(imagesPath,image))
+        #cambio
+        if os.path.splitext(image)[1] == '.jpg':
+            #cambio
+            imagesPaths.append(os.path.join(imagesPath,image))
     return imagesPaths
+
+
 
 def save_json(product,data):
     skuFolder=f"src/marketPlacesDestino/dinners/"

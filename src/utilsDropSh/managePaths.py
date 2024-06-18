@@ -44,6 +44,17 @@ class managePaths:
             #read first line
             lines=f.readlines()
         self.profiel_path=lines[0].replace("\n","").split("=")[1]
+
+
+    #############
+    def get_directory_from_path(self,file_path):
+        return os.path.dirname(file_path)
+    # 
+    # 
+    # 
+    # #######import os
+
+  
 mp=managePaths()
 
 
