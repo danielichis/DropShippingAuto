@@ -765,7 +765,7 @@ class LoaderRipley:
         print('--------')
         print("Cargando SKU..."+self.dataToLoad['sku'])
         self.add_product()
-        for i in range(2):
+        for i in range(1):
             self.load_all_category()
         self.get_all_required_fields()
         self.split_required_fields()
@@ -775,7 +775,7 @@ class LoaderRipley:
         self.load_base_price()
         self.load_special_price()
         self.load_package_dimensions(30,36,16)
-        #self.print_split_fields()
+        self.print_split_fields()
         self.fill_fillable_fields()
         self.fill_nonfillable_fields2()
         #self.generate_dinamic_answer("Descripción")
