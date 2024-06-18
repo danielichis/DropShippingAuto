@@ -19,7 +19,7 @@ import os
 
 #from img_sizer1000x1000 import resize_image
 
-from DropShippingAuto.src.main import amazon_mkt_peruvians
+#from DropShippingAuto.src.main import amazon_mkt_peruvians
 
 
 homeRipley="https://ripleyperu-prod.mirakl.net/login"
@@ -682,7 +682,7 @@ class LoaderRipley:
         print("Campos con opciones llenados")
 
 
-    def search_best_option_combobox(self,combobox_locator,textField:str,valueField:str)->str:
+    def search_best_option_combobox(self,combobox_locator,textField:str,valueToSearch:str,valueField:str)->str:
 
         field=combobox_locator   
         print("campo recibido : "+textField)
@@ -806,7 +806,7 @@ if __name__ == "__main__":
     with open("dataToDownloadAndLoad.json","r") as f:
         sheetData=json.load(f)
     print("cargando productosSS")
-    amp=amazon_mkt_peruvians(sheetData)
+    #amp=amazon_mkt_peruvians(sheetData)
     #amp.main_process()
 
 
