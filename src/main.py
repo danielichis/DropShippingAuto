@@ -46,8 +46,7 @@ class amazon_mkt_peruvians:
         #                           context=self.context,p=self.p)
         self.loadersFuntions={
             "DINNERS":self.load_to_dinners,
-            "SHOPIFY":self.load_to_shopify,
-            "REAL_PLAZA":self.load_to_real_plaza
+            "SHOPIFY":self.load_to_shopify
         }
     def update_loaders_data(self):
         dataAmzn=get_product_in_amazon_carpet_parsed(self.product['SKU'])
@@ -123,5 +122,4 @@ if __name__ == "__main__":
     print("cargando productosSS")
     amp=amazon_mkt_peruvians(sheetData)
     amp.main_process()
-    
-
+        

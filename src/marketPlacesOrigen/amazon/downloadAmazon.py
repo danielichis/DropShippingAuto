@@ -6,8 +6,10 @@ import io
 from tqdm import tqdm
 import os
 from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
+from DropShippingAuto.src.utilsDropSh.magic_fields import get_static_fields_with_openai
 from PIL import Image
-from DropShippingAuto.src.utilsDropSh.managePaths import mp
+from DropShippingAuto.src.utilsDropSh.imageConverters import resize_image
+from utils.managePaths import mp
 import traceback
 import csv
 
@@ -17,12 +19,22 @@ def get_overView(pw_page):
     except:
         pass
     overView=pw_page.query_selector_all("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr")
+
     overVies={}
     for view in overView:
         try:
             overVies[view.query_selector("td:nth-child(1) span").inner_text()]=view.query_selector("td:nth-child(2) span").inner_text().replace("\u200e","")
         except:
             pass
+
+    if len(overView)==0:
+        overView=pw_page.query_selector_all("div[id='feature-bullets'] li")
+        for i,view in enumerate(overView):
+            try:
+                overVies[view.query_selector("span").inner_text().replace("\u200e","").split(":")[0]]=':'.join(view.query_selector("span").inner_text().replace("\u200e","").split(":")[1:])
+            except:
+                pass
+
     return overVies
 
 def get_technicalDetails(pw_page):
@@ -75,7 +87,10 @@ def get_bulletDetails(pw_page):
     bulletInfo=pw_page.query_selector_all("div#detailBullets_feature_div li")
     bulletInfoDict={}
     for bullet in bulletInfo:
-        bulletInfoDict[bullet.query_selector("span span").inner_text()]=bullet.query_selector("span:nth-child(2)").inner_text().replace("\u200e","")
+        try:
+            bulletInfoDict[bullet.query_selector("span span").inner_text()]=bullet.query_selector("span:nth-child(2)").inner_text().replace("\u200e","")
+        except:
+            pass
     return bulletInfoDict
 
 def get_urls(pw_page):
@@ -105,15 +120,12 @@ def img_down(links,skuFolder):
             response  = requests.get(link).content 
             image_file = io.BytesIO(response)
             image  = Image.open(image_file)
+            resized_image = image.resize((1000, 1000))
             sku=link.split('/')[-1]
             imagePath=os.path.join(skuImageFolder,sku)
             with open(imagePath , "wb") as f:
-                image.save(f , "JPEG")
-
-    #####create directory for ripley -add To MAIN
-    #ripleyImageFolder=os.path.join(skuImageFolder,"ripley750x555")
-    #os.makedirs(ripleyImageFolder)
-    ######
+                resized_image.save(f , "JPEG")
+                
 def get_comparitions(pw_page):
     rows=pw_page.query_selector_all("table[id='HLCXComparisonTable'] tr[class='comparison_other_attribute_row']")
     comparisonDict={}
@@ -174,8 +186,7 @@ def get_garanty(pw_page):
 
 def get_sku_amazon_product(pw_page,product):
     sku=product['SKU'].strip()
-    currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
-    skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
+    skuFolder=os.path.join(mp.sku_folder_path,sku)
     if not os.path.exists(skuFolder):
         #download_sku(pw_page,sku,urlProducto,skuFolder)
         try:    
@@ -206,13 +217,10 @@ def get_sku_amazon_product(pw_page,product):
     return response
 def download_sku(pw_page,sku):
     urlProducto=f"https://www.amazon.com/dp/{sku}"
-    currentFolder =os.path.join(mp.get_current_path(1),"marketPlacesOrigen","amazon")
-    skuFolder=os.path.join(currentFolder,"skus_Amazon",sku)
-
+    skuFolder=os.path.join(mp.sku_folder_path,sku)
     pw_page.goto(urlProducto)
     urls_images=get_urls(pw_page)
     print("\nPagina cargada en el producto "+sku)
-
     classificaction=get_classificaction(pw_page)
     title=get_title(pw_page)
     price=get_price(pw_page)
@@ -227,7 +235,6 @@ def download_sku(pw_page,sku):
     comparitions=get_comparitions(pw_page)
     descriptions=get_descriptions(pw_page)
     garanty=get_garanty(pw_page)    
-    
     img_down(urls_images,skuFolder)
     data={
         "sku":sku,
@@ -248,67 +255,11 @@ def download_sku(pw_page,sku):
         "Nota":note,
         "Links Imagenes":urls_images    
     }
-    dataToEmbed={
-        "clasificacion":classificaction,
-        "titulo":title,
-        "descripciones":descriptions,
-        "Vista General":overView,
-        "Detalles Tecnicos":technicalDetails,
-        "Acerca del producto":abaooutProduct,
-        "Otros detalles":otherDetails,
-        "Contenido de la caja":bulletDetails,
-        "Mas detalles Tecnicos":comparitions,
-        "Informacion Importante":importantInfo,
-        "Informacion Adicional":aditionalInfo,
-    }
-    
+    more_fields=get_static_fields_with_openai(data)
+    data.update(more_fields)
     dataJsonPath=skuFolder+"/data.json"
-    dataJsonToEmbedPath=skuFolder+"/data_to_embed.json"
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
-    with open(dataJsonToEmbedPath, "w",encoding="utf-8") as f:
-        json.dump(dataToEmbed, f, indent=4, ensure_ascii=False)
-    # data to txt file
-    dataTxtPath=skuFolder+"/data.txt"
-    with open(dataTxtPath, "w",encoding="utf-8") as f:
-        f.write(f"-SKU:{sku}\n")
-        f.write(f"-URL:{urlProducto}\n")
-        f.write(f"-TITULO:{title}\n")
-        f.write(f"-PRECIO AMAZON:{price}\n")
-        f.write(f"-GARANTIA:{garanty}\n")
-        f.write(f"-CLASIFICACION:{classificaction}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-DESCRIPCIONES:\n")
-        for key,value in descriptions.items():
-            f.write(f"{key}:{value}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-OVERVIEW:\n")
-        for key,value in overView.items():
-            f.write(f"{key}:{value}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-DETALLES TECNICOS:\n")
-        for key,value in technicalDetails.items():
-            f.write(f"{key}:{value}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-ACERCA DEL PRODUCTO:\n")
-        for key,value in abaooutProduct.items():
-            f.write(f"{key}:{value}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-OTROS DETALLES:\n")
-        for key,value in otherDetails.items():
-            f.write(f"{key}:{value}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-CAJA VIENE CON:\n")
-        for key,value in bulletDetails.items():
-            f.write(f"{key}:{value}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-DETALLE COMPARATIVO:\n")
-        for key,value in comparitions.items():
-            f.write(f"{key}:{value}\n")
-        f.write("---------------------------------------\n\n")
-        f.write(f"-INFORMACION ADICIONAL:\n")
-        for key,value in aditionalInfo.items():
-            f.write(f"{key}:{value}\n")
 
 def remove_all_sku_folder():
     currentFolder = os.path.dirname(os.path.abspath(__file__))
@@ -326,9 +277,9 @@ def download_info(dataSheet=None):
     else:
         products=get_data_to_download()
         products=[x for x in products['dataToLoad']]
-    pw = sync_playwright().start()
-    browser = pw.chromium.launch(headless=False)
-    context=browser.new_context(storage_state="DropShippingAuto/src/sessions/state_amazon.json")
+    p = sync_playwright().start()
+    user_dir=mp.get_current_chrome_profile_path()
+    context = p.chromium.launch_persistent_context(user_dir,headless=False)
     pw_page = context.new_page()
     downloadsResponse=[]
     for product in tqdm(products):
@@ -336,14 +287,12 @@ def download_info(dataSheet=None):
         downloadsResponse.append({
             "sku":product['SKU'],
             "status":r['status'],
-            "newProduct":r['newProduct'],
+            "newProduct":r['condition'],
             "product":r['product']
         })
     context.storage_state(path="DropShippingAuto/src/sessions/state_amazon.json")
     context.close()
-    browser.close()
-    pw.stop()
+    p.stop()
     return downloadsResponse
 if __name__ == "__main__":
     download_info()
-    #print(os.path.join(pathsManager.get_current_path(1),"marketPlacesOrigen","amazon"))

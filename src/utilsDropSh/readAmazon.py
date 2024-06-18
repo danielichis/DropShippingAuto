@@ -3,9 +3,10 @@ import csv
 from DropShippingAuto.src.utilsDropSh.managePaths import mp
 from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
-from utils.structures import get_element_with_more_fields
 import os
 import re
+
+from utils.structures import get_element_with_more_fields
 #read csv file
 
 def sku_folder(sku):
@@ -43,6 +44,7 @@ def get_product_in_amazon_carpet_parsed(product_sku):
     list_descripciones=[dataAmazon["descripciones"],dataAmazon["Vista General"],dataAmazon["Acerca del producto"],dataAmazon["Detalles Tecnicos"]]
 
     dataAmazon["descripciones"]=get_element_with_more_fields(list_descripciones)
+    
     # el que tenga mas elementos 
 
 

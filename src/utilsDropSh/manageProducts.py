@@ -1,12 +1,9 @@
 import csv
 import json
 def get_data_to_download():
-    #open json to load
-    #DropShippingAuto\dataToDownload.json
-    #DropShippingAuto\dataToDownload.json
-    with open("DropShippingAuto/dataToDownload.json","r",encoding="utf-8") as json_file:
-        dataLoad=json.load(json_file)
-    return dataLoad
+    with open("dataToDownloadAndLoad.json","r") as f:
+        sheetData=json.load(f)
+    return sheetData
 
 def get_product_amazon_sku(sku:str)->dict:
     #open json file
