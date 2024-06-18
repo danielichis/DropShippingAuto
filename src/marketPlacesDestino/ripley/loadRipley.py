@@ -1,6 +1,6 @@
 import traceback
 from playwright.sync_api import sync_playwright,expect
-from utils.embeddings.embeding import get_best_similarity_option
+from utils.embeddings.embeding import get_best_similarity_option,get_best_similarity_option2
 from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
@@ -78,7 +78,10 @@ class LoaderRipley:
         funcCallingValue=category_selected[category_name]
         print("Valor retornado con Function Calling : "+funcCallingValue)
         #Using value returned from Function Calling to use Embeddings
-        optionToSelect=get_best_similarity_option(cat_options_names,funcCallingValue)
+        #optionToSelect=get_best_similarity_option(cat_options_names,funcCallingValue)
+        embedding_top_result=get_best_similarity_option2(cat_options_names,funcCallingValue)
+        #optionScore=embedding_top_result["similarity"]
+        optionToSelect=embedding_top_result["optionName"]
         print("Categoría retornada con Embeddings :"+optionToSelect)
         #finding the index of the value returned from the embeddings
         categNumb=cat_options_names.index(optionToSelect)
@@ -105,9 +108,14 @@ class LoaderRipley:
     def load_all_category(self):
         cat_num=0
         while(True):
-            next_locator=self.page.locator("div[id='next"+str(cat_num)+"']")
+            next_locator=self.page.locator(f"#next{str(cat_num)}")
+            #next_locator=self.page.locator("div[id='next"+str(cat_num)+"']")
             try:
-                next_locator.locator("div[class='input col-md-4 col-lg-4']").click(timeout=4000)
+                self.page.wait_for_load_state("networkidle")
+                self.page.wait_for_load_state("load")
+                self.page.wait_for_load_state("domcontentloaded")
+                expect(next_locator.locator("div[class='input col-md-4 col-lg-4']").first).to_be_enabled()
+                next_locator.locator("div[class='input col-md-4 col-lg-4']").first.click(timeout=10000)
                 category_dict=self.make_category_dict(cat_num)
                 categories_list=category_dict["options"]
                 #Using embeddings to select the best category
@@ -118,6 +126,7 @@ class LoaderRipley:
                 print(categNumb)
                 categories_list[categNumb]["locator"].click()
                 print("Categoria seleccionada")
+                time.sleep(2)
                 cat_num+=1
             except Exception as e:
                 print(e)
@@ -491,9 +500,6 @@ class LoaderRipley:
         print(resizedImgPaths)
         return resizedImgPaths
 
-        
-
- 
     def load_images(self):
         print("Redimensionando imágenes...")
         resizedImgPaths=self.resizing_images()
@@ -756,28 +762,28 @@ class LoaderRipley:
         self.page.get_by_label("Precio con descuento").fill(special_price)
 
     def load_sku(self):
-        number_products=1
-        for i in range(number_products):
-            print("Subiendo producto N-"+str(i)+"...")
-            self.add_product()
+        print('--------')
+        print("Cargando SKU..."+self.dataToLoad['sku'])
+        self.add_product()
+        for i in range(2):
             self.load_all_category()
-            self.get_all_required_fields()
-            self.split_required_fields()
-            self.load_offer_settings()
-            self.load_description()
-            self.load_images()
-            self.load_base_price()
-            self.load_special_price()
-            self.load_package_dimensions(30,36,16)
-            self.print_split_fields()
-            self.fill_fillable_fields()
-            self.fill_nonfillable_fields2()
-            #self.generate_dinamic_answer("Descripción")
-            #self.generate_dinamic_answer("Descripción corta")
-            print("//////////////////Producto cargado////////////////////////")
-            self.raise_test_error()
-            #self.confirm_product()
-        print("Se crearon "+str(number_products)+ " productos")
+        self.get_all_required_fields()
+        self.split_required_fields()
+        self.load_offer_settings()
+        self.load_description()
+        self.load_images()
+        self.load_base_price()
+        self.load_special_price()
+        self.load_package_dimensions(30,36,16)
+        #self.print_split_fields()
+        self.fill_fillable_fields()
+        self.fill_nonfillable_fields2()
+        #self.generate_dinamic_answer("Descripción")
+        #self.generate_dinamic_answer("Descripción corta")
+        print("//////////////////Producto cargado////////////////////////")
+        self.raise_test_error()
+        #self.confirm_product()
+        print("Se creó producto con SKU: "+self.dataToLoad['sku'])
         print('--------')
 
     def load_main_ripley(self):
