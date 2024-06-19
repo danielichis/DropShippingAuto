@@ -61,7 +61,12 @@ class LoaderRipley:
     def go_to_home(self):
         self.page.goto(homeRipley)
         self.to_login()
-        self.page.get_by_role("link", name="Añadir una oferta").click()
+        #self.page.get_by_role("link", name="Añadir una oferta").click()
+        #CREATING PRODUCT FROM 'PRECIOS Y EXISTENCIAS' MENU
+        self.page.get_by_role("button", name="Precios y existencias").click()
+        self.page.get_by_role("menuitem", name="Ofertas").click()
+        self.page.get_by_role("link", name="+ Añadir una oferta").click()
+        #page3.get_by_role("link", name="+ Crear un producto").click()
         
     def add_product(self):
         self.page.get_by_role("link", name="+ Crear un producto").click()
@@ -532,13 +537,14 @@ class LoaderRipley:
         print("Producto confirmado")
         print("Añadiendo otro producto...")
 
-    def load_description(self):
+    def load_description(self)->str:
         description=self.dataToLoad['descripciones']
-        description_str=dictConverter().dict_to_string(description)
+        description_str=dictConverter().dict_to_string_bp(description)
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
         self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill(description_str)
+        return description_str
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").type("---")
-        print("Descripción cargada")
+        #print("Descripción cargada")
 
     def load_package_dimensions(self,alto:int,ancho:int,largo:int):
         print("Cargando dimensiones del paquete...")
@@ -550,7 +556,8 @@ class LoaderRipley:
 
 
     def fill_fillable_fields(self):
-        self.static_filled_fields=['Descripcion','Precio','largo empaque','alto empaque','ancho empaque']
+        #self.static_filled_fields=['Descripcion','Precio','largo empaque','alto empaque','ancho empaque']
+        self.static_filled_fields=['Precio','largo empaque','alto empaque','ancho empaque']
         print("Llenando campos sin opciones con información del producto...")
         contentProduct=mp.data_sku(self.dataToLoad['sku'])
         dimArgs=get_dinamic_args_extraction2(options_type="options_0",content_product=str(contentProduct),fieldsFromMarketPlace=self.fields_fillable)
@@ -562,15 +569,30 @@ class LoaderRipley:
                 print(f"Campo {textField}  se llenó sin uso de la API")
                 print("Pasando a siguiente campo")
                 continue
+            elif textField=='Descripcion':
+                static_description=self.load_description()
+                valueField=dimArgs['Descripción Corta'] + "\n"+ static_description        
+            elif textField=='sku_seller':
+                valueField=self.product_sku
             elif textField=='Nombre':
                     valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Nombre resumido en máximo 129 caracteres incluyendo espacios en blanco")
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
-                valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
+                #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
+                short_name=dimArgs["Nombre"]
+                short_header="Compra tu "+" en Ripley Internacional"
+                max_chars=129-len(short_header)
+                if len(short_name)>max_chars:
+                    print("Generando nuevo nombre corto para la Descripción corta porque excede el límite de caracteres")
+                    new_name_constraints="Nombre,"+f"máximo {str(max_chars)} caracteres"
+                    print(new_name_constraints)
+                    short_name=get_dinamic_args_extraction2(options_type="options_0",content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":new_name_constraints,"locator":None,"options":[]}])[new_name_constraints]
+                short_description="Compra tu "+short_name+" en Ripley Internacional"
+                valueField=short_description
             elif textField=='Cantidad de la oferta':
                 valueField='0'
             elif textField=='Peso':
-                valueField=dimArgs['Peso'] #if dimArgs['Peso']!="" or dimArgs['Peso']!="No Especifica" else "33"
+                valueField=dimArgs['Peso'] if dimArgs['Peso']!="" or dimArgs['Peso']!="No Especifica" else "N/A"
             elif textField=='Precio':
                 #valueField=self.load_base_price()
                 continue
@@ -682,7 +704,7 @@ class LoaderRipley:
         print("Campos con opciones llenados")
 
 
-    def search_best_option_combobox(self,combobox_locator,textField:str,valueToSearch:str,valueField:str)->str:
+    def search_best_option_combobox(self,combobox_locator,textField:str,valueField:str)->str:
 
         field=combobox_locator   
         print("campo recibido : "+textField)
@@ -693,7 +715,7 @@ class LoaderRipley:
                 keyboard_delete_text(self.page,valueField)
                 print("Seleccionando opciones por defecto...")
                 if textField=="Marca":
-                    self.page.keyboard.type("unaluka")
+                    self.page.keyboard.type("GENÉRICO")
                     self.page.wait_for_load_state("networkidle")
                     time.sleep(2)
                     self.page.keyboard.press("Enter")
@@ -731,14 +753,15 @@ class LoaderRipley:
 
     def load_offer_settings(self):
         contentProduct=mp.data_sku(self.dataToLoad['sku'])
-        print(contentProduct["sku"])
+        self.product_sku=contentProduct["sku"]
+        print(self.product_sku)
         #filling offer sku field
-        self.page.get_by_label("SKU de oferta").fill(contentProduct["sku"])
+        self.page.get_by_label("SKU de oferta").fill(self.product_sku)
         #filling offer periods until 2028
         self.page.get_by_label("Período de descuento").click()
         self.page.get_by_role("button", name="Hoy").click()
         self.page.get_by_role("button", name="Cerrar").click()
-        self.page.locator("#ui-id-0runningPricing-discountValidityInterval-end").fill("31/12/2028 00:00")
+        self.page.locator("#ui-id-0runningPricing-discountValidityInterval-end").fill("31/12/2030 00:00")
         self.page.get_by_role("button", name="Cerrar").click()
         print("Se llenaron los parámetros de la oferta")
 
@@ -770,7 +793,7 @@ class LoaderRipley:
         self.get_all_required_fields()
         self.split_required_fields()
         self.load_offer_settings()
-        self.load_description()
+        #self.load_description()
         self.load_images()
         self.load_base_price()
         self.load_special_price()
@@ -781,8 +804,8 @@ class LoaderRipley:
         #self.generate_dinamic_answer("Descripción")
         #self.generate_dinamic_answer("Descripción corta")
         print("//////////////////Producto cargado////////////////////////")
-        self.raise_test_error()
-        #self.confirm_product()
+        #self.raise_test_error()
+        self.confirm_product()
         print("Se creó producto con SKU: "+self.dataToLoad['sku'])
         print('--------')
 
