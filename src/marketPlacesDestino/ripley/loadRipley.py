@@ -40,6 +40,8 @@ class LoaderRipley:
         self.p=p
         self.sheetProductData=sheetProductData
         self.configDataSheet=configSheetData
+        #Initializing all category_paths
+        self.all_category_paths=[]
 
     def start_playwright(self):
         #self.p = sync_playwright().start()
@@ -68,6 +70,32 @@ class LoaderRipley:
         self.page.get_by_role("link", name="+ Añadir una oferta").click()
         #page3.get_by_role("link", name="+ Crear un producto").click()
         
+
+
+    def get_ripley_categories_response(self):
+        self.page.goto("https://ripleyperu-prod.mirakl.net/mmp/shop/catalog/template/configure?modelType=PRODUCTS_OFFERS")
+        self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_load_state("load")
+        self.page.wait_for_load_state("domcontentloaded")
+        fncalling_value="LAPTOPS"
+        url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={fncalling_value}&selectedLocale=es_PE&withRoot=false"
+        url_test="https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search=juguete&selectedLocale=es_PE&withRoot=false"
+        with self.page.expect_response(url_petition,timeout=12000) as response_info:
+            self.page.locator("input[name='filter']").fill(fncalling_value)
+        response=response_info.value
+        print(response)
+        print(response.status)
+        return response.text()
+        # if response.ok:
+        #     self.statusLoad="Cargado Correctamente"
+        #     self.condition="NEW"
+        # elif response.status==409:
+        #     self.statusLoad="NO SE CARGÓ,El PRODUCTO YA EXISTE"
+        #     self.condition="NO"
+        # else:
+        #     self.statusLoad="ERROR EN LA CARGA"   
+
+
     def add_product(self):
         self.page.get_by_role("link", name="+ Crear un producto").click()
         print("pagina cargada")
@@ -85,13 +113,22 @@ class LoaderRipley:
         #Using value returned from Function Calling to use Embeddings
         #optionToSelect=get_best_similarity_option(cat_options_names,funcCallingValue)
         embedding_top_result=get_best_similarity_option2(cat_options_names,funcCallingValue)
-        #optionScore=embedding_top_result["similarity"]
-        optionToSelect=embedding_top_result["optionName"]
-        print("Categoría retornada con Embeddings :"+optionToSelect)
-        #finding the index of the value returned from the embeddings
+        return embedding_top_result
+        # #optionScore=embedding_top_result["similarity"]
+        # optionToSelect=embedding_top_result["optionName"]
+        # print("Categoría retornada con Embeddings :"+optionToSelect)
+        # #finding the index of the value returned from the embeddings
+        # categNumb=cat_options_names.index(optionToSelect)
+        # return categNumb
+    
+    def get_category_number(self,category_dict:dict,optionToSelect:str)->int:
+        cat_options_names=[option["name"] for option in category_dict["options"]]
         categNumb=cat_options_names.index(optionToSelect)
         return categNumb
 
+
+    def add_to_all_category_paths(self,category_path:list):
+        self.all_category_paths.append(category_path)
 
     def make_category_dict(self,category_div_order:int)->list:
         categories_list_locator=self.page.locator("div[class='select2-result-label']").all()
@@ -112,6 +149,7 @@ class LoaderRipley:
 
     def load_all_category(self):
         cat_num=0
+        category_path=[]
         while(True):
             next_locator=self.page.locator(f"#next{str(cat_num)}")
             #next_locator=self.page.locator("div[id='next"+str(cat_num)+"']")
@@ -124,24 +162,44 @@ class LoaderRipley:
                 category_dict=self.make_category_dict(cat_num)
                 categories_list=category_dict["options"]
                 #Using embeddings to select the best category
-                categNumb=self.select_category_fc_n_embbedings(category_dict)
+                embedding_top_result=self.select_category_fc_n_embbedings(category_dict)
+                #optionScore=embedding_top_result["similarity"]
+                #optionToSelect=embedding_top_result["optionName"]
+                categNumb=self.get_category_number(category_dict,embedding_top_result["optionName"])
+                embedding_top_result["categNumber"]=categNumb
+                print(embedding_top_result)
+                #addSelectiontoRoute
                 ####
                 #Select a random category
                 #categNumb=randrange(0,len(categories_list))
                 print(categNumb)
                 categories_list[categNumb]["locator"].click()
+                category_path.append(embedding_top_result)
                 print("Categoria seleccionada")
                 time.sleep(2)
                 cat_num+=1
             except Exception as e:
                 print(e)
+                print("Ultima categoria seleccionada")
+                self.add_to_all_category_paths(category_path)
+                print("ruta")
+                print(self.all_category_paths)
+                print("Se añadió la ruta de categorías")
                 print("No hay más categorías por seleccionar")
                 break
+   
         self.page.wait_for_load_state("networkidle")
         self.page.wait_for_load_state('domcontentloaded')
         self.page.wait_for_load_state('load')
 
         print("Se cargaron todas las categorías")
+
+        if embedding_top_result["similarity"]<0.8:
+            print("Se volverán a cargar las categorías")
+            return False
+        else:
+            print("Se seleccionaron bien las categorías")
+            return True
         
     def add_tag_n_attributes(self,locators_list:list)->list:
         for loc in locators_list:
@@ -230,6 +288,10 @@ class LoaderRipley:
         print([x["name"] for x in new_options])
         print("Opciones obtenidas")
         
+    def get_optimal_categories_path(self):
+        last_categories=[category[-1]["similarity"] for category in self.all_category_paths]
+        print(last_categories)
+        print("work")
 
 
     def get_options_locator_list2(self,locators_list:list)->list:
@@ -715,7 +777,8 @@ class LoaderRipley:
                 keyboard_delete_text(self.page,valueField)
                 print("Seleccionando opciones por defecto...")
                 if textField=="Marca":
-                    self.page.keyboard.type("GENÉRICO")
+                    self.page.keyboard.type("UNALUKA")
+                    #self.page.keyboard.type("GENÉRICO")
                     self.page.wait_for_load_state("networkidle")
                     time.sleep(2)
                     self.page.keyboard.press("Enter")
@@ -787,9 +850,13 @@ class LoaderRipley:
     def load_sku(self):
         print('--------')
         print("Cargando SKU..."+self.dataToLoad['sku'])
-        self.add_product()
+        #self.add_product()
         for i in range(1):
-            self.load_all_category()
+        #self.get_ripley_categories_response()
+        #isGoodSelection=False
+        #while(not isGoodSelection):
+            isGoodSelection=self.load_all_category()
+        self.get_optimal_categories_path()
         self.get_all_required_fields()
         self.split_required_fields()
         self.load_offer_settings()
@@ -803,9 +870,9 @@ class LoaderRipley:
         self.fill_nonfillable_fields2()
         #self.generate_dinamic_answer("Descripción")
         #self.generate_dinamic_answer("Descripción corta")
-        print("//////////////////Producto cargado////////////////////////")
         #self.raise_test_error()
         self.confirm_product()
+        print("//////////////////Producto cargado////////////////////////")
         print("Se creó producto con SKU: "+self.dataToLoad['sku'])
         print('--------')
 
