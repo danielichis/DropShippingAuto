@@ -10,15 +10,18 @@ from DropShippingAuto.src.utilsDropSh.magic_fields import get_static_fields_with
 from PIL import Image
 from DropShippingAuto.src.utilsDropSh.imageConverters import resize_image
 from utils.managePaths import mp
+from utils.manipulateDicts import dictManipulator
 import traceback
 import csv
 
 def get_overView(pw_page):
+    overViewSelectors=["div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr","div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr"]
     try:
         pw_page.wait_for_selector("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr",timeout=3000)
     except:
         pass
     overView=pw_page.query_selector_all("div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr")
+
 
     overVies={}
     for view in overView:
@@ -34,7 +37,13 @@ def get_overView(pw_page):
                 overVies[view.query_selector("span").inner_text().replace("\u200e","").split(":")[0]]=':'.join(view.query_selector("span").inner_text().replace("\u200e","").split(":")[1:])
             except:
                 pass
-
+    if len(overView)==0:
+        overView=pw_page.query_selector_all("div:has(>h3[class='product-facts-title'])>div>div")
+        for view in overView:
+            try:
+                overVies[view.query_selector("div:nth-child(1)").inner_text().replace("\u200e","")]=view.query_selector("div:nth-child(2)").inner_text().replace("\u200e","")
+            except:
+                pass
     return overVies
 
 def get_technicalDetails(pw_page):
@@ -49,23 +58,28 @@ def get_technicalDetails(pw_page):
     elif len(pw_page.query_selector_all("table[id*='technicalSpecifications'] tr"))>0:
         technicalDetails=pw_page.query_selector_all("table[id*='technicalSpecifications'] tr")
         child="th"
+    elif len(pw_page.query_selector_all("table[class='a-bordered'] tr"))>0:
+        technicalDetails=pw_page.query_selector_all("table[class='a-bordered'] tr")
+        child="td"
+
     technicalDetailsDict={}
     for technicalDetail in technicalDetails:
         technicalDetailsDict[technicalDetail.query_selector(f"{child}:nth-child(1)").inner_text()]=technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
     return technicalDetailsDict
 
 def get_abaoutProduct(pw_page):
-    abaoutProduct=pw_page.query_selector_all("div#feature-bullets li span")
+    
+    selectorsOptions=["div#feature-bullets li span","div[id='productFactsDesktop_feature_div'] ul li>span"]
     abaoutProductDict={}
-    if len(abaoutProduct)>0:
+    if len(pw_page.query_selector_all(selectorsOptions[0]))>0:
+        abaoutProduct=pw_page.query_selector_all(selectorsOptions[0])
+    elif len(pw_page.query_selector_all(selectorsOptions[1]))>0:
+        abaoutProduct=pw_page.query_selector_all(selectorsOptions[1])
         for i,abaoutP in enumerate(abaoutProduct):
             try:
-                ab1=abaoutP.inner_text().split(":")[0]
-                ab2=abaoutP.inner_text().split(":")[1]
-                abaoutProductDict[ab1]=ab2
+                abaoutProductDict[dictManipulator.fisrt_substring_before_double_dot(abaoutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(abaoutP.inner_text())
             except:
-                abaoutProductDict[str(">")]=abaoutP.inner_text()
-                pass    
+                abaoutProductDict[str(i)+".-"]=abaoutP.inner_text()
     return abaoutProductDict
 
 def get_otherDetails(pw_page):
@@ -88,7 +102,7 @@ def get_bulletDetails(pw_page):
     bulletInfoDict={}
     for bullet in bulletInfo:
         try:
-            bulletInfoDict[bullet.query_selector("span span").inner_text()]=bullet.query_selector("span:nth-child(2)").inner_text().replace("\u200e","")
+            bulletInfoDict[bullet.query_selector("span span").inner_text().replace("\u200e","").replace("\u200f","")]=bullet.query_selector("span:nth-child(2)").inner_text().replace("\u200e","")
         except:
             pass
     return bulletInfoDict
@@ -269,7 +283,10 @@ def remove_all_sku_folder():
         os.remove(skuPath)
 def save_screenshot(pw_page,skuFolder):
     #create folder
-    os.makedirs(skuFolder)
+    
+    #validate if the folder exists
+    if not os.path.exists(skuFolder):
+        os.makedirs(skuFolder)
     pw_page.screenshot(path=f"{skuFolder}/screenshot.png")
 def download_info(dataSheet=None):
     if dataSheet:

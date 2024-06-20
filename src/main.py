@@ -30,7 +30,7 @@ class amazon_mkt_peruvians:
         self.go_to_amazon()
         self.go_to_shopify()
         #self.go_to_dinners()
-        self.go_to_ripley()
+        #self.go_to_ripley()
     def set_loaders(self):
         self.loaderDinner=LoaderDinners(dataToLoad=None,
                                   page=self.dinnersPage,
