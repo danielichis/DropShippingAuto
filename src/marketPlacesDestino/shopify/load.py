@@ -158,7 +158,7 @@ class LoaderShopify:
             raise Exception("Error al cargar la pagina de custom fields")
         print("cargando custom fields")
     def load_custom_fields(self):
-        self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("STOCK")
+        self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("DROPSHIPPING")
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
         descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
