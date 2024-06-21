@@ -850,9 +850,10 @@ class LoaderRipley:
     def load_sku(self):
         print('--------')
         print("Cargando SKU..."+self.dataToLoad['sku'])
-        #self.add_product()
+        self.get_ripley_categories_response()
+        self.add_product()
         for i in range(1):
-        #self.get_ripley_categories_response()
+        #
         #isGoodSelection=False
         #while(not isGoodSelection):
             isGoodSelection=self.load_all_category()

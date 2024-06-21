@@ -1,9 +1,9 @@
 {
-    "sku": "B0BHBP8CS2",
+    "sku": "B0C73VYCZH",
     "status": "ERROR AL CARGAR",
     "url": "",
     "marketplace": "shopify",
     "condition": "new",
-    "log": "Traceback (most recent call last):\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/shopify/load.py\", line 77, in load_main_sku_shopify\n    url=self.load_sub_main_shopify()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/shopify/load.py\", line 190, in load_sub_main_shopify\n    self.go_to_custom_fields()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/shopify/load.py\", line 152, in go_to_custom_fields\n    self.page.goto(editUrl)\n  File \"/Users/macbook/unalukabots/unalukaBots/the_env/lib/python3.9/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/Users/macbook/unalukabots/unalukaBots/the_env/lib/python3.9/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\nplaywright._impl._errors.TimeoutError: Timeout 20000ms exceeded while waiting for event \"response\"\n=========================== logs ===========================\nwaiting for response https://app.advancedcustomfield.com/admin/load-met…\n============================================================\n",
-    "fecha": "2024-06-19 10:08:32"
+    "log": "Traceback (most recent call last):\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/shopify/load.py\", line 77, in load_main_sku_shopify\n    url=self.load_sub_main_shopify()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/shopify/load.py\", line 188, in load_sub_main_shopify\n    self.select_shopify_collections()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/shopify/load.py\", line 62, in select_shopify_collections\n    TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)\n  File \"/Users/macbook/unalukabots/unalukaBots/utils/embeddings/embeding.py\", line 162, in get_top_n_match\n    \"similarity\":get_similarity(product_embed,embedCollection)\n  File \"/Users/macbook/unalukabots/unalukaBots/utils/embeddings/embeding.py\", line 27, in get_similarity\n    similarity = np.dot(embed1, embed2)\nValueError: shapes (3072,) and (1536,) not aligned: 3072 (dim 0) != 1536 (dim 0)\n",
+    "fecha": "2024-06-21 10:58:13"
 }
