@@ -5,9 +5,9 @@ from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
-from utils.dinamicMassivArgsExtractions_rip import get_dinamic_args_extraction,list_attributes_ff_in_json,list_attributes_nff_in_json,get_dinamic_args_extraction2,list_attributes_fields_in_json,get_dinamic_answer
+from utils.dinamicMassivArgsExtractions_rip import get_dinamic_args_extraction,list_attributes_ff_in_json,list_attributes_nff_in_json,get_dinamic_args_extraction2,list_attributes_fields_in_json,get_dinamic_answer,dinamic_order_categories
 from utils.managePaths import mp
-from DropShippingAuto.src.marketPlacesDestino.ripley.StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator,keyboard_delete_text,extract_words_regex
+from DropShippingAuto.src.marketPlacesDestino.ripley.StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator,keyboard_delete_text,extract_words_regex,atomize_classification_wo_prepositions
 import json
 import time
 import re
@@ -71,7 +71,27 @@ class LoaderRipley:
         
     def get_ripley_categories_response(self)->bool:
         contentProduct=mp.data_sku(self.dataToLoad['sku'])
-        amazon_categories=contentProduct['clasificacion'][::-1]
+        amazon_categories=contentProduct['clasificacion']
+        if amazon_categories=="sin clasificacion":
+            print("No hay clasificación en Amazon")
+            print("Generando categoría con la API...")
+            description_gen="lista de posibles Categorías en las que encaja el producto(ejemplo: laptops,carteras,electronica,jabonoes,etc) en formato string para el producto,mínimo 3 ,máximo 5,entre corchetes,"
+            while(True): 
+                try:
+                    #generated_categories=get_dinamic_args_extraction2(options_type='options_0',content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":description_gen,"locator":None,"options":[]}])[description_gen]
+                    generated_categories=get_dinamic_answer(str(contentProduct),description_gen)
+                    print(generated_categories)
+                    generated_categories=ast.literal_eval(generated_categories)
+                except Exception as e:
+                    print(str(e))
+                    print("Error al generar categoría con la API")
+                    print("Generando de nuevo")
+                else:
+                    break
+            amazon_categories=list(set(atomize_classification_wo_prepositions(generated_categories)))
+        else:
+            #Invirtiendo lista de amazon
+            amazon_categories=amazon_categories[::-1]
         print(amazon_categories)
         self.page.goto("https://ripleyperu-prod.mirakl.net/mmp/shop/catalog/template/configure?modelType=PRODUCTS_OFFERS")
         self.page.wait_for_load_state("networkidle")
@@ -88,15 +108,16 @@ class LoaderRipley:
         #     # else:
         #     #     print("Categoría generada incorrecta,generando de nuevo")
 
-        amazon_splitted_list=list(map(lambda x: x.split(" ") ,amazon_categories))
-        print(amazon_splitted_list)
-        amazon_splitted_list2=[]
-        print(amazon_splitted_list)
-        for i in amazon_splitted_list:
-            amazon_splitted_list2.append(*
-        possible_categories=[*amazon_categories,*amazon_splitted_list2]
+        cleaned_categories=list(set(atomize_classification_wo_prepositions(amazon_categories)))
+        print(cleaned_categories)
+        print("Ordenando categorías con la API...")
+        gen_categories=dinamic_order_categories(str(contentProduct),cleaned_categories)
+        print(gen_categories)
+        print("Transformando a lista de Python")
+        possible_categories=ast.literal_eval(gen_categories)
+        self.possible_categories=possible_categories
+        print(type(possible_categories))
         print(possible_categories)
-        response_categories_list=[]
         for category_value in possible_categories:
             url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={category_value}&selectedLocale=es_PE&withRoot=false"
             print(url_petition)
@@ -279,7 +300,7 @@ class LoaderRipley:
                 self.page.wait_for_load_state("load")
                 self.page.wait_for_load_state("domcontentloaded")
                 expect(next_locator.locator("div[class='input col-md-4 col-lg-4']").first).to_be_enabled()
-                next_locator.locator("div[class='input col-md-4 col-lg-4']").first.click(timeout=10000)
+                next_locator.locator("div[class='input col-md-4 col-lg-4']").first.click(timeout=5000)
                 category_name=top_categories_path[cat_num]
                 self.page.get_by_role("option", name=category_name, exact=True).click()
                 print("Categoria seleccionada")
@@ -368,8 +389,8 @@ class LoaderRipley:
         print("Obteniendo nuevas opciones de combobox...")
         id_ul=combobox_locator["options_id"]
         print(id_ul)
-        self.page.keyboard.type(cgpt_answer,delay=100)
-        time.sleep(2)
+        self.page.keyboard.type(cgpt_answer,delay=50)
+        time.sleep(4)
         
         options_list_locator=self.page.locator(f"#{id_ul}").locator("li").all()
         print(options_list_locator)
@@ -381,6 +402,7 @@ class LoaderRipley:
                                 "locator":item})
             
         combobox_locator["options"]=new_options
+        print("Nuevas opciones...")
         print([x["name"] for x in new_options])
         print("Opciones obtenidas")
         
@@ -748,15 +770,21 @@ class LoaderRipley:
                 max_chars=129-len(short_header)
                 if len(short_name)>max_chars:
                     print("Generando nuevo nombre corto para la Descripción corta porque excede el límite de caracteres")
-                    new_name_constraints="Nombre,"+f"máximo {str(max_chars)} caracteres"
+                    new_name_constraints="Nombre,"+f"no sobrepasar los {str(max_chars)} caracteres incluyendo espacios en blanco"
                     print(new_name_constraints)
-                    short_name=get_dinamic_args_extraction2(options_type="options_0",content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":new_name_constraints,"locator":None,"options":[]}])[new_name_constraints]
-                short_description="Compra tu "+short_name+" en Ripley Internacional"
+                    while(True):
+                        short_name=get_dinamic_args_extraction2(options_type="options_0",content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":new_name_constraints,"locator":None,"options":[]}])[new_name_constraints]
+                        short_description="Compra tu "+short_name+" en Ripley Internacional"
+                        if len(short_description)<=129:
+                            break
+                        else:
+                            print("Generando nuevo nombre corto para la Descripción corta porque excede el límite de caracteres")
+
                 valueField=short_description
             elif textField=='Cantidad de la oferta':
                 valueField='0'
-            elif textField=='Peso':
-                valueField=dimArgs['Peso'] if dimArgs['Peso']!="" or dimArgs['Peso']!="No Especifica" else "N/A"
+            elif textField=='Peso (kg)':
+                valueField=dimArgs['Peso (kg)'] if dimArgs['Peso (kg)']!="" and dimArgs['Peso (kg)']!="No Especifica" else "N/A"
             elif textField=='Precio':
                 #valueField=self.load_base_price()
                 continue
@@ -846,7 +874,7 @@ class LoaderRipley:
             if field["tag"]=="SELECT":
                 option_label=valueField
                 try:
-                    field["locator"].select_option(label=option_label)
+                    field["locator"].select_option(label=option_label,timeout=10000)
                 except:
                     if textField=="Condición":
                         print("No se encontró información respecto a la condición del producto")
@@ -860,18 +888,25 @@ class LoaderRipley:
             elif field["tag"]=="INPUT":
                 field["locator"].click()
                 try:
-                    self.search_best_option_combobox(field,textField,valueField)
+                    self.search_best_option_combobox(field,textField,valueField,valueField)
                 except Exception as e:
                     print("ERROR INTERNO "+str(e))
                     self.page.keyboard.press("Enter")
 
         print("Campos con opciones llenados")
 
-    def search_best_option_combobox(self,combobox_locator,textField:str,valueField:str)->str:
+    ####counter for the amount of times to find the best option in the combobox
+    combobox_search_counter=-1
+    #######
 
+    def search_best_option_combobox(self,combobox_locator,textField:str,valueField:str,valueToSearch=None)->str:
+        
         field=combobox_locator   
         print("campo recibido : "+textField)
-        self.get_new_options_from_combobox(field,cgpt_answer=valueField)
+        if valueToSearch==None:
+            self.get_new_options_from_combobox(field,cgpt_answer=valueField)
+        else:
+            self.get_new_options_from_combobox(field,cgpt_answer=valueToSearch)
         if len(field["options"])==1:
             if field["options"][0]["name"]=="No se encontraron resultados":
                 print("No se encontraron resultados")
@@ -889,10 +924,17 @@ class LoaderRipley:
                     time.sleep(2)
                     self.page.keyboard.press("Enter")
                 else:
-                    valueField_words=extract_words_regex(valueField)
-                    #self.page.keyboard.type(valueField_words[0])
+                    self.combobox_search_counter+=1
+                    valueField_words=atomize_classification_wo_prepositions(valueField)
                     #recursive
-                    self.search_best_option_combobox(field,textField,valueField_words[0])
+                    if self.combobox_search_counter<len(valueField_words):
+                        print("Buscando la mejor opcion para el combobox "+ str(self.combobox_search_counter+1)+"° vez")
+                        print(valueField_words[self.combobox_search_counter])
+                        self.search_best_option_combobox(field,textField,valueField,valueField_words[self.combobox_search_counter])
+                    else:
+                        self.combobox_search_counter=-1
+                        print("No se encontraron resultados")
+                        raise Exception("No se encontraron resultados")
                     #Sinonimos
                     #buscar de nuevo
                     #bucle,funcion recursiva quizás 
@@ -900,6 +942,7 @@ class LoaderRipley:
                 self.page.wait_for_load_state("networkidle")
                 time.sleep(2)
                 self.page.keyboard.press("Enter")
+                self.combobox_search_counter=-1
         else:
             print("Se encontraron resultados")
             options_name_list=[x["name"] for x in field["options"]]
@@ -910,6 +953,7 @@ class LoaderRipley:
             self.page.wait_for_load_state("networkidle")
             self.page.wait_for_load_state("domcontentloaded")
             self.page.wait_for_load_state("load")
+            self.combobox_search_counter=-1
             time.sleep(2)
  
     def raise_test_error(self):
@@ -917,6 +961,7 @@ class LoaderRipley:
 
     def load_offer_settings(self):
         contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        self.product_info=contentProduct
         self.product_sku=contentProduct["sku"]
         print(self.product_sku)
         #filling offer sku field
@@ -947,6 +992,14 @@ class LoaderRipley:
         special_price=str(self.sheetProductData['PRECIO FINAL MARKETPLACE'])
         self.page.get_by_label("Precio con descuento").fill(special_price)
 
+    def load_model_number(self):
+        content_product=mp.data_sku(self.dataToLoad['sku'])
+        field_to_extract="Número de modelo.No es el SKU ni el ASIN"
+        model_number=get_dinamic_args_extraction2(options_type="options_0",content_product=str(content_product),fieldsFromMarketPlace=[{"name":field_to_extract,"locator":None,"options":[]}])[field_to_extract]
+        print(model_number)
+        if model_number!= self.dataToLoad['sku']:
+            self.page.get_by_role("textbox", name="Modelo").fill(model_number)
+
     def load_sku(self):
         print('--------')
         print("Cargando SKU..."+self.dataToLoad['sku'])
@@ -968,17 +1021,18 @@ class LoaderRipley:
             self.load_images()
             self.load_base_price()
             self.load_special_price()
+            self.load_model_number()
             self.load_package_dimensions(30,36,16)
             self.print_split_fields()
             self.fill_fillable_fields()
             self.fill_nonfillable_fields2()
             #self.generate_dinamic_answer("Descripción")
             #self.generate_dinamic_answer("Descripción corta")
-            #self.raise_test_error()
-            self.confirm_product()
+            #self.confirm_product()
             print("//////////////////Producto cargado////////////////////////")
             print("Se creó producto con SKU: "+self.dataToLoad['sku'])
             print('--------')
+            self.raise_test_error()
         else:
             print("No se encontraron categorías")
             raise Exception("No se encontraron categorías")
