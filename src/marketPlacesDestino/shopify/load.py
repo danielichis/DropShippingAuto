@@ -140,7 +140,8 @@ class LoaderShopify:
         self.page.locator(pshopy.cajaPesoDelProducto.selector).fill("0.01")
 
     def save_edition(self):
-        self.page.query_selector_all("//span[text()='Guardar']")[1].click()
+        saves=self.page.query_selector_all("//span[text()='Guardar']")
+        saves[len(saves)-1].click()
         self.page.wait_for_selector("span[class*='Polaris-Banner--textSuccessOnBgFill']+h2",timeout=8000)
     def go_to_custom_fields(self):
         baseUrl="https://admin.shopify.com/store/unaluka/apps/arena-custom-fields/products_editor/"
@@ -158,17 +159,25 @@ class LoaderShopify:
             raise Exception("Error al cargar la pagina de custom fields")
         print("cargando custom fields")
     def load_custom_fields(self):
-        self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option("DROPSHIPPING")
+        self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option(str(self.sheetProductData['FORMA DE VENTA']))
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
         descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
         frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['Breve resumen para vender'])
-        try:
-            self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=8000)
-        except:
-            frame_locator.locator("div[class='fr-element fr-view']").press("Enter")
-            self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=5000)
+        saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
+        with self.page.expect_response(saveUrl,timeout=20000) as response_info:
+            try:
+                self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=8000)
+            except:
+                frame_locator.locator("div[class='fr-element fr-view']").press("Enter")
+                self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=5000)
+        response = response_info.value
+        if response.ok:
+            pass
+        else:
+            self.status="ERROR AL CARGAR,NO SE PUDO CARGAR LA PAGINA DE LOS CUSTOM FIELDS"
+            raise Exception("Error al cargar la pagina de custom fields")
         baseUrl="https://admin.shopify.com/store/unaluka/products/"
         currentUrl=self.page.url
         codeProduct=re.findall(r"\d+",currentUrl)[0]
@@ -182,7 +191,7 @@ class LoaderShopify:
         self.load_peso()
         self.load_sku()
         self.load_stock()
-        self.page.get_by_label("Estado").select_option(self.configDataSheet['MODO PUBLICACION SHOPIFY'])
+        self.page.locator("select[name='status']").select_option(self.configDataSheet['MODO PUBLICACION SHOPIFY'])
         self.load_shopify_category_suggestion()
         self.load_provider()
         self.select_shopify_collections()
@@ -206,7 +215,6 @@ def test_main_shopify(dataSheet=None):
         with open("dataToDownLoadAndLoad.json","r",encoding="utf-8") as json_file:
             dataSheet=json.load(json_file)
     p = sync_playwright().start()
-    user_dir=mp.profiel_path
     browser = p.chromium.launch(headless=False)
     context=browser.new_context(storage_state="DropShippingAuto/src/sessions/state_shopify.json")
     loaderShopify=LoaderShopify(dataSheet['dataToLoadSheet'],

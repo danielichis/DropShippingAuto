@@ -47,10 +47,8 @@ def get_overView(pw_page):
     return overVies
 
 def get_technicalDetails(pw_page):
-    technicalDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr")
-    
-    if len(pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr"))>0:
-        technicalDetails=pw_page.query_selector_all("table#productDetails_techSpec_section_1 tr")
+    if len(pw_page.query_selector_all("table[id*='productDetails_techSpec_section'] tr"))>0:
+        technicalDetails=pw_page.query_selector_all("table[id*='productDetails_techSpec_section'] tr")
         child="th"
     elif len(pw_page.query_selector_all("div[id=poExpander] tbody tr"))>0:
         technicalDetails=pw_page.query_selector_all("div[id=poExpander] tbody tr")
@@ -75,11 +73,11 @@ def get_abaoutProduct(pw_page):
         abaoutProduct=pw_page.query_selector_all(selectorsOptions[0])
     elif len(pw_page.query_selector_all(selectorsOptions[1]))>0:
         abaoutProduct=pw_page.query_selector_all(selectorsOptions[1])
-        for i,abaoutP in enumerate(abaoutProduct):
-            try:
-                abaoutProductDict[dictManipulator.fisrt_substring_before_double_dot(abaoutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(abaoutP.inner_text())
-            except:
-                abaoutProductDict[str(i)+".-"]=abaoutP.inner_text()
+    for i,abaoutP in enumerate(abaoutProduct):
+        try:
+            abaoutProductDict[dictManipulator.fisrt_substring_before_double_dot(abaoutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(abaoutP.inner_text())
+        except:
+            abaoutProductDict[str(i)+".-"]=abaoutP.inner_text()
     return abaoutProductDict
 
 def get_otherDetails(pw_page):
