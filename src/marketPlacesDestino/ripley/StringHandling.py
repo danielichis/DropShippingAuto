@@ -47,10 +47,33 @@ def extract_words_regex(text:str):
     #print(match)
     return match
 
+def atomize_classification_wo_prepositions(classification_list:list)->list:
+    
+    if type(classification_list)==str:
+        print("Es un str,creando lista de 1 solo elemento")
+        classification_list=[classification_list]
+
+    print("Atomizando y quitando preposiciones")
+    class_string=" ".join(classification_list)
+    class_string=re.sub(r',',"",class_string)
+    print(class_string)
+    prepositions=['de','y','en','para','con','sin','sobre','tras','durante','mediante','hacia','según','versus','vía']
+    splitted_list=class_string.split(" ")
+    new_classification_list=[i for i in splitted_list if i not in prepositions]
+    print(new_classification_list)
+
+
+    return new_classification_list
+
+def test_atomize_classification()->list:
+    classification_list=['Electrodomésticos', 'y', 'Línea Blanca', 'Cocina y Lavandería', 'Cafeteras y Hervidores', 'Cafetera de goteo Oster BVSTDCDW12B013']
+    print(atomize_classification_wo_prepositions(classification_list))
+
 
 
 if __name__ == "__main__":
     extract_words_regex("taza de cafe")
+    test_atomize_classification()
  
 
 
