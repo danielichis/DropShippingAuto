@@ -17,7 +17,6 @@ def get_product_in_amazon_carpet_parsed(product_sku):
     dataJsonPath=skuFolder+"/data.json"
     with open(dataJsonPath, "r",encoding="utf-8") as f:
         dataAmazon= json.load(f)
-    vendedor="UNALUKA INTERNACIONAL"
     categoria=dataAmazon["clasificacion"]
     if "Marca" in dataAmazon['Vista General'].keys():
         dataAmazon['Marca']=dataAmazon["Vista General"]["Marca"]
