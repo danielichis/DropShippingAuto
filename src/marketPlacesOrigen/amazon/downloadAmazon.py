@@ -59,6 +59,8 @@ def get_technicalDetails(pw_page):
     elif len(pw_page.query_selector_all("table[class='a-bordered'] tr"))>0:
         technicalDetails=pw_page.query_selector_all("table[class='a-bordered'] tr")
         child="td"
+    else:
+        technicalDetails=[]
 
     technicalDetailsDict={}
     for technicalDetail in technicalDetails:
@@ -285,7 +287,8 @@ def save_screenshot(pw_page,skuFolder):
     #validate if the folder exists
     if not os.path.exists(skuFolder):
         os.makedirs(skuFolder)
-    pw_page.screenshot(path=f"{skuFolder}/screenshot.png")
+    picPath=os.path.join(skuFolder,"screenshot.png")
+    #pw_page.screenshot(path=picPath)
 def download_info(dataSheet=None):
     if dataSheet:
         products=[item for item in dataSheet]
