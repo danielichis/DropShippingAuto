@@ -813,8 +813,18 @@ class LoaderRipley:
     def confirm_product(self):
         print("Confirmando producto...")
         self.page.get_by_role("button",name=re.compile("Presentar para su aprobación", re.IGNORECASE)).click()
-        print("Producto confirmado")
-        print("Añadiendo otro producto...")
+        self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_load_state("load")
+        self.page.wait_for_load_state("domcontentloaded")
+        time.sleep(2)
+        try:
+            expect(self.page.locator("div[class='mui-col-xs-flex mui-flex-col mui-alert-content']")).to_contain_text("Tu formulario contiene errores")
+        except:
+            print("Producto confirmado")
+        else:
+            print("El sku ya existe u otro error")
+            print("Pasando a siguiente producto")
+            raise Exception("El sku ya existe u otro error")
 
     def load_description(self)->str:
         description=self.dataToLoad['descripciones']
@@ -1054,7 +1064,9 @@ class LoaderRipley:
         else:
             print("Se encontraron resultados")
             options_name_list=[x["name"] for x in field["options"]]
-            optionToSelect=get_best_similarity_option(options_name_list,valueField)
+            #Using product info to get the best option
+            print("Usando Embeddings")
+            optionToSelect=get_best_similarity_option(options_name_list,str(self.product_info))
             print("opcion seleccionada : "+ optionToSelect)
             categNumb=options_name_list.index(optionToSelect)
             field["options"][categNumb]["locator"].click()
@@ -1106,7 +1118,10 @@ class LoaderRipley:
         model_number=get_dinamic_args_extraction2(options_type="options_0",content_product=str(content_product),fieldsFromMarketPlace=[{"name":field_to_extract,"locator":None,"options":[]}])[field_to_extract]
         print(model_number)
         if model_number!= self.dataToLoad['sku']:
-            self.page.get_by_role("textbox", name="Modelo").fill(model_number)
+            try:
+                self.page.get_by_role("textbox", name="Modelo").fill(model_number,timeout=4000)
+            except:
+                print("No hay campo modelo para llenar")
 
     def load_sku(self):
         print('--------')
@@ -1136,19 +1151,24 @@ class LoaderRipley:
             self.fill_nonfillable_fields2()
             #self.generate_dinamic_answer("Descripción")
             #self.generate_dinamic_answer("Descripción corta")
-            #self.confirm_product()
-            print("//////////////////Producto cargado////////////////////////")
-            print("Se creó producto con SKU: "+self.dataToLoad['sku'])
+            self.confirm_product()
+            print("-----------Producto cargado-----------------")
+            print("<<<<<<<<<<Se creó producto con SKU: "+self.dataToLoad['sku']+">>>>>>>>>>>")
             print('--------')
-            self.raise_test_error()
+            print("Añadiendo otro producto...")
+            return self.dataToLoad['sku']
+            #self.raise_test_error()
         else:
             print("No se encontraron categorías")
             raise Exception("No se encontraron categorías")
 
     def load_main_ripley(self):
         try: 
-            self.load_sku()   
+            url=self.load_sku()   
+            tb="ok"
+            self.status="CARGADO CORRECTAMENTE"
         except Exception as e:
+            url=self.dataToLoad['sku']
             tb=traceback.format_exc()
             print("Error:"+str(e))
             print(str(tb))
@@ -1157,6 +1177,20 @@ class LoaderRipley:
             self.page.goto(market_dashboard)
             self.page.get_by_role("link", name="Añadir una oferta").click()
             print("Cargando otro producto...")
+
+        responseLoad={
+            "sku":self.dataToLoad['sku'],
+            "status":self.status,
+            "url":url,
+            "marketplace":"ripley",
+            "condition":"new",
+            "log":tb,
+            "fecha":time.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        print(responseLoad)
+        with open("DropShippingAuto/Responsedata_load_ripley.json","w",encoding="utf-8") as json_file:
+            json.dump(responseLoad,json_file,indent=4,ensure_ascii=False)
+        self.responseRipleyLoad=responseLoad
 
 
 
