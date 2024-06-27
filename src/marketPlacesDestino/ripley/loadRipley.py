@@ -7,7 +7,7 @@ from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
 from utils.dinamicMassivArgsExtractions_rip import get_dinamic_args_extraction,list_attributes_ff_in_json,list_attributes_nff_in_json,get_dinamic_args_extraction2,list_attributes_fields_in_json,get_dinamic_answer,dinamic_order_categories
 from utils.managePaths import mp
-from DropShippingAuto.src.marketPlacesDestino.ripley.StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator,keyboard_delete_text,extract_words_regex,atomize_classification_wo_prepositions
+from DropShippingAuto.src.marketPlacesDestino.ripley.StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator,keyboard_delete_text,extract_words_regex,atomize_classification_wo_prepositions,remove_duplicates_preserve_order,format_url_with_encoded_values
 import json
 import time
 import re
@@ -68,83 +68,166 @@ class LoaderRipley:
         # self.page.get_by_role("menuitem", name="Ofertas").click()
         # self.page.get_by_role("link", name="+ Añadir una oferta").click()
         #page3.get_by_role("link", name="+ Crear un producto").click()
-        
-    def get_ripley_categories_response(self)->bool:
+
+    response_categories_dict=[]
+
+    def get_ripley_categories_response2(self)->bool:
         contentProduct=mp.data_sku(self.dataToLoad['sku'])
         amazon_categories=contentProduct['clasificacion']
         if amazon_categories=="sin clasificacion":
             print("No hay clasificación en Amazon")
             print("Generando categoría con la API...")
-            description_gen="lista de posibles Categorías en las que encaja el producto(ejemplo: laptops,carteras,electronica,jabonoes,etc) en formato string para el producto,mínimo 3 ,máximo 5,entre corchetes,"
+            description_gen="lista de tipo de producto o posibles categorías específicas para el producto según el diccionario enviado (ejemplo: laptops,carteras,electronica,jabones,etc) en formato string entre comillas para el producto,mínimo 3 ,máximo 5,todo entre corchetes,"
             while(True): 
                 try:
                     #generated_categories=get_dinamic_args_extraction2(options_type='options_0',content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":description_gen,"locator":None,"options":[]}])[description_gen]
                     generated_categories=get_dinamic_answer(str(contentProduct),description_gen)
                     print(generated_categories)
-                    generated_categories=ast.literal_eval(generated_categories)
+                    product_categories=ast.literal_eval(generated_categories)
                 except Exception as e:
                     print(str(e))
                     print("Error al generar categoría con la API")
                     print("Generando de nuevo")
                 else:
                     break
-            amazon_categories=list(set(atomize_classification_wo_prepositions(generated_categories)))
+            print("Se generaron categorías exitosamente")
+            #product_categories=list(set(atomize_classification_wo_prepositions(generated_categories)))
         else:
             #Invirtiendo lista de amazon
-            amazon_categories=amazon_categories[::-1]
-        print(amazon_categories)
+            print("Se encontró clasificación")
+            product_categories=amazon_categories[::-1]
+
+        print(product_categories)
+        #Going to product_offers page to obtain categories
         self.page.goto("https://ripleyperu-prod.mirakl.net/mmp/shop/catalog/template/configure?modelType=PRODUCTS_OFFERS")
         self.page.wait_for_load_state("networkidle")
         self.page.wait_for_load_state("load")
         self.page.wait_for_load_state("domcontentloaded")
-        #fieldsfromMarketPlace is a list 
-        # while(True):
-        #for i in range(3):
-        # description_gen="3 posibles categorias diferentes a las presentes a la clasificacion para el producto separadas por comas"
-        # print("Generando categoría con la API...")
-        # generated_category=get_dinamic_args_extraction2(options_type='options_0',content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":description_gen,"locator":None,"options":[]}])[description_gen]
-        #     # if len(extract_words_regex(generated_category))==1:
-        #     #     break
-        #     # else:
-        #     #     print("Categoría generada incorrecta,generando de nuevo")
-
-        cleaned_categories=list(set(atomize_classification_wo_prepositions(amazon_categories)))
-        print(cleaned_categories)
-        print("Ordenando categorías con la API...")
-        gen_categories=dinamic_order_categories(str(contentProduct),cleaned_categories)
-        print(gen_categories)
-        print("Transformando a lista de Python")
-        possible_categories=ast.literal_eval(gen_categories)
+        #Atomizando,quitando preposiciones y removiendo duplicados sin afectar el orden
+        no_duplicates_categories=remove_duplicates_preserve_order(atomize_classification_wo_prepositions(product_categories))
+        print(no_duplicates_categories)
+        # print("Ordenando categorías con la API...")
+        # gen_categories=dinamic_order_categories(str(contentProduct),no_duplicates_categories)
+        print(no_duplicates_categories)
+        #print("Transformando a lista de Python")
+        #possible_categories=ast.literal_eval(gen_categories)
+        possible_categories=[*product_categories,*no_duplicates_categories]
         self.possible_categories=possible_categories
-        print(type(possible_categories))
         print(possible_categories)
         for category_value in possible_categories:
-            url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={category_value}&selectedLocale=es_PE&withRoot=false"
+            encoded_category_value=format_url_with_encoded_values(category_value)
+            url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={encoded_category_value}&selectedLocale=es_PE&withRoot=false"
             print(url_petition)
             try:
-                with self.page.expect_response(url_petition,timeout=10000) as response_info:
+                with self.page.expect_response(url_petition,timeout=12000) as response_info:
                     self.page.locator("input[name='filter']").fill(category_value)
                 response=response_info.value
                 response_categories_list=json.loads(response.text())
-                if len(response_categories_list)>0:
-                    print("Categorías encontradas")
-                    self.selected_category_value=category_value
-                    self.response_categories_list=response_categories_list
-                    return True
-            except:
+                if response.status==200:
+                    if len(response_categories_list)>0:
+                        print("Categorías encontradas")
+                        self.selected_category_value=category_value
+                        self.response_categories_list=response_categories_list
+                        self.response_categories_dict.append({"category":category_value,"categories_list":response_categories_list})
+                        print('Se añadieron categorías')
+                else:
+                    print("Petición no exitosa")
+                    print("Probando con siguiente categoría")
+                    continue
+            except Exception as e:
+                print(str(e))
                 continue
 
         print("Categorías no encontradas")
+        print("Llamando de nuevo a la funcion para generar categorías")
+        self.get_ripley_categories_response()
+        print("Generando categoria con API")
+        return False
+
+
+    def get_ripley_categories_response(self)->bool:
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        amazon_categories=contentProduct['clasificacion']
+        if amazon_categories=="sin clasificacion":
+            print("No hay clasificación en Amazon")
+            print("Generando categoría con la API...")
+            description_gen="lista de tipo de producto o posibles categorías específicas para el producto según el diccionario enviado (ejemplo: laptops,carteras,electronica,jabones,etc) en formato string entre comillas para el producto,mínimo 3 ,máximo 5,todo entre corchetes,"
+            while(True): 
+                try:
+                    #generated_categories=get_dinamic_args_extraction2(options_type='options_0',content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":description_gen,"locator":None,"options":[]}])[description_gen]
+                    generated_categories=get_dinamic_answer(str(contentProduct),description_gen)
+                    print(generated_categories)
+                    product_categories=ast.literal_eval(generated_categories)
+                except Exception as e:
+                    print(str(e))
+                    print("Error al generar categoría con la API")
+                    print("Generando de nuevo")
+                else:
+                    break
+            print("Se generaron categorías exitosamente")
+            #product_categories=list(set(atomize_classification_wo_prepositions(generated_categories)))
+        else:
+            #Invirtiendo lista de amazon
+            print("Se encontró clasificación")
+            product_categories=amazon_categories[::-1]
+
+        print(product_categories)
+        #Going to product_offers page to obtain categories
+        self.page.goto("https://ripleyperu-prod.mirakl.net/mmp/shop/catalog/template/configure?modelType=PRODUCTS_OFFERS")
+        self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_load_state("load")
+        self.page.wait_for_load_state("domcontentloaded")
+        #Atomizando,quitando preposiciones y removiendo duplicados sin afectar el orden
+        no_duplicates_categories=remove_duplicates_preserve_order(atomize_classification_wo_prepositions(product_categories))
+        print(no_duplicates_categories)
+        # print("Ordenando categorías con la API...")
+        # gen_categories=dinamic_order_categories(str(contentProduct),no_duplicates_categories)
+        print(no_duplicates_categories)
+        #print("Transformando a lista de Python")
+        #possible_categories=ast.literal_eval(gen_categories)
+        possible_categories=[*product_categories,*no_duplicates_categories]
+        self.possible_categories=possible_categories
+        print(possible_categories)
+        for category_value in possible_categories:
+            encoded_category_value=format_url_with_encoded_values(category_value)
+            url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={encoded_category_value}&selectedLocale=es_PE&withRoot=false"
+            print(url_petition)
+            try:
+                with self.page.expect_response(url_petition,timeout=12000) as response_info:
+                    self.page.locator("input[name='filter']").fill(category_value)
+                response=response_info.value
+                response_categories_list=json.loads(response.text())
+                if response.status==200:
+                    if len(response_categories_list)>0:
+                        print("Categorías encontradas")
+                        self.selected_category_value=category_value
+                        self.response_categories_list=response_categories_list
+                        return True
+                else:
+                    print("Petición no exitosa")
+                    print("Probando con siguiente categoría")
+                    continue
+            except Exception as e:
+                print(str(e))
+                continue
+
+        print("Categorías no encontradas")
+        print("Llamando de nuevo a la funcion para generar categorías")
+        self.get_ripley_categories_response()
         print("Generando categoria con API")
         return False
         
         
 
     def make_ripley_categories_paths(self):
+        
+        categories_list=self.response_categories_list
+        
         categories_paths_codes=[]
         categories_paths_lists=[]
         categories_paths_str=[]
-        for categ_dict in self.response_categories_list:
+
+        for categ_dict in categories_list:
             if categ_dict["children"]==False:
                 categories_paths_codes.append(categ_dict['fullHierarchy'])
 
@@ -164,10 +247,13 @@ class LoaderRipley:
         print("String de rutas")
         print(categories_paths_str)
 
-        self.categories_paths={
+
+        categories_paths={
             "lists":categories_paths_lists,
             "strings":categories_paths_str
         }
+
+        self.categories_paths=categories_paths
         
         print("Se crearon las rutas de categorías")
         
@@ -183,6 +269,22 @@ class LoaderRipley:
             category_label=""
 
         return category_label
+
+    def get_optimal_categories_path(self):
+        # last_categories=[category[-1]["similarity"] for category in self.all_category_paths]
+        # print(last_categories)
+        # print("work")
+        #category_to_embed=self.selected_category_value
+        print("Transformando el contenido del producto a string")
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        print(contentProduct)
+        print("Usando el contenido del producto en Embeddings")
+        #top_string_path=get_best_similarity_option(self.categories_paths["strings"],category_to_embed)
+        top_string_path=get_best_similarity_option(self.categories_paths["strings"],str(contentProduct))
+        print(top_string_path)
+        top_categories_path=top_string_path.split(" > ")
+        print(top_categories_path)
+        return top_categories_path
 
     def add_product(self):
         #self.page.get_by_role("button", name="Precios y existencias").click()
@@ -406,16 +508,7 @@ class LoaderRipley:
         print([x["name"] for x in new_options])
         print("Opciones obtenidas")
         
-    def get_optimal_categories_path(self):
-        # last_categories=[category[-1]["similarity"] for category in self.all_category_paths]
-        # print(last_categories)
-        # print("work")
-        category_to_embed=self.selected_category_value
-        top_string_path=get_best_similarity_option(self.categories_paths["strings"],category_to_embed)
-        print(top_string_path)
-        top_categories_path=top_string_path.split(" > ")
-        print(top_categories_path)
-        return top_categories_path
+
 
 
     def get_options_locator_list2(self,locators_list:list)->list:
@@ -727,7 +820,7 @@ class LoaderRipley:
         description=self.dataToLoad['descripciones']
         description_str=dictConverter().dict_to_string_bp(description)
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
-        self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill(description_str)
+        #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill(description_str)
         return description_str
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").type("---")
         #print("Descripción cargada")
@@ -775,11 +868,13 @@ class LoaderRipley:
                     while(True):
                         short_name=get_dinamic_args_extraction2(options_type="options_0",content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":new_name_constraints,"locator":None,"options":[]}])[new_name_constraints]
                         short_description="Compra tu "+short_name+" en Ripley Internacional"
+                        print(short_description)
                         if len(short_description)<=129:
                             break
                         else:
                             print("Generando nuevo nombre corto para la Descripción corta porque excede el límite de caracteres")
-
+                else:
+                    short_description="Compra tu "+short_name+" en Ripley Internacional"
                 valueField=short_description
             elif textField=='Cantidad de la oferta':
                 valueField='0'
@@ -892,6 +987,7 @@ class LoaderRipley:
                 except Exception as e:
                     print("ERROR INTERNO "+str(e))
                     self.page.keyboard.press("Enter")
+                    #raise Exception("No se encontraron resultados")
 
         print("Campos con opciones llenados")
 
@@ -903,14 +999,11 @@ class LoaderRipley:
         
         field=combobox_locator   
         print("campo recibido : "+textField)
-        if valueToSearch==None:
-            self.get_new_options_from_combobox(field,cgpt_answer=valueField)
-        else:
-            self.get_new_options_from_combobox(field,cgpt_answer=valueToSearch)
+        self.get_new_options_from_combobox(field,cgpt_answer=valueField if valueToSearch==None else valueToSearch)   
         if len(field["options"])==1:
             if field["options"][0]["name"]=="No se encontraron resultados":
                 print("No se encontraron resultados")
-                keyboard_delete_text(self.page,valueField)
+                keyboard_delete_text(self.page,word_to_erase=valueField if valueToSearch==None else valueToSearch)
                 print("Seleccionando opciones por defecto...")
                 if textField=="Marca":
                     self.page.keyboard.type("UNALUKA")
@@ -923,6 +1016,21 @@ class LoaderRipley:
                     self.page.wait_for_load_state("networkidle")
                     time.sleep(2)
                     self.page.keyboard.press("Enter")
+                elif textField=="Tipo de producto":
+                    self.combobox_search_counter+=1
+                    print("Enriqueciendo la lista de categorias")
+                    valueField_words=[*atomize_classification_wo_prepositions(valueField),*self.possible_categories]
+                    print(valueField_words)
+                    #recursive
+                    if self.combobox_search_counter<len(valueField_words):
+                        print("Buscando la mejor opcion para el combobox "+ str(self.combobox_search_counter+1)+"° vez")
+                        print(valueField_words[self.combobox_search_counter])
+                        self.search_best_option_combobox(field,textField,valueField,valueField_words[self.combobox_search_counter])
+                    else:
+                        self.combobox_search_counter=-1
+                        print("No se encontraron resultados")
+                        raise Exception("No se encontraron resultados para el combobox tipo de Producto")           
+
                 else:
                     self.combobox_search_counter+=1
                     valueField_words=atomize_classification_wo_prepositions(valueField)
@@ -934,7 +1042,7 @@ class LoaderRipley:
                     else:
                         self.combobox_search_counter=-1
                         print("No se encontraron resultados")
-                        raise Exception("No se encontraron resultados")
+                        raise Exception("No se encontraron resultados para el comboBox")
                     #Sinonimos
                     #buscar de nuevo
                     #bucle,funcion recursiva quizás 
