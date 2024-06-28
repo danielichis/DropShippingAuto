@@ -183,7 +183,9 @@ def get_price(pw_page):
     return price
 
 def get_title(pw_page):
-    full_text=pw_page.inner_text()
+    full_text=pw_page.locator("body").inner_text()
+    if full_text.find("¿Estás buscando algo?\nLo sentimos.")!=-1:
+        raise Exception("ERROR, NO EXISTE PRODUCTO O INTERNET LENTO")
     title=pw_page.query_selector("span[id='productTitle']").inner_text()
     return title
 
@@ -260,8 +262,7 @@ def download_sku(pw_page,sku):
     try:
         title=get_title(pw_page)
     except:
-        raise ""
-        title="no especifico"
+        raise Exception("ERROR, NO EXISTE PRODUCTO O INTERNET LENTO")
     price=get_price(pw_page)
     overView=get_overView(pw_page)
     note=get_note(pw_page)
