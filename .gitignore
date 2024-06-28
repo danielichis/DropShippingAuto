@@ -6,5 +6,10 @@ products.csv
 *skus_Amazon
 *credentials.py
 *__pycache__
+state_amazon.json
+state_shopify.json
+allData.json
+Responsedata_load_shopify.json
+
 
 

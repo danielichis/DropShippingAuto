@@ -127,8 +127,8 @@ def get_importantInfo(pw_page):
     return importantInfoList
 def img_down(links,skuFolder):
     skuImageFolder=os.path.join(skuFolder,"images")
-    os.makedirs(skuFolder)
-    os.makedirs(skuImageFolder)
+    os.makedirs(skuFolder,exist_ok=True)
+    os.makedirs(skuImageFolder,exist_ok=True)
     for link in links:
         if link!="":
             response  = requests.get(link).content 
@@ -183,6 +183,9 @@ def get_price(pw_page):
     return price
 
 def get_title(pw_page):
+    full_text=pw_page.locator("body").inner_text()
+    if full_text.find("¿Estás buscando algo?\nLo sentimos.")!=-1:
+        raise Exception("ERROR, NO EXISTE PRODUCTO O INTERNET LENTO")
     title=pw_page.query_selector("span[id='productTitle']").inner_text()
     return title
 
@@ -198,37 +201,65 @@ def get_garanty(pw_page):
         garanty=None
     return garanty
 
+def download_sub_main_sku_amazon_product(pw_page,sku):
+    try:    
+        download_sku(pw_page,sku)
+        status="DESCARGADO CORRECTAMENTE"
+        newProduct="yes"
+        tb="ok"
+        status_code=200
+    except Exception as e:
+        tb=traceback.format_exc()
+        newProduct="yes"
+        status="ERROR EN LA DESCARGA"
+        status_code=500
+        save_screenshot(pw_page,sku)
+        pw_page.close()
+    return {
+        "status":status,
+        "newProduct":newProduct,
+        "log":tb,
+        "status_code":status_code
+    }
 def get_sku_amazon_product(pw_page,product):
     sku=product['SKU'].strip()
     skuFolder=os.path.join(mp.sku_folder_path,sku)
-    if not os.path.exists(skuFolder):
-        #download_sku(pw_page,sku,urlProducto,skuFolder)
-        try:    
-            download_sku(pw_page,sku)
-            status="descargado correctamente"
-            newProduct="yes"
-            tb="ok"    
-        except Exception as e:
-            tb=traceback.format_exc()
-            print(e)
-            newProduct="yes"
-            status="ERROR:"+str(e)
-            save_screenshot(pw_page,skuFolder)
-            pw_page.close()
-    else:
-        status="descargado correctamente"
-        newProduct="no"
-        tb="ok"
-    response={
+    skuFolderImages=os.path.join(skuFolder,"images")
+    skuFolderData=os.path.join(skuFolder,"data.json")
+    defaulResponse={
         "product":sku,
-        "status":status,
+        "status":"",
         "url":f"https://www.amazon.com/dp/{sku}",
         "marketplace":"amazon",
-        "condition":newProduct,
-        "log":tb,
+        "condition":"",
+        "log":"",
         "fecha":time.strftime("%Y-%m-%d %H:%M:%S")
     }
-    return response
+    if not os.path.exists(skuFolder):
+        #download_sku(pw_page,sku,urlProducto,skuFolder)
+        r=download_sub_main_sku_amazon_product(pw_page,sku)
+        status=r['status']
+        newProduct=r['newProduct']
+        tb=r['log']
+        status_code=r['status_code']
+    elif  not os.path.exists(skuFolderImages) or not os.path.exists(skuFolderData):
+        r=download_sub_main_sku_amazon_product(pw_page,sku)
+        status=r['status']
+        newProduct=r['newProduct']
+        tb=r['log']
+        status_code=r['status_code']
+    else:
+        status="DESCARGADO CORRECTAMENTE"
+        newProduct="no"
+        tb="ok"
+        status_code=200
+
+    defaulResponse['status']=status
+    defaulResponse['condition']=newProduct
+    defaulResponse['log']=tb
+    defaulResponse['fecha']=time.strftime("%Y-%m-%d %H:%M:%S")
+    defaulResponse['status_code']=status_code
+    return defaulResponse
 def download_sku(pw_page,sku):
     urlProducto=f"https://www.amazon.com/dp/{sku}"
     skuFolder=os.path.join(mp.sku_folder_path,sku)
@@ -236,7 +267,10 @@ def download_sku(pw_page,sku):
     urls_images=get_urls(pw_page)
     print("\nPagina cargada en el producto "+sku)
     classificaction=get_classificaction(pw_page)
-    title=get_title(pw_page)
+    try:
+        title=get_title(pw_page)
+    except:
+        raise Exception("ERROR, NO EXISTE PRODUCTO O INTERNET LENTO")
     price=get_price(pw_page)
     overView=get_overView(pw_page)
     note=get_note(pw_page)
@@ -281,14 +315,13 @@ def remove_all_sku_folder():
     for sku in os.listdir(skuFolder):
         skuPath=os.path.join(skuFolder,sku)
         os.remove(skuPath)
-def save_screenshot(pw_page,skuFolder):
-    #create folder
-    
-    #validate if the folder exists
+def save_screenshot(pw_page,sku):
+    skuFolder=os.path.join(mp.sku_folder_path,sku)
     if not os.path.exists(skuFolder):
         os.makedirs(skuFolder)
     picPath=os.path.join(skuFolder,"screenshot.png")
-    #pw_page.screenshot(path=picPath)
+    pw_page.screenshot(path=picPath)
+
 def download_info(dataSheet=None):
     if dataSheet:
         products=[item for item in dataSheet]

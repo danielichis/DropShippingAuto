@@ -51,7 +51,7 @@ dataToLoad= [
 
 
 class LoaderRealPlaza:
-    def __init__(self,dataToLoad,page,context,p,sheetProductData,configSheetData):
+    def __init__(self,dataToLoad=None,page=None,context=None,p=None,sheetProductData=None,configSheetData=None):
         self.dataToLoad=dataToLoad
         self.page=page
         self.context=context
@@ -61,11 +61,58 @@ class LoaderRealPlaza:
     def start_playwright(self):
         self.p = sync_playwright().start()
         user_dir=mp.get_current_chrome_profile_path()
-        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/',slow_mo=50)
+        #self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/',slow_mo=50)
+        self.browser= self.p.chromium.launch(headless=False)
         self.page=self.browser.new_page()
-    
+    def login_real_plaza(self):
+        pass
+
+    def handle_login_real_plaza(self):
+        self.cookies=self.page.context.cookies()
+        self.page.locator("form[name='userLogin'] button").click()
+        if self.page.url.find("https://irmarketplace.us.auth0.com/login?state")!=-1:
+            print("Se encuentra en la página de autenticación")
+            self.page.locator("input[name='email']").fill("mkpinter@unaluka.com")
+            self.page.locator("input[name='password']").fill("Inretail123*")
+        self.page.wait_for_load_state("networkidle")
+        print("Haciendo clik para loguearse")
+        with self.page.expect_response("https://irmarketplace.us.auth0.com/oauth/token") as response_info:
+            self.page.locator("g[id='Login']").click()
+        response = response_info.value
+        tokenLogin=response.json()["access_token"]
+        self.token=tokenLogin
+
+    def sear_category(self,category:str):
+        urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=10&text=laptops"
+        # cok=self.page.context.cookies()
+        # contextApi=self.p.request.new_context(cookies=cok)
+        header={"Authorization":f"Bearer {self.token}",
+                "Content-Type":"application/json"}
+        r=self.page.request.get(urlEndpoint,headers=header)
+        print(r.json())
+        #make get request to get categories with page.route
+        print("Categoría buscada")
+    def get_children_category_trought_api(self,categoryId:str):
+        urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=10&text={categoryId}"
+        header={"Authorization":f"Bearer {self.token}",
+                "Content-Type":"application/json"}
+        r=self.page.request.get(urlEndpoint,headers=header)
+        return r.json()
+    def get_tree_categories(self):
+        rootUrl="https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=100&root=true"
+        header={"Authorization":f"Bearer {self.token}",
+                "Content-Type":"application/json"}
+        rootCategories=self.page.request.get(rootUrl,headers=header).json()
+        treeCategories={}
+        for category in rootCategories:
+            if category["hasChildren"]==True:
+                children=self.get_children_category_trought_api(category["id"])
+                treeCategories[category["name"]]=category["children"]
+            
     def go_to_create_product(self):
         self.page.goto(homeRealPlaza)
+        self.page.wait_for_load_state("networkidle")
+        self.handle_login_real_plaza()
         self.page.get_by_text("Catálogo").click()
         self.page.get_by_role("link", name="Administrar Productos").click()
         self.page.get_by_role("button", name="Crear Producto").click()
@@ -87,9 +134,6 @@ class LoaderRealPlaza:
         print("Se insertó descripción")
 
     def load_category(self)->bool:
-        #getting the list of categories
-        #self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
-        
         time.sleep(1)
 
         try:
@@ -109,14 +153,8 @@ class LoaderRealPlaza:
             categoryList.append({"name":category.locator("span").inner_text(),
                                 "button":button})
         print(categoryList)
-        #example
-
-        #getting random number
-        ##Use embeddings function to select the best category
-        #categoryList=search_best_option(categoryList)
         categNumb=randrange(0,len(categoryList))
         print(categNumb)
-        #selecting the category
 
         try:
             categoryList[categNumb]["button"].click(timeout=2000)
@@ -128,11 +166,6 @@ class LoaderRealPlaza:
     
         print("Categoria seleccionada:"+categoryList[categNumb]["name"])
         return True
-        #self.page.locator(".btn-subcategory").first.click()
-        #self.page.locator(".btn-subcategory").first.click()
-        #self.page.get_by_text("Aceite Vegetal").click()
-        #print("categoria seleccionada")
-
 
     def load_all_category(self):
 
@@ -143,12 +176,7 @@ class LoaderRealPlaza:
                 break
         print("Se cargaron todas las categorías")
         self.page.wait_for_load_state("networkidle")
-        # #example
-        # #categoryList[0]["button"].click()
-        # self.page.locator(".btn-subcategory").first.click()
-        # self.page.locator(".btn-subcategory").first.click()
-        # self.page.get_by_text("Aceite Vegetal").click()
-        # print("categoria seleccionada")
+
         
     def load_brand(self):
         self.page.locator("div[id='inputBrand']").click()
@@ -327,6 +355,7 @@ class LoaderRealPlaza:
     def load_main_real_plaza(self):
         self.go_to_create_product()
         print("---Paso 1: Crear Producto---")
+        self.sear_category("laptops")
         self.load_product_name()
         self.load_all_category()
         self.get_additional_fields()
@@ -387,7 +416,7 @@ class LoaderRP:
 
 
 if __name__ == "__main__":
-    RPmloader=LoaderRealPlaza(2)
+    RPmloader=LoaderRealPlaza()
     RPmloader.start_playwright()
     RPmloader.load_main_real_plaza()
 
