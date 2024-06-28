@@ -183,6 +183,7 @@ def get_price(pw_page):
     return price
 
 def get_title(pw_page):
+    full_text=pw_page.inner_text()
     title=pw_page.query_selector("span[id='productTitle']").inner_text()
     return title
 
@@ -256,7 +257,11 @@ def download_sku(pw_page,sku):
     urls_images=get_urls(pw_page)
     print("\nPagina cargada en el producto "+sku)
     classificaction=get_classificaction(pw_page)
-    title=get_title(pw_page)
+    try:
+        title=get_title(pw_page)
+    except:
+        raise ""
+        title="no especifico"
     price=get_price(pw_page)
     overView=get_overView(pw_page)
     note=get_note(pw_page)
