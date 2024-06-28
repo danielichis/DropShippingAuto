@@ -206,17 +206,20 @@ def download_sub_main_sku_amazon_product(pw_page,sku):
         download_sku(pw_page,sku)
         status="DESCARGADO CORRECTAMENTE"
         newProduct="yes"
-        tb="ok"    
+        tb="ok"
+        status_code=200
     except Exception as e:
         tb=traceback.format_exc()
         newProduct="yes"
         status="ERROR EN LA DESCARGA"
+        status_code=500
         save_screenshot(pw_page,sku)
         pw_page.close()
     return {
         "status":status,
         "newProduct":newProduct,
-        "log":tb
+        "log":tb,
+        "status_code":status_code
     }
 def get_sku_amazon_product(pw_page,product):
     sku=product['SKU'].strip()
@@ -238,19 +241,24 @@ def get_sku_amazon_product(pw_page,product):
         status=r['status']
         newProduct=r['newProduct']
         tb=r['log']
+        status_code=r['status_code']
     elif  not os.path.exists(skuFolderImages) or not os.path.exists(skuFolderData):
         r=download_sub_main_sku_amazon_product(pw_page,sku)
         status=r['status']
         newProduct=r['newProduct']
         tb=r['log']
+        status_code=r['status_code']
     else:
         status="DESCARGADO CORRECTAMENTE"
         newProduct="no"
         tb="ok"
+        status_code=200
+
     defaulResponse['status']=status
     defaulResponse['condition']=newProduct
     defaulResponse['log']=tb
     defaulResponse['fecha']=time.strftime("%Y-%m-%d %H:%M:%S")
+    defaulResponse['status_code']=status_code
     return defaulResponse
 def download_sku(pw_page,sku):
     urlProducto=f"https://www.amazon.com/dp/{sku}"
