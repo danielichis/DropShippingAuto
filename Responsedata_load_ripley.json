@@ -1,0 +1,9 @@
+{
+    "sku": "B00E3AMCRW",
+    "status": "El sku ya existe u otro error",
+    "url": "B00E3AMCRW",
+    "marketplace": "ripley",
+    "condition": "new",
+    "log": "Traceback (most recent call last):\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/ripley/loadRipley.py\", line 1169, in load_main_ripley\n    url=self.load_sku()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/ripley/loadRipley.py\", line 1156, in load_sku\n    self.confirm_product()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/ripley/loadRipley.py\", line 829, in confirm_product\n    raise Exception(\"El sku ya existe u otro error\")\nException: El sku ya existe u otro error\n",
+    "fecha": "2024-06-28 14:48:42"
+}

@@ -41,6 +41,7 @@ class LoaderRipley:
         self.p=p
         self.sheetProductData=sheetProductData
         self.configDataSheet=configSheetData
+        self.status="ERROR AL CARGAR"
 
     def start_playwright(self):
         #self.p = sync_playwright().start()
@@ -193,7 +194,7 @@ class LoaderRipley:
             url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={encoded_category_value}&selectedLocale=es_PE&withRoot=false"
             print(url_petition)
             try:
-                with self.page.expect_response(url_petition,timeout=12000) as response_info:
+                with self.page.expect_response(url_petition,timeout=15000) as response_info:
                     self.page.locator("input[name='filter']").fill(category_value)
                 response=response_info.value
                 response_categories_list=json.loads(response.text())
@@ -823,6 +824,7 @@ class LoaderRipley:
             print("Producto confirmado")
         else:
             print("El sku ya existe u otro error")
+            self.status="El sku ya existe u otro error"
             print("Pasando a siguiente producto")
             raise Exception("El sku ya existe u otro error")
 

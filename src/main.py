@@ -112,7 +112,8 @@ class amazon_mkt_peruvians:
 
     def load_to_ripley(self):
         self.ripleyPage.bring_to_front()  
-        self.loaderRipley.load_main_ripley()  
+        self.loaderRipley.load_main_ripley()
+        post_peticion(self.loaderRipley.responseRipleyLoad)  
 
 
     def main_process(self):
