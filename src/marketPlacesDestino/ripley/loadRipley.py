@@ -1,6 +1,6 @@
 import traceback
 from playwright.sync_api import sync_playwright,expect
-from utils.embeddings.embeding import get_best_similarity_option,get_best_similarity_option2
+from utils.embeddings.embeding import get_best_similarity_option,get_best_similarity_option2,get_similarity_option
 from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
@@ -51,14 +51,17 @@ class LoaderRipley:
         pass
         
     def to_login(self):
-        print("Iniciando sesion...")
-        user_name="mkpinter@unaluka.com"
-        user_password="Unaluk@Flash*"
-        self.page.get_by_placeholder("Tu inicio de sesión").fill(user_name)
-        self.page.get_by_role("button",name="Siguiente").click()
-        self.page.get_by_label("Password*").fill(user_password)
-        self.page.get_by_role("button",name="Sign in").click()
-        print("Sesion iniciada")
+        try:
+            print("Iniciando sesion...")
+            user_name="mkpinter@unaluka.com"
+            user_password="Unaluk@Flash*"
+            self.page.get_by_placeholder("Tu inicio de sesión").fill(user_name)
+            self.page.get_by_role("button",name="Siguiente").click()
+            self.page.get_by_label("Password*").fill(user_password)
+            self.page.get_by_role("button",name="Sign in").click()
+            print("Sesion iniciada")
+        except:
+            pass
     
     def go_to_home(self):
         self.page.goto(homeRipley)
@@ -492,8 +495,8 @@ class LoaderRipley:
         print("Obteniendo nuevas opciones de combobox...")
         id_ul=combobox_locator["options_id"]
         print(id_ul)
-        self.page.keyboard.type(cgpt_answer,delay=50)
-        time.sleep(4)
+        self.page.keyboard.type(cgpt_answer,delay=100)
+        time.sleep(3)
         
         options_list_locator=self.page.locator(f"#{id_ul}").locator("li").all()
         print(options_list_locator)
@@ -686,7 +689,7 @@ class LoaderRipley:
         print("Separando campos a llenar en con y sin opciones...")
         self.fields_fillable=[]
         self.fields_nonfillable=[]
-
+    
         for loc in locators_list:
             print(loc["name"]+"-"+loc["tag"])
             if len(loc["options"])>0:
@@ -696,8 +699,13 @@ class LoaderRipley:
                 print("Campo con opciones")
                 self.fields_fillable.append(loc)
 
+        
+
         print("Se separaron los campos a llenar en campos con opciones y campos sin opciones")
         print("////////////")   
+
+
+
 
         
     def get_all_required_fields(self):
@@ -800,6 +808,22 @@ class LoaderRipley:
             print("Imagen cargada")
         print("Se cargaron todas las imágenes")
 
+    def load_color(self):
+        if "Color" not in self.dimArgs.keys():
+            try:
+                self.page.locator("#s2id_productAndOffersCommand-offerAndVariantsCommandui-id-0-attributeValuesFormCommand-272508").click(timeout=5000)
+                nearest_color=self.find_nearest_color()
+                self.page.keyboard.type(nearest_color,delay=50)
+                time.sleep(1)
+                self.page.wait_for_load_state("networkidle")
+                self.page.keyboard.press("Enter")
+            except:
+                print("No se encontró el campo de color")
+                return
+        else:
+            print("Ya se llenó el campo de color")
+
+
     def print_split_fields(self):
         print("Fillable Fields")
         print([x["name"] for x in self.fields_fillable])
@@ -870,14 +894,18 @@ class LoaderRipley:
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
                 #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
-                short_name=dimArgs["Nombre"]
+                #short_name=dimArgs["Nombre"]
+                short_name=self.product_info["Titulo corto, maximo 30 caracteres"]
                 short_header="Compra tu "+" en Ripley Internacional"
-                max_chars=129-len(short_header)
+                max_chars=129-len(short_header)-10
                 if len(short_name)>max_chars:
                     print("Generando nuevo nombre corto para la Descripción corta porque excede el límite de caracteres")
                     new_name_constraints="Nombre,"+f"no sobrepasar los {str(max_chars)} caracteres incluyendo espacios en blanco"
                     print(new_name_constraints)
+                    count=0
                     while(True):
+                        count+=1
+                        print("Intento "+str(count))
                         short_name=get_dinamic_args_extraction2(options_type="options_0",content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":new_name_constraints,"locator":None,"options":[]}])[new_name_constraints]
                         short_description="Compra tu "+short_name+" en Ripley Internacional"
                         print(short_description)
@@ -965,23 +993,31 @@ class LoaderRipley:
 
         print("Campos con opciones llenados")
 
-
+    def select_value_field(self,field_name:str,current_valueField:str)->str:
+        if field_name=="Color":
+            return self.find_nearest_color()
+        elif field_name=="Tipo de producto":
+            return self.find_nearest_product_type()
+        else:
+            return current_valueField
 
     def fill_nonfillable_fields2(self):
         print("Llenando campos con opciones con información del producto...")
         contentProduct=mp.data_sku(self.dataToLoad['sku'])
         dimArgs=get_dinamic_args_extraction2(options_type="options_1",content_product=str(contentProduct),fieldsFromMarketPlace=self.fields_nonfillable)
+        self.dimArgs=dimArgs
         print(dimArgs)
 
         for field in self.fields_nonfillable:
             textField=field["name"]
-            valueField=dimArgs[textField]
+            current_valueField=dimArgs[textField]
+            valueField=self.select_value_field(textField,current_valueField)
             print("Llenando campo :"+textField)
             print(valueField)
             if field["tag"]=="SELECT":
                 option_label=valueField
                 try:
-                    field["locator"].select_option(label=option_label,timeout=10000)
+                    field["locator"].select_option(label=option_label,timeout=5000)
                 except:
                     if textField=="Condición":
                         print("No se encontró información respecto a la condición del producto")
@@ -1024,7 +1060,8 @@ class LoaderRipley:
                     time.sleep(2)
                     self.page.keyboard.press("Enter")
                 elif textField=="Color":
-                    self.page.keyboard.type("Multicolor")
+                    nearest_color=self.find_nearest_color()
+                    self.page.keyboard.type(nearest_color)
                     self.page.wait_for_load_state("networkidle")
                     time.sleep(2)
                     self.page.keyboard.press("Enter")
@@ -1037,7 +1074,9 @@ class LoaderRipley:
                     if self.combobox_search_counter<len(valueField_words):
                         print("Buscando la mejor opcion para el combobox "+ str(self.combobox_search_counter+1)+"° vez")
                         print(valueField_words[self.combobox_search_counter])
-                        self.search_best_option_combobox(field,textField,valueField,valueField_words[self.combobox_search_counter])
+                        nearest_product_type=self.find_nearest_product_type()
+                        #self.search_best_option_combobox(field,textField,valueField,valueField_words[self.combobox_search_counter])
+                        self.search_best_option_combobox(field,textField,valueField,nearest_product_type)
                     else:
                         self.combobox_search_counter=-1
                         print("No se encontraron resultados")
@@ -1105,7 +1144,44 @@ class LoaderRipley:
         print("--------------")
         #return {"name":field_to_gen,"value":generated_field}
         return generated_field
+    
+    def find_nearest_color(self)->str:
+        with open('DropShippingAuto/src/marketPlacesDestino/ripley/options_list/color.json', 'r') as file:
+            colors_options = json.load(file)
+        print(colors_options)
         
+        if "Color" in self.dimArgs.keys():
+            selected_color=self.dimArgs["Color"]
+        else:
+            selected_color=get_dinamic_args_extraction2(options_type="options_0",content_product=str(self.product_info),fieldsFromMarketPlace=[{"name":"Color","locator":None,"options":[]}])["Color"]
+
+        if selected_color=='No Especifica' or selected_color=='':
+            nearest_color='Multicolor'
+        else:
+            if selected_color in colors_options:
+                nearest_color=selected_color
+            else:
+                nearest_color=get_best_similarity_option(colors_options,selected_color)
+        print("Color seleccionado : "+nearest_color)
+        return nearest_color
+
+    def find_nearest_product_type(self)->str:
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        with open('DropShippingAuto/src/marketPlacesDestino/ripley/options_list/product_type.json', 'r') as file:
+            product_type_options = json.load(file)
+        part_size = len(product_type_options) // 3
+        product_type_options_1 = product_type_options[:part_size]
+        product_type_options_2 = product_type_options[part_size:2*part_size]
+        product_type_options_3 = product_type_options[2*part_size:]
+
+        nearest_option_1=get_best_similarity_option(product_type_options_1,str(contentProduct))
+        nearest_option_2=get_best_similarity_option(product_type_options_2,str(contentProduct))
+        nearest_option_3=get_best_similarity_option(product_type_options_3,str(contentProduct))
+        nearest_product_type=get_best_similarity_option([nearest_option_1,nearest_option_2,nearest_option_3],str(contentProduct))
+        print("Tipo de producto seleccionado final : "+nearest_product_type)
+        return nearest_product_type
+
+    
     def load_base_price(self):
         base_price=str(self.sheetProductData['PRECIO LISTA MARKETPLACE'])
         self.page.get_by_label("Precio", exact=True).fill(base_price)
@@ -1151,6 +1227,7 @@ class LoaderRipley:
             self.print_split_fields()
             self.fill_fillable_fields()
             self.fill_nonfillable_fields2()
+            self.load_color()
             #self.generate_dinamic_answer("Descripción")
             #self.generate_dinamic_answer("Descripción corta")
             self.confirm_product()
@@ -1198,6 +1275,8 @@ class LoaderRipley:
 
 if __name__ == "__main__":
 
+    pass
+
     # with open("dataToDownloadAndLoad.json","r") as f:
     #     sheetData=json.load(f)
     # print("cargando productosSS")
@@ -1221,6 +1300,5 @@ if __name__ == "__main__":
     # print("Se crearon "+str(number_products)+ " productos")
     # print('--------')
 
-    for i in range(5,2,-1):
-        print(i)
-
+    # for i in range(5,2,-1):
+    #     print(i)
