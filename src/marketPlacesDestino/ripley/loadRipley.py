@@ -1,6 +1,6 @@
 import traceback
 from playwright.sync_api import sync_playwright,expect
-from utils.embeddings.embeding import get_best_similarity_option,get_best_similarity_option2,get_similarity_option
+from utils.embeddings.embeding import get_best_similarity_option,get_best_similarity_option2
 from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc

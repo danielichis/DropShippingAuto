@@ -1,9 +1,9 @@
 {
-    "sku": "B0014BYHJE",
-    "status": "El sku ya existe u otro error",
-    "url": "B0014BYHJE",
+    "sku": "B09674F2X6",
+    "status": "CARGADO CORRECTAMENTE",
+    "url": "B09674F2X6",
     "marketplace": "ripley",
     "condition": "new",
-    "log": "Traceback (most recent call last):\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/ripley/loadRipley.py\", line 1247, in load_main_ripley\n    url=self.load_sku()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/ripley/loadRipley.py\", line 1234, in load_sku\n    self.confirm_product()\n  File \"/Users/macbook/unalukabots/unalukaBots/DropShippingAuto/src/marketPlacesDestino/ripley/loadRipley.py\", line 853, in confirm_product\n    raise Exception(\"El sku ya existe u otro error\")\nException: El sku ya existe u otro error\n",
-    "fecha": "2024-07-02 15:12:23"
+    "log": "ok",
+    "fecha": "2024-07-02 15:53:12"
 }
