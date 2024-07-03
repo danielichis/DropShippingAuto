@@ -778,8 +778,8 @@ class LoaderRipley:
         for i,resizedImg in enumerate(self.dataToLoad["imagesPath"]):
             print("Redimensionando imagen : "+resizedImg+str(i+1))
             ripImg=Image.open(resizedImg)
-            ripImg.thumbnail(ripleyCustomSize,Image.Resampling.LANCZOS)
-            #ripImg=ripImg.resize(ripleyCustomSize)
+            #ripImg.thumbnail(ripleyCustomSize,Image.Resampling.LANCZOS)
+            ripImg=ripImg.resize(ripleyCustomSize)
             ripley_image_path=os.path.join(ripleyFolderDir,f"resizedImg_ripley_{i}.jpg")
             ripImg.save(ripley_image_path)
             print("Imagen redimensionada"+str(i+1))
@@ -866,7 +866,6 @@ class LoaderRipley:
         self.page.get_by_role("textbox", name="alto empaque *").fill(str(alto))
         self.page.get_by_role("textbox", name="ancho empaque *").fill(str(ancho))
         self.page.get_by_role("textbox", name="largo empaque *").fill(str(largo))
-
         print("Dimensiones del paquete cargadas")
 
 
@@ -1075,9 +1074,9 @@ class LoaderRipley:
                     if self.combobox_search_counter<len(valueField_words):
                         print("Buscando la mejor opcion para el combobox "+ str(self.combobox_search_counter+1)+"° vez")
                         print(valueField_words[self.combobox_search_counter])
-                        nearest_product_type=self.find_nearest_product_type()
-                        #self.search_best_option_combobox(field,textField,valueField,valueField_words[self.combobox_search_counter])
-                        self.search_best_option_combobox(field,textField,valueField,nearest_product_type)
+                        #nearest_product_type=self.find_nearest_product_type()
+                        self.search_best_option_combobox(field,textField,valueField,valueField_words[self.combobox_search_counter])
+                        #self.search_best_option_combobox(field,textField,valueField,nearest_product_type)
                     else:
                         self.combobox_search_counter=-1
                         print("No se encontraron resultados")
