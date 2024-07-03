@@ -134,7 +134,9 @@ def img_down(links,skuFolder):
             response  = requests.get(link).content 
             image_file = io.BytesIO(response)
             image  = Image.open(image_file)
-            resized_image = image.resize((1000, 1000))
+            #resized_image = image.resize((1000, 1000))
+            #Modifyed to not resize the image
+            resized_image = image
             sku=link.split('/')[-1]
             imagePath=os.path.join(skuImageFolder,sku)
             with open(imagePath , "wb") as f:

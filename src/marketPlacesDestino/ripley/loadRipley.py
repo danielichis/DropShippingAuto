@@ -890,7 +890,8 @@ class LoaderRipley:
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':
-                    valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Nombre resumido en máximo 129 caracteres incluyendo espacios en blanco")
+                    #valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Nombre resumido en máximo 70 caracteres incluyendo espacios en blanco")
+                    valueField=self.product_info["Titulo corto, maximo 30 caracteres"]
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
                 #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
@@ -1173,11 +1174,12 @@ class LoaderRipley:
         product_type_options_1 = product_type_options[:part_size]
         product_type_options_2 = product_type_options[part_size:2*part_size]
         product_type_options_3 = product_type_options[2*part_size:]
-
+        #product_type_extracted=self.dimArgs["Tipo de producto"]
         nearest_option_1=get_best_similarity_option(product_type_options_1,str(contentProduct))
         nearest_option_2=get_best_similarity_option(product_type_options_2,str(contentProduct))
         nearest_option_3=get_best_similarity_option(product_type_options_3,str(contentProduct))
         nearest_product_type=get_best_similarity_option([nearest_option_1,nearest_option_2,nearest_option_3],str(contentProduct))
+        #nearest_product_type=get_best_similarity_option([nearest_option_1,nearest_option_2,nearest_option_3],product_type_extracted)
         print("Tipo de producto seleccionado final : "+nearest_product_type)
         return nearest_product_type
 
