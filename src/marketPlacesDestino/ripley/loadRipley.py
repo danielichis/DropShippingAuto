@@ -8,6 +8,7 @@ from utils.jsHandler import insertPropertiesToPage
 from utils.dinamicMassivArgsExtractions_rip import get_dinamic_args_extraction,list_attributes_ff_in_json,list_attributes_nff_in_json,get_dinamic_args_extraction2,list_attributes_fields_in_json,get_dinamic_answer,dinamic_order_categories
 from utils.managePaths import mp
 from DropShippingAuto.src.marketPlacesDestino.ripley.StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator,keyboard_delete_text,extract_words_regex,atomize_classification_wo_prepositions,remove_duplicates_preserve_order,format_url_with_encoded_values
+from DropShippingAuto.src.marketPlacesDestino.ripley.imgHandling import add_background_to_img
 import json
 import time
 import re
@@ -889,8 +890,12 @@ class LoaderRipley:
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':
-                    #valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Nombre resumido en máximo 70 caracteres incluyendo espacios en blanco")
-                    valueField=self.product_info["Titulo corto, maximo 30 caracteres"]
+                    amazon_title=self.product_info["titulo"]
+                    #print("titulo caracteres :"+ str(len(amazon_title)))
+                    #valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Título resumido en máximo 120 caracteres incluyendo espacios en blanco")
+                    valueField=amazon_title if len(amazon_title)<=129 else self.generate_dinamic_answer("Título resumido con cantidad de caracteres entre 100 y 120 incluyendo espacios en blanco")
+                    #print("titulo caracteres :"+ str(len(valueField)))
+                    #valueField=self.product_info["Titulo corto, maximo 30 caracteres"]
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
                 #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
