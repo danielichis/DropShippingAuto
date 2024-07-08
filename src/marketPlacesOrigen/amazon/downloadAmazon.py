@@ -11,6 +11,7 @@ from PIL import Image
 from DropShippingAuto.src.utilsDropSh.imageConverters import resize_image
 from utils.managePaths import mp
 from utils.manipulateDicts import dictManipulator
+from utils.imgHandling.imgHandling import resize_original_images_per_mkp
 import traceback
 import csv
 
@@ -139,19 +140,21 @@ def get_importantInfo(pw_page):
         })
     return importantInfoList
 def img_down(links,skuFolder):
-    skuImageFolder=os.path.join(skuFolder,"images")
+    skuImageFolder=os.path.join(skuFolder,"images","originals")
     os.makedirs(skuFolder,exist_ok=True)
     os.makedirs(skuImageFolder,exist_ok=True)
     for link in links:
         if link!="":
             response  = requests.get(link).content 
             image_file = io.BytesIO(response)
-            image  = Image.open(image_file)
-            resized_image = image.resize((1000, 1000))
+            image  = Image.open(image_file)   
             sku=link.split('/')[-1]
             imagePath=os.path.join(skuImageFolder,sku)
             with open(imagePath , "wb") as f:
-                resized_image.save(f , "JPEG")
+                image.save(f , "JPEG")
+    resize_original_images_per_mkp(skuFolder)
+
+
                 
 def get_comparitions(pw_page):
     rows=pw_page.query_selector_all("table[id='HLCXComparisonTable'] tr[class='comparison_other_attribute_row']")
