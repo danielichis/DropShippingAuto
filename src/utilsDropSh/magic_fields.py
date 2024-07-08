@@ -1,7 +1,7 @@
 from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
 
 def get_static_fields_with_openai(universeText):
-    aditionalFields=["Titulo corto, maximo 30 caracteres","Breve resumen para vender","Peso en Kg","Dimensiones del producto en cm",]
+    aditionalFields=["Titulo corto, maximo 30 caracteres","Breve resumen para vender","Peso en Kg del producto","Peso en Kg del envio","Dimensiones del producto en cm","Titulo corto entre 110 y 120 caracteres"]
     listToSend=[]
     for field in aditionalFields:
         listToSend.append({"name":field,"fieldType":"input","options":[]})

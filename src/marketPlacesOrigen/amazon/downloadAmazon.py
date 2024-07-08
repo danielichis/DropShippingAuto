@@ -46,6 +46,19 @@ def get_overView(pw_page):
                 pass
     return overVies
 
+def get_field_from_search_bar(pw_page,field):
+    #url https://www.amazon.com/ask/livesearch/detailPageSearch/search?query=peso&asin=B0815XFSGK&forumId=&liveSearchSessionId=c196fd3e-3b30-41c6-b949-216cd5287a70&liveSearchPageLoadId=b4aedb69-c00e-4229-bebe-6dd7a5205bda&searchSource=LIVE_SEARCH_SOURCE&askLanguage=es_US&isFromSecondaryPage=
+    #scroll to the search bar
+    try:
+        pw_page.evaluate("window.scrollTo(0, document.body.scrollHeight/2.2);")
+        input_searcher=pw_page.locator("input[type='search']")
+        input_searcher.fill(field,timeout=3000)
+        field_descriptions=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])").first
+        fields=field_descriptions.inner_text()
+    except:
+        fields="No Especifica"
+    return  fields
+
 def get_technicalDetails(pw_page):
     if len(pw_page.query_selector_all("table[id*='productDetails_techSpec_section'] tr"))>0:
         technicalDetails=pw_page.query_selector_all("table[id*='productDetails_techSpec_section'] tr")
@@ -284,6 +297,8 @@ def download_sku(pw_page,sku):
     descriptions=get_descriptions(pw_page)
     garanty=get_garanty(pw_page)    
     img_down(urls_images,skuFolder)
+    weight_description=get_field_from_search_bar(pw_page,"peso")
+    
     data={
         "sku":sku,
         "url":urlProducto,
@@ -301,10 +316,15 @@ def download_sku(pw_page,sku):
         "Informacion Adicional":aditionalInfo,
         "Garantia":garanty,
         "Nota":note,
-        "Links Imagenes":urls_images    
+        "Links Imagenes":urls_images,
+        "Peso en Kg del envio":weight_description
     }
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
+
+    if weight_description=="No Especifica":
+        data['Peso en Kg del envio']=data['Peso en Kg del producto']
+
     dataJsonPath=skuFolder+"/data.json"
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
@@ -320,7 +340,7 @@ def save_screenshot(pw_page,sku):
     if not os.path.exists(skuFolder):
         os.makedirs(skuFolder)
     picPath=os.path.join(skuFolder,"screenshot.png")
-    pw_page.screenshot(path=picPath)
+    #pw_page.screenshot(path=picPath)
 
 def download_info(dataSheet=None):
     if dataSheet:

@@ -81,7 +81,7 @@ class amazon_mkt_peruvians:
         post_peticion(r)
         if r['status_code']==200:
             self.amazonDataSku=get_product_in_amazon_carpet_parsed(self.product['SKU'])
-        self.statu_download_code=r['status_code']
+        self.status_download_code=r['status_code']
     def go_to_shopify(self):
         self.shopifyPage.goto(mp.newProductShopify)
         self.shopifyPage.wait_for_load_state("load")
@@ -127,7 +127,7 @@ class amazon_mkt_peruvians:
                     print("descargando y actualizando...")
                     self.download_amazon()
                     self.update_loaders_data()
-                if self.statu_download_code==200:
+                if self.status_download_code==200:
                     print(f"cargando productos...")
                     self.loadersFuntions[product['MARKETPLACE']]()
         except Exception as e:
