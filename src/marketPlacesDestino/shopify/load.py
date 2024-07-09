@@ -137,7 +137,10 @@ class LoaderShopify:
     
     def load_peso(self):
         self.page.locator(pshopy.cajaPesoDelProducto.selector).click()
-        self.page.locator(pshopy.cajaPesoDelProducto.selector).fill(self.dataToLoad['Peso en Kg del envio'])
+        amazon_peso=self.dataToLoad['Peso en Kg del envio']
+        if amazon_peso=='No Especifica':
+            amazon_peso=0.1
+        self.page.locator(pshopy.cajaPesoDelProducto.selector).fill(amazon_peso)
 
     def save_edition(self):
         saves=self.page.query_selector_all("//span[text()='Guardar']")
