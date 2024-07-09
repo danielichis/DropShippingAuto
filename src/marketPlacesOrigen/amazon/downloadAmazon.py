@@ -326,9 +326,9 @@ def download_sku(pw_page,sku):
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
 
-    if weight_description=="No Especifica":
+    if data['Peso en Kg del envio']=="No Especifica":
         data['Peso en Kg del envio']=data['Peso en Kg del producto']
-
+    
     dataJsonPath=skuFolder+"/data.json"
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
