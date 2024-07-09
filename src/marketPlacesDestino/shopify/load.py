@@ -114,11 +114,11 @@ class LoaderShopify:
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto, maximo 30 caracteres"])
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto entre 110 y 120 caracteres"])
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")
-        self.page.locator("span>input[type='file']").set_input_files(self.dataToLoad['imagesPath'])
+        self.page.locator("span>input[type='file']").set_input_files(self.dataToLoad['imagesPath']['1000x1000'])
         pass
     def load_prices(self):
         self.page.wait_for_selector(pshopy.cajaPrecioProducto.selector)
