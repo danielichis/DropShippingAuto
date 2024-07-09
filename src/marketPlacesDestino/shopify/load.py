@@ -164,7 +164,7 @@ class LoaderShopify:
         frame_locator=webelement.content_frame
         descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['Breve resumen para vender'])
+        frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['titulo'])
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
         with self.page.expect_response(saveUrl,timeout=20000) as response_info:
             try:
