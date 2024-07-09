@@ -72,15 +72,27 @@ def get_product_in_amazon_carpet_parsed(product_sku):
     return dataAmazon
 
 def get_images_paths(product):
-    imagesPaths=[]
+    imagesPaths_750x555=[]
+    imagesPaths_1000x1000=[]
     skuFolder=sku_folder(product)
-    imagesPath=os.path.join(skuFolder,"images")
-    print(imagesPath)
-    for image in os.listdir(imagesPath):
-        #cambio
+    imagesDir_750x555=os.path.join(skuFolder,"images","resized_750x555")
+    imagesDir_1000x1000=os.path.join(skuFolder,"images","resized_1000x1000")
+    print(imagesDir_750x555)
+    print(imagesDir_1000x1000)
+
+    for image in os.listdir(imagesDir_750x555):
         if os.path.splitext(image)[1] == '.jpg':
-            #cambio
-            imagesPaths.append(os.path.join(imagesPath,image))
+            imagesPaths_750x555.append(os.path.join(imagesDir_750x555,image))
+    
+    for image in os.listdir(imagesDir_1000x1000):
+        if os.path.splitext(image)[1] == '.jpg':
+            imagesPaths_1000x1000.append(os.path.join(imagesDir_1000x1000,image))
+
+    imagesPaths={
+        "750x555":imagesPaths_750x555,
+        "1000x1000":imagesPaths_1000x1000
+    }        
+
     return imagesPaths
 
 

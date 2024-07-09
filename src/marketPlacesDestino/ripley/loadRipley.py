@@ -769,34 +769,8 @@ class LoaderRipley:
         #self.test_locators_list2(divs4_locators)
         self.required_fields=divs4_locators
 
-    def resizing_images(self)->list:
-        ripleyCustomSize=(750,555)
-        imgDirectory=os.path.dirname(self.dataToLoad["imagesPath"][0])
-        ripleyFolderDir=os.path.join(imgDirectory,"ripley750x555")
-        resizedImgPaths=[]
-        os.makedirs(ripleyFolderDir,exist_ok=True)
-        print(imgDirectory)
-        for i,resizedImg in enumerate(self.dataToLoad["imagesPath"]):
-            print("Redimensionando imagen : "+resizedImg+str(i+1))
-            ripImg=Image.open(resizedImg)
-            #ripImg.thumbnail(ripleyCustomSize,Image.Resampling.LANCZOS)
-            ripImg=ripImg.resize(ripleyCustomSize)
-            ripley_image_path=os.path.join(ripleyFolderDir,f"resizedImg_ripley_{i}.jpg")
-            ripImg.save(ripley_image_path)
-            print("Imagen redimensionada"+str(i+1))
-        print("Se redimensionaron imágenes")
-
-        #get routes of resized images
-        for image in os.listdir(ripleyFolderDir):
-            if os.path.splitext(image)[1] == '.jpg':
-                resizedImgPaths.append(os.path.join(ripleyFolderDir,image))
-
-        print(resizedImgPaths)
-        return resizedImgPaths
-
     def load_images(self):
-        print("Redimensionando imágenes...")
-        resizedImgPaths=self.resizing_images()
+        resizedImgPaths=self.dataToLoad["imagesPath"]["750x555"]
         image_locators=self.page.locator("input:enabled[type='file']").all()
         number_loadable_images=min(len(resizedImgPaths),len(image_locators))
         print("Cantidad de img a subir: "+str(number_loadable_images))
@@ -823,7 +797,6 @@ class LoaderRipley:
                 return
         else:
             print("Ya se llenó el campo de color")
-
 
     def print_split_fields(self):
         print("Fillable Fields")
@@ -891,11 +864,8 @@ class LoaderRipley:
                 valueField=self.product_sku
             elif textField=='Nombre':
                     amazon_title=self.product_info["titulo"]
-                    #print("titulo caracteres :"+ str(len(amazon_title)))
-                    #valueField=dimArgs['Nombre'] if len(dimArgs['Nombre'])<=129 else self.generate_dinamic_answer("Título resumido en máximo 120 caracteres incluyendo espacios en blanco")
-                    valueField=amazon_title if len(amazon_title)<=129 else self.generate_dinamic_answer("Título resumido con cantidad de caracteres entre 100 y 120 incluyendo espacios en blanco")
-                    #print("titulo caracteres :"+ str(len(valueField)))
-                    #valueField=self.product_info["Titulo corto, maximo 30 caracteres"]
+                    amazon_generated_title=self.product_info["Titulo corto entre 110 y 120 caracteres"]
+                    valueField=amazon_title if len(amazon_title)<=129 else amazon_generated_title
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
                 #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
@@ -924,7 +894,9 @@ class LoaderRipley:
             elif textField=='Cantidad de la oferta':
                 valueField='0'
             elif textField=='Peso (kg)':
-                valueField=dimArgs['Peso (kg)'] if dimArgs['Peso (kg)']!="" and dimArgs['Peso (kg)']!="No Especifica" else "N/A"
+                #valueField=dimArgs['Peso (kg)'] if dimArgs['Peso (kg)']!="" and dimArgs['Peso (kg)']!="No Especifica" else "N/A"
+                amazon_weight=self.product_info["Peso en Kg del envio"]
+                valueField=amazon_weight if amazon_weight!="" and amazon_weight!="No Especifica" else "N/A"
             elif textField=='Precio':
                 #valueField=self.load_base_price()
                 continue

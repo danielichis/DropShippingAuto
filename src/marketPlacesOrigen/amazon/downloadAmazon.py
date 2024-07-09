@@ -139,6 +139,7 @@ def get_importantInfo(pw_page):
             info.query_selector("h4").inner_text():info.query_selector("p:nth-child(3)").inner_text()
         })
     return importantInfoList
+
 def img_down(links,skuFolder):
     skuImageFolder=os.path.join(skuFolder,"images","originals")
     os.makedirs(skuFolder,exist_ok=True)
