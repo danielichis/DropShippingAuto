@@ -114,11 +114,11 @@ class LoaderShopify:
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto, maximo 30 caracteres"])
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto entre 110 y 120 caracteres"])
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")
-        self.page.locator("span>input[type='file']").set_input_files(self.dataToLoad['imagesPath'])
+        self.page.locator("span>input[type='file']").set_input_files(self.dataToLoad['imagesPath']['1000x1000'])
         pass
     def load_prices(self):
         self.page.wait_for_selector(pshopy.cajaPrecioProducto.selector)
@@ -137,7 +137,10 @@ class LoaderShopify:
     
     def load_peso(self):
         self.page.locator(pshopy.cajaPesoDelProducto.selector).click()
-        self.page.locator(pshopy.cajaPesoDelProducto.selector).fill("0.01")
+        amazon_peso=self.dataToLoad['Peso en Kg del envio']
+        if amazon_peso=='No Especifica':
+            amazon_peso=0.1
+        self.page.locator(pshopy.cajaPesoDelProducto.selector).fill(amazon_peso)
 
     def save_edition(self):
         saves=self.page.query_selector_all("//span[text()='Guardar']")
@@ -164,7 +167,7 @@ class LoaderShopify:
         frame_locator=webelement.content_frame
         descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['Breve resumen para vender'])
+        frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['titulo'])
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
         with self.page.expect_response(saveUrl,timeout=20000) as response_info:
             try:

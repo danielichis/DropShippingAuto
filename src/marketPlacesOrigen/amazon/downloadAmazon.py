@@ -139,6 +139,7 @@ def get_importantInfo(pw_page):
             info.query_selector("h4").inner_text():info.query_selector("p:nth-child(3)").inner_text()
         })
     return importantInfoList
+
 def img_down(links,skuFolder):
     skuImageFolder=os.path.join(skuFolder,"images","originals")
     os.makedirs(skuFolder,exist_ok=True)
@@ -325,9 +326,9 @@ def download_sku(pw_page,sku):
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
 
-    if weight_description=="No Especifica":
+    if data['Peso en Kg del envio']=="No Especifica":
         data['Peso en Kg del envio']=data['Peso en Kg del producto']
-
+    
     dataJsonPath=skuFolder+"/data.json"
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
