@@ -35,7 +35,7 @@ class LoaderRipley:
     #     self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False)
     #     self.page=self.browser.new_page()
 
-    def __init__(self,dataToLoad,page,context,p,sheetProductData,configSheetData):
+    def __init__(self,dataToLoad=None,page=None,context=None,p=None,sheetProductData=None,configSheetData=None):
         self.dataToLoad=dataToLoad
         self.page=page
         self.context=context
@@ -45,10 +45,10 @@ class LoaderRipley:
         self.status="ERROR AL CARGAR"
 
     def start_playwright(self):
-        #self.p = sync_playwright().start()
-        #user_dir=mp.get_current_chrome_profile_path()
-        #self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/',slow_mo=50)
-        #self.page=self.browser.new_page()
+        self.p = sync_playwright().start()
+        user_dir=mp.get_current_chrome_profile_path()
+        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/',slow_mo=50)
+        self.page=self.browser.new_page()
         pass
         
     def to_login(self):
@@ -1253,16 +1253,14 @@ class LoaderRipley:
 
 if __name__ == "__main__":
 
-    pass
-
     # with open("dataToDownloadAndLoad.json","r") as f:
     #     sheetData=json.load(f)
     # print("cargando productosSS")
     # #amp=amazon_mkt_peruvians(sheetData)
     # #amp.main_process()
-    # RIPloader=LoaderRipley(2)
-    # RIPloader.start_playwright()
-    # RIPloader.go_to_home()
+    RIPloader=LoaderRipley()
+    RIPloader.start_playwright()
+    RIPloader.go_to_home()
     # #number_products = int(input("Set number of products:"))
     # number_products=1
     # for i in range(number_products):
