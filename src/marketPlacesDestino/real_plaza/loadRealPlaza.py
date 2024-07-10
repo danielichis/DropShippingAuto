@@ -102,8 +102,7 @@ class LoaderRealPlaza:
         if child_of_child['hasChildren']:
             child_of_child["children"]=self.get_children_category_trought_api(child_of_child['id'])
             for child in child_of_child["children"]:
-                child["children"]=self.get_childrens(child)
-            return child_of_child
+                self.get_childrens(child)
             
     def get_tree_categories(self):
         rootUrl="https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=100&root=true"
@@ -111,8 +110,13 @@ class LoaderRealPlaza:
                 "Content-Type":"application/json"}
         rootCategories=self.page.request.get(rootUrl,headers=header).json()
         for child in rootCategories:
-            child["children"]=self.get_childrens(child)
-            
+            self.get_childrens(child)
+        path_real_plaza_categories_json=mp.realPlazaTreeCategoriesJsonPath
+        with open(path_real_plaza_categories_json, "w",encoding="utf-8") as f:
+            json.dump(rootCategories, f, indent=4, ensure_ascii=False)
+        print("Categorías guardadas en json")
+        #query para obtener los nodos con el atributo hasChildren=False
+
     def go_to_create_product(self):
         self.page.goto(homeRealPlaza)
         self.page.wait_for_load_state("networkidle")
