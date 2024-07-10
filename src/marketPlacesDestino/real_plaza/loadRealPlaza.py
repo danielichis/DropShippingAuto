@@ -93,27 +93,25 @@ class LoaderRealPlaza:
         #make get request to get categories with page.route
         print("Categoría buscada")
     def get_children_category_trought_api(self,categoryId:str):
-        urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=10&text={categoryId}"
+        urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=100&parentId={categoryId}"
         header={"Authorization":f"Bearer {self.token}",
                 "Content-Type":"application/json"}
         r=self.page.request.get(urlEndpoint,headers=header)
         return r.json()
-    def get_childrens(self,child):
-        if child['hasChildren']:
-            childs=self.get_children_category_trought_api(child['id'])
-            for child_of_child in childs:
-                child[child_of_child['name']]=child[child_of_child['childreen']]
-                self.get_childrens(child_of_child)
+    def get_childrens(self,child_of_child):
+        if child_of_child['hasChildren']:
+            child_of_child["children"]=self.get_children_category_trought_api(child_of_child['id'])
+            for child in child_of_child["children"]:
+                child["children"]=self.get_childrens(child)
+            return child_of_child
             
     def get_tree_categories(self):
         rootUrl="https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=100&root=true"
         header={"Authorization":f"Bearer {self.token}",
                 "Content-Type":"application/json"}
         rootCategories=self.page.request.get(rootUrl,headers=header).json()
-        self.treeCategories={}
-        for category in rootCategories:
-            self.treeCategories[category["name"]]=category["children"]
-            self.get_childrens(category["id"])
+        for child in rootCategories:
+            child["children"]=self.get_childrens(child)
             
     def go_to_create_product(self):
         self.page.goto(homeRealPlaza)
@@ -361,6 +359,7 @@ class LoaderRealPlaza:
     def load_main_real_plaza(self):
         self.go_to_create_product()
         print("---Paso 1: Crear Producto---")
+        self.get_tree_categories()
         self.sear_category("laptops")
         self.load_product_name()
         self.load_all_category()
@@ -379,7 +378,9 @@ class LoaderRealPlaza:
         print("Producto creado y variante creada")
         print("Regresando a la página de crear producto")
         self.go_to_create_product()
-        self.end_playwright()    
+        self.end_playwright()   
+def test_get_tree_categories():
+    pass
 class LoaderRP:
     def __init__(self,dataToLoad):
         self.dataToLoad=dataToLoad
