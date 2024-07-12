@@ -83,20 +83,20 @@ def get_technicalDetails(pw_page):
         technicalDetailsDict[technicalDetail.query_selector(f"{child}:nth-child(1)").inner_text()]=technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
     return technicalDetailsDict
 
-def get_abaoutProduct(pw_page):
+def get_aboutProduct(pw_page):
     
     selectorsOptions=["div#feature-bullets li span","div[id='productFactsDesktop_feature_div'] ul li>span"]
-    abaoutProductDict={}
+    aboutProductDict={}
     if len(pw_page.query_selector_all(selectorsOptions[0]))>0:
-        abaoutProduct=pw_page.query_selector_all(selectorsOptions[0])
+        aboutProduct=pw_page.query_selector_all(selectorsOptions[0])
     elif len(pw_page.query_selector_all(selectorsOptions[1]))>0:
-        abaoutProduct=pw_page.query_selector_all(selectorsOptions[1])
-    for i,abaoutP in enumerate(abaoutProduct):
+        aboutProduct=pw_page.query_selector_all(selectorsOptions[1])
+    for i,aboutP in enumerate(aboutProduct):
         try:
-            abaoutProductDict[dictManipulator.fisrt_substring_before_double_dot(abaoutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(abaoutP.inner_text())
+            aboutProductDict[dictManipulator.fisrt_substring_before_double_dot(aboutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(aboutP.inner_text())
         except:
-            abaoutProductDict[str(i)+".-"]=abaoutP.inner_text()
-    return abaoutProductDict
+            aboutProductDict[str(i)+".-"]=aboutP.inner_text()
+    return aboutProductDict
 
 def get_otherDetails(pw_page):
     otherDetails=pw_page.query_selector_all("table[class*='_product-comparison'] tr")
@@ -294,7 +294,7 @@ def download_sku(pw_page,sku):
     overView=get_overView(pw_page)
     note=get_note(pw_page)
     technicalDetails=get_technicalDetails(pw_page)
-    abaooutProduct=get_abaoutProduct(pw_page)
+    aboutProduct=get_aboutProduct(pw_page)
     otherDetails=get_otherDetails(pw_page)
     aditionalInfo=get_aditionalInfo(pw_page)
     bulletDetails=get_bulletDetails(pw_page)
@@ -314,7 +314,7 @@ def download_sku(pw_page,sku):
         "descripciones":descriptions,
         "Vista General":overView,
         "Detalles Tecnicos":technicalDetails,
-        "Acerca del producto":abaooutProduct,
+        "Acerca del producto":aboutProduct,
         "Otros detalles":otherDetails,
         "Contenido de la caja":bulletDetails,
         "Mas detalles Tecnicos":comparitions,

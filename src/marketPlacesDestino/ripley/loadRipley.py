@@ -15,7 +15,7 @@ import re
 from random import randrange
 from datetime import date,timedelta
 from PIL import Image
-from utils.manipulateDicts import dictConverter
+from utils.manipulateDicts import dictManipulator
 import os
 import ast
 
@@ -323,8 +323,7 @@ class LoaderRipley:
         cat_options_names=[option["name"] for option in category_dict["options"]]
         categNumb=cat_options_names.index(optionToSelect)
         return categNumb
-
-
+    
     def make_category_dict(self,category_div_order:int)->list:
         categories_list_locator=self.page.locator("div[class='select2-result-label']").all()
         categories_list=[]
@@ -513,9 +512,6 @@ class LoaderRipley:
         print([x["name"] for x in new_options])
         print("Opciones obtenidas")
         
-
-
-
     def get_options_locator_list2(self,locators_list:list)->list:
 
         for locator in locators_list:
@@ -706,9 +702,6 @@ class LoaderRipley:
         print("////////////")   
 
 
-
-
-        
     def get_all_required_fields(self):
 
         divs4_names=self.page.locator("label:visible[class='required']").all_inner_texts()
@@ -828,12 +821,18 @@ class LoaderRipley:
 
     def load_description(self)->str:
         description=self.dataToLoad['descripciones']
-        description_str=dictConverter().dict_to_string_bp(description)
+        description_str=dictManipulator.dict_to_string_bp(description)
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill(description_str)
         return description_str
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").type("---")
         #print("Descripción cargada")
+    
+
+    def get_about_this_item_str(self,number_paragraphs:int):
+        if self.dataToLoad["Acerca del producto"]:
+            about_this_item_str=dictManipulator.dict_to_bp_w_paragraphs(self.dataToLoad["Acerca del producto"],number_paragraphs)
+            return about_this_item_str
 
     def load_package_dimensions(self,alto:int,ancho:int,largo:int):
         print("Cargando dimensiones del paquete...")
@@ -859,7 +858,11 @@ class LoaderRipley:
                 continue
             elif textField=='Descripcion':
                 static_description=self.load_description()
-                valueField=dimArgs['Descripción Corta'] + "\n"+ static_description        
+                about_this_item_str=self.get_about_this_item_str(3)
+                if about_this_item_str:
+                    valueField=about_this_item_str +"\n"+ static_description     
+                else:
+                    valueField=dimArgs['Descripción Corta'] +"\n"+ static_description     
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':

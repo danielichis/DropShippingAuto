@@ -8,6 +8,7 @@ from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_carpet_parsed
 from DropShippingAuto.src.utilsDropSh.managePaths import dictManipulator
 from DropShippingAuto.src.utilsDropSh.dinamySelections import search_best_option
+from utils.dinamicMassivArgsExtractions_rip import get_dinamic_answer 
 from utils.manipulateDicts import dictManipulator
 from utils.embeddings.embeding import get_top_n_match
 from utils.embeddings.embeding import get_best_category_shopify
@@ -142,6 +143,13 @@ class LoaderShopify:
             amazon_peso=0.1
         self.page.locator(pshopy.cajaPesoDelProducto.selector).fill(amazon_peso)
 
+    def get_about_this_item_str(self,number_paragraphs:int):
+        if self.dataToLoad["Acerca del producto"]:
+            about_this_item_str=dictManipulator.dict_to_bp_w_paragraphs(self.dataToLoad["Acerca del producto"],number_paragraphs)
+            return about_this_item_str
+        else:
+            return self.dataToLoad["Resumen de 3 a 4 parrafos separados por viñetas"]
+
     def save_edition(self):
         saves=self.page.query_selector_all("//span[text()='Guardar']")
         saves[len(saves)-1].click()
@@ -167,7 +175,7 @@ class LoaderShopify:
         frame_locator=webelement.content_frame
         descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['titulo'])
+        frame_locator.locator("div[class='fr-element fr-view']").fill(self.get_about_this_item_str(3))
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
         with self.page.expect_response(saveUrl,timeout=20000) as response_info:
             try:

@@ -108,7 +108,6 @@ class amazon_mkt_peruvians:
         pass
 
     def go_to_ripley(self):
-        self.loaderRipley.start_playwright()
         self.loaderRipley.go_to_home()
 
     def load_to_ripley(self):
