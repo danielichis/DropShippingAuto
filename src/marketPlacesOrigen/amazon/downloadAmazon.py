@@ -1,5 +1,5 @@
 import time
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright,expect
 import json
 import requests
 import io
@@ -53,9 +53,11 @@ def get_field_from_search_bar(pw_page,field):
     try:
         pw_page.evaluate("window.scrollTo(0, document.body.scrollHeight/2.2);")
         input_searcher=pw_page.locator("input[type='search']")
-        input_searcher.fill(field,timeout=3000)
-        field_descriptions=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])").first
-        fields=field_descriptions.inner_text()
+        input_searcher.fill(field,timeout=5000)
+        #time.sleep(2)
+        field_locator=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])")
+        expect(field_locator).to_be_visible(timeout=10000)
+        fields=field_locator.first.inner_text()
     except:
         fields="No Especifica"
     return  fields
