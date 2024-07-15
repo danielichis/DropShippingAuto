@@ -325,6 +325,10 @@ def download_sku(pw_page,sku):
         "Links Imagenes":urls_images,
         "Peso en Kg del envio":weight_description
     }
+    
+    ##Erasing key values 
+
+
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
 
