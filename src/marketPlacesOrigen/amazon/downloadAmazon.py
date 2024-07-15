@@ -325,9 +325,10 @@ def download_sku(pw_page,sku):
         "Links Imagenes":urls_images,
         "Peso en Kg del envio":weight_description
     }
-    
-    ##Erasing key values 
 
+    ##Erasing any key-value pair that contains any of the word in the list
+    dictManipulator.remove_pair_holding_word_from_dict(data,["garantia","garantía"])
+    ####
 
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)

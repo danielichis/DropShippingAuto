@@ -101,17 +101,26 @@ class LoaderShopify:
         ulElementSelector="div[id='%s'] ul" %(key)
         list_providers=self.page.locator(selectorProviders).all_inner_texts()
         wildcardBrand="Genérico"
-        if "Marca" in self.dataToLoad.keys():
-            if self.dataToLoad['Marca']!="No especificado":
-                provider=self.dataToLoad['Marca']
-                if provider in list_providers:
-                    self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
-                else:
-                    self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
-            else:
-                self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+
+        # if "Marca" in self.dataToLoad.keys():
+        #     if self.dataToLoad['Marca']!="No especificado":
+        #         provider=self.dataToLoad['Marca']
+        #         if provider in list_providers:
+        #             self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
+        #         else:
+        #             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+        #     else:
+        #         self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+        # else:
+        #     self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+        provider=self.dataToLoad["Marca,proveedor o fabricante"]
+        if provider in list_providers:
+            self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
         else:
             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+
+
+
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
@@ -140,7 +149,7 @@ class LoaderShopify:
         self.page.locator(pshopy.cajaPesoDelProducto.selector).click()
         amazon_peso=self.dataToLoad['Peso en Kg del envio']
         if amazon_peso=='No Especifica':
-            amazon_peso=0.1
+            amazon_peso="0.1"
         self.page.locator(pshopy.cajaPesoDelProducto.selector).fill(amazon_peso)
 
     def get_about_this_item_str(self,number_paragraphs:int):
@@ -175,7 +184,7 @@ class LoaderShopify:
         frame_locator=webelement.content_frame
         descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(self.get_about_this_item_str(3))
+        frame_locator.locator("div[class='fr-element fr-view']").fill(self.get_about_this_item_str(4))
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
         with self.page.expect_response(saveUrl,timeout=20000) as response_info:
             try:
