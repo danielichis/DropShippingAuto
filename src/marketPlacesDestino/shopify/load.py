@@ -124,7 +124,8 @@ class LoaderShopify:
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto entre 110 y 120 caracteres"])
+        #self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto entre 110 y 120 caracteres"])
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo ,corregido, si tiene errores de redaccion, en un máximo de 200 caracteres"])
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")

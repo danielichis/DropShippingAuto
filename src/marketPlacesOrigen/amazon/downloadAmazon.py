@@ -301,7 +301,7 @@ def download_sku(pw_page,sku):
     importantInfo=get_importantInfo(pw_page)
     comparitions=get_comparitions(pw_page)
     descriptions=get_descriptions(pw_page)
-    garanty=get_garanty(pw_page)    
+    #garanty=get_garanty(pw_page)    
     img_down(urls_images,skuFolder)
     weight_description=get_field_from_search_bar(pw_page,"peso")
     
@@ -320,7 +320,7 @@ def download_sku(pw_page,sku):
         "Mas detalles Tecnicos":comparitions,
         "Informacion Importante":importantInfo,
         "Informacion Adicional":aditionalInfo,
-        "Garantia":garanty,
+        #"Garantia":garanty,
         "Nota":note,
         "Links Imagenes":urls_images,
         "Peso en Kg del envio":weight_description

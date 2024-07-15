@@ -1173,7 +1173,7 @@ class LoaderRipley:
 
     def load_model_number(self):
         content_product=mp.data_sku(self.dataToLoad['sku'])
-        field_to_extract="Número de modelo.No es el SKU ni el ASIN"
+        field_to_extract="Número de modelo o número de serie.No es el SKU ni el ASIN"
         model_number=get_dinamic_args_extraction2(options_type="options_0",content_product=str(content_product),fieldsFromMarketPlace=[{"name":field_to_extract,"locator":None,"options":[]}])[field_to_extract]
         print(model_number)
         if model_number!= self.dataToLoad['sku']:
