@@ -115,7 +115,6 @@ class amazon_mkt_peruvians:
         self.loaderRipley.load_main_ripley()
         post_peticion(self.loaderRipley.responseRipleyLoad)  
 
-
     def main_process(self):
         self.set_loaders()
         self.start_pages()
