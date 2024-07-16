@@ -47,18 +47,32 @@ def get_overView(pw_page):
                 pass
     return overVies
 
+def scroll_to_bottom_slowly(pw_page):
+    pw_page.evaluate("""
+        async () => {
+            const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+            while (window.scrollY + window.innerHeight < document.body.scrollHeight) {
+                window.scrollBy(0, 250);  // Scroll down by 100 pixels
+                await delay(50);  // Wait for 100 milliseconds
+            }
+        }
+    """)
+
 def get_field_from_search_bar(pw_page,field):
     #url https://www.amazon.com/ask/livesearch/detailPageSearch/search?query=peso&asin=B0815XFSGK&forumId=&liveSearchSessionId=c196fd3e-3b30-41c6-b949-216cd5287a70&liveSearchPageLoadId=b4aedb69-c00e-4229-bebe-6dd7a5205bda&searchSource=LIVE_SEARCH_SOURCE&askLanguage=es_US&isFromSecondaryPage=
     #scroll to the search bar
     try:
-        pw_page.evaluate("window.scrollTo(0, document.body.scrollHeight/2.2);")
+        scroll_to_bottom_slowly(pw_page)
+        #pw_page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
         input_searcher=pw_page.locator("input[type='search']")
+        expect(input_searcher).to_be_visible()
+        input_searcher.scroll_into_view_if_needed()
         input_searcher.fill(field,timeout=5000)
-        #time.sleep(2)
-        field_locator=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])")
+        field_locator=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])").first
         expect(field_locator).to_be_visible(timeout=10000)
-        fields=field_locator.first.inner_text()
-    except:
+        fields=field_locator.inner_text()
+    except Exception as e:
+        print(str(e))
         fields="No Especifica"
     return  fields
 
@@ -328,8 +342,12 @@ def download_sku(pw_page,sku):
 
     ##Erasing any key-value pair that contains any of the word in the list
     dictManipulator.remove_pair_holding_word_from_dict(data,["garantia","garantía"])
-    ####
+    ## Borrando peso ligero del subdiccionario otros detalles
+    if "Peso Ligero" in data["Otros detalles"].keys():
+        print("Borrando peso ligero del diccionario")
+        del data["Otros detalles"]["Peso Ligero"]
 
+    ####
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
 
