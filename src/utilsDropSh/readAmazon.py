@@ -109,7 +109,7 @@ def get_all_products_in_amazon_carpet_parsed():
     return allData_list
 
 if __name__ == "__main__":
-    r=get_product_in_amazon_carpet_parsed("B000GAYQJ0")
+    r=get_product_in_amazon_carpet_parsed("B0CYL5QPN4")
     print(r['descripciones'])
     #get_all_products_in_amazon_carpet_parsed()
     pass

@@ -48,7 +48,7 @@ def get_overView(pw_page):
     return overVies
 
 
-def scroll_to_bottom_slowly(pw_page, timeout_ms=30000):  # timeout_ms is the maximum allowed time in milliseconds
+def scroll_to_bottom_slowly(pw_page, timeout_ms=20000):  # timeout_ms is the maximum allowed time in milliseconds
     pw_page.evaluate(f"""
         async () => {{
             const startTime = new Date().getTime();  // Initialize start time

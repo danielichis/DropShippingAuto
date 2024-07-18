@@ -140,7 +140,7 @@ class LoaderShopify:
     
     def load_stock(self):
         self.page.locator(pshopy.cajaStock.selector).click()
-        self.page.locator(pshopy.cajaStock.selector).fill("1")
+        self.page.locator(pshopy.cajaStock.selector).fill("50")
     
     def load_sku(self):
         self.page.locator(pshopy.cajaSKU.selector).click()
