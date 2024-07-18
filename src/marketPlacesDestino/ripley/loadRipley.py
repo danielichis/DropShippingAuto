@@ -866,9 +866,9 @@ class LoaderRipley:
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':
-                    amazon_title=self.product_info["titulo"]
-                    amazon_generated_title=self.product_info["Titulo corto entre 110 y 120 caracteres"]
-                    valueField=amazon_title if len(amazon_title)<=129 else amazon_generated_title
+                    #amazon_title=self.product_info["titulo"]
+                    amazon_generated_title=self.product_info["Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario"]
+                    valueField=amazon_generated_title
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
                 #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")

@@ -47,15 +47,22 @@ def get_overView(pw_page):
                 pass
     return overVies
 
-def scroll_to_bottom_slowly(pw_page):
-    pw_page.evaluate("""
-        async () => {
+
+def scroll_to_bottom_slowly(pw_page, timeout_ms=30000):  # timeout_ms is the maximum allowed time in milliseconds
+    pw_page.evaluate(f"""
+        async () => {{
+            const startTime = new Date().getTime();  // Initialize start time
+            const timeout = {timeout_ms};  // Timeout in milliseconds
             const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-            while (window.scrollY + window.innerHeight < document.body.scrollHeight) {
-                window.scrollBy(0, 250);  // Scroll down by 100 pixels
-                await delay(50);  // Wait for 100 milliseconds
-            }
-        }
+            while (window.scrollY + window.innerHeight < document.body.scrollHeight) {{
+                window.scrollBy(0, 250);  // Corrected comment: Scroll down by 250 pixels
+                await delay(50);  // Corrected comment: Wait for 50 milliseconds
+                const elapsedTime = new Date().getTime() - startTime;
+                if (elapsedTime > timeout) {{  // Check if timeout is exceeded
+                    break;  // Stop scrolling if timeout is exceeded
+                }}
+            }}
+        }}
     """)
 
 def get_field_from_search_bar(pw_page,field):
@@ -69,7 +76,7 @@ def get_field_from_search_bar(pw_page,field):
         input_searcher.scroll_into_view_if_needed()
         input_searcher.fill(field,timeout=5000)
         field_locator=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])").first
-        expect(field_locator).to_be_visible(timeout=10000)
+        expect(field_locator).to_be_visible(timeout=8000)
         fields=field_locator.inner_text()
     except Exception as e:
         print(str(e))
@@ -351,7 +358,7 @@ def download_sku(pw_page,sku):
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
 
-    if data['Peso en Kg del envio']=="No Especifica":
+    if data['Peso en Kg del envio'].upper()=="NO ESPECIFICA":
         data['Peso en Kg del envio']=data['Peso en Kg del producto']
     
     dataJsonPath=skuFolder+"/data.json"

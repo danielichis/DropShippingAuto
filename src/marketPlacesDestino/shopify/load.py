@@ -124,8 +124,8 @@ class LoaderShopify:
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        #self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto entre 110 y 120 caracteres"])
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo ,corregido, si tiene errores de redaccion, en un máximo de 200 caracteres"])
+        amazon_generated_title=self.dataToLoad["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"]
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(amazon_generated_title)
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")
