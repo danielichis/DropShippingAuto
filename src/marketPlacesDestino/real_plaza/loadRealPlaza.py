@@ -191,7 +191,7 @@ class LoaderRealPlaza:
         brands_text=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
         print(brands_text)
         try:
-            brand_index = brands_text.index("GENÉRICO")
+            brand_index = brands_text.index("YONKER")
             print(brand_index)
         except:
             brand_index = -1
@@ -363,8 +363,8 @@ class LoaderRealPlaza:
     def load_main_real_plaza(self):
         self.go_to_create_product()
         print("---Paso 1: Crear Producto---")
-        self.get_tree_categories()
-        self.sear_category("laptops")
+        #self.get_tree_categories()
+        #self.sear_category("laptops")
         self.load_product_name()
         self.load_all_category()
         self.get_additional_fields()
