@@ -1,54 +1,13 @@
+import os
 from playwright.sync_api import sync_playwright,expect
 from utils.jsHandler import insertPropertiesToPage
 from random import randrange
 from datetime import date,timedelta
 from utils.managePaths import mp
-from DropShippingAuto.src.utilsDropSh.imageConverters import resize_image
-#from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
-#from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
 import json
 import time
 homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
-
-
-dataToLoad= [
-        {
-            "sku": "B07QSTJV95",
-            "status_d": "descargado correctamente",
-            "newProduct": "no",
-            "product": {
-                "estado": "Crear",
-                "SKU": "B07QSTJV95",
-                "PrecioShopify": "299.00",
-                "PrecioListaShopify": "329",
-                "PrecioDinners": "347",
-                "PrecioRealPlaza": "347",
-                "PrecioRipley": "347",
-                "PrecioMercadoLibre": "369",
-                "PrecioShopstar": "347",
-                "fila": 85
-            }
-        },
-        {
-            "sku": "B0CKYF12ZR",
-            "status_d": "descargado correctamente",
-            "newProduct": "yes",
-            "product": {
-                "estado": "Crear",
-                "SKU": "B0CKYF12ZR",
-                "PrecioShopify": "149.00",
-                "PrecioListaShopify": "164",
-                "PrecioDinners": "175",
-                "PrecioRealPlaza": "171",
-                "PrecioRipley": "175",
-                "PrecioMercadoLibre": "182",
-                "PrecioShopstar": "171",
-                "fila": 91
-            }
-        }
-    ]
-
 
 class LoaderRealPlaza:
     def __init__(self,dataToLoad=None,page=None,context=None,p=None,sheetProductData=None,configSheetData=None):
@@ -117,10 +76,10 @@ class LoaderRealPlaza:
         print("Categorías guardadas en json")
         #query para obtener los nodos con el atributo hasChildren=False
 
-    def go_to_create_product(self):
+    def go_to_home(self):
         self.page.goto(homeRealPlaza)
         self.page.wait_for_load_state("networkidle")
-        self.handle_login_real_plaza()
+    def go_to_create_product(self):
         self.page.get_by_text("Catálogo").click()
         self.page.get_by_role("link", name="Administrar Productos").click()
         self.page.get_by_role("button", name="Crear Producto").click()
@@ -282,7 +241,7 @@ class LoaderRealPlaza:
     def create_product(self):
         self.page.get_by_role("button", name="Guardar").click()
         self.page.get_by_role("button", name="OK").click()
-        print("Producto creado")
+        print("Producto guardado")
         self.page.wait_for_load_state("networkidle")
 
     def create_variant(self):
@@ -335,12 +294,13 @@ class LoaderRealPlaza:
         
     def load_img(self):
         #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
-        img_route=r"C:\UnalukaBots\DropShippingAuto\src\marketPlacesOrigen\amazon\skus_Amazon\B0B92Y18GT\images\61U220djaVL._SL1080_.jpg"
-        img_route_resized=r"C:\UnalukaBots\DropShippingAuto\src\marketPlacesOrigen\amazon\skus_Amazon\B0B92Y18GT\images\61U220djaVL._SL1080_resized.jpg"
-        print("Convirtiendo imagen a 1000x1000...")
-        resize_image(img_route,img_route_resized)
-        print("Imagen convertida")
-        self.page.locator("input[type='file']").first.set_input_files(img_route_resized)
+        test_sku_path=os.path.join(mp.sku_folder_path,"B0BGHRMJ1B","images","originals")
+        imagesList=os.listdir(test_sku_path)
+        fullPaths=[]
+        for image in imagesList:
+            fullPath=os.path.join(test_sku_path,image)
+            fullPaths.append(fullPath)
+        self.page.locator("input[type='file']").first.set_input_files(fullPaths[0])
 
     def update_inventory_number(self):
         self.page.get_by_role("navigation").get_by_text("Inventario", exact=True).click()
@@ -361,6 +321,8 @@ class LoaderRealPlaza:
         self.p.stop()
         print("Playwright cerrado")
     def load_main_real_plaza(self):
+        self.go_to_home()
+        self.handle_login_real_plaza()
         self.go_to_create_product()
         print("---Paso 1: Crear Producto---")
         #self.get_tree_categories()
@@ -381,6 +343,7 @@ class LoaderRealPlaza:
         self.update_inventory_number()
         print("Producto creado y variante creada")
         print("Regresando a la página de crear producto")
+        self.go_to_home()
         self.go_to_create_product()
         self.end_playwright()   
 def test_get_tree_categories():
@@ -425,9 +388,14 @@ class LoaderRP:
         print(fieldsData)
 
 
+def other_tests():
+    test_sku_path=os.path.join(mp.sku_folder_path,"B0BGHRMJ1B","images","originals")
+    imagesList=os.listdir(test_sku_path)
+    print(imagesList)
 
 if __name__ == "__main__":
+    #other_tests()
     RPmloader=LoaderRealPlaza()
     RPmloader.start_playwright()
     RPmloader.load_main_real_plaza()
-
+    
