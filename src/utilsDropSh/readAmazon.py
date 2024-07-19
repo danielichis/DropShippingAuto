@@ -3,6 +3,7 @@ import csv
 from DropShippingAuto.src.utilsDropSh.managePaths import mp
 from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
+from utils.imgHandling.imgHandling import get_sorted_images_paths
 import os
 import re
 
@@ -40,12 +41,12 @@ def get_product_in_amazon_carpet_parsed(product_sku):
         dataAmazon['Peso Kg']=peso_kg
     else:
         peso_kg="200"
-    list_descripciones=[dataAmazon["descripciones"],dataAmazon["Vista General"],dataAmazon["Acerca del producto"],dataAmazon["Detalles Tecnicos"]]
+    #list_descripciones=[dataAmazon["descripciones"],dataAmazon["Vista General"],dataAmazon["Acerca del producto"],dataAmazon["Detalles Tecnicos"]]
+    #we are not considering "Acerca del producto" because there could be redundant information
+    list_descripciones=[dataAmazon["descripciones"],dataAmazon["Vista General"],dataAmazon["Detalles Tecnicos"]]
     print(list_descripciones)
     dataAmazon["descripciones"]=get_element_with_more_fields(list_descripciones)
-    
     # el que tenga mas elementos 
-
 
     if "Dimensiones del artículo Largo x Ancho x Altura" in dataAmazon["Otros detalles"].keys():
         dimensions=dataAmazon["Otros detalles"]["Dimensiones del artículo Largo x Ancho x Altura"]
@@ -70,32 +71,25 @@ def get_product_in_amazon_carpet_parsed(product_sku):
     dataAmazon['upc']=get_upc(product_sku)
 
     return dataAmazon
+ 
+
+
 
 def get_images_paths(product):
     imagesPaths_750x555=[]
     imagesPaths_1000x1000=[]
     skuFolder=sku_folder(product)
+    #directories
     imagesDir_750x555=os.path.join(skuFolder,"images","resized_750x555")
     imagesDir_1000x1000=os.path.join(skuFolder,"images","resized_1000x1000")
-    print(imagesDir_750x555)
-    print(imagesDir_1000x1000)
-
-    for image in os.listdir(imagesDir_750x555):
-        if os.path.splitext(image)[1] == '.jpg':
-            imagesPaths_750x555.append(os.path.join(imagesDir_750x555,image))
-    
-    for image in os.listdir(imagesDir_1000x1000):
-        if os.path.splitext(image)[1] == '.jpg':
-            imagesPaths_1000x1000.append(os.path.join(imagesDir_1000x1000,image))
-
+    #sorted images paths
+    imagesPaths_750x555=get_sorted_images_paths(imagesDir_750x555)
+    imagesPaths_1000x1000=get_sorted_images_paths(imagesDir_1000x1000)
     imagesPaths={
         "750x555":imagesPaths_750x555,
         "1000x1000":imagesPaths_1000x1000
     }        
-
     return imagesPaths
-
-
 
 def save_json(product,data):
     skuFolder=f"src/marketPlacesDestino/dinners/"
@@ -119,7 +113,7 @@ def get_all_products_in_amazon_carpet_parsed():
     return allData_list
 
 if __name__ == "__main__":
-    r=get_product_in_amazon_carpet_parsed("B000GAYQJ0")
+    r=get_product_in_amazon_carpet_parsed("B0CYL5QPN4")
     print(r['descripciones'])
     #get_all_products_in_amazon_carpet_parsed()
     pass

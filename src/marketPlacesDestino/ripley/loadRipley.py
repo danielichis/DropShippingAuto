@@ -15,7 +15,7 @@ import re
 from random import randrange
 from datetime import date,timedelta
 from PIL import Image
-from utils.manipulateDicts import dictConverter
+from utils.manipulateDicts import dictManipulator
 import os
 import ast
 
@@ -323,8 +323,7 @@ class LoaderRipley:
         cat_options_names=[option["name"] for option in category_dict["options"]]
         categNumb=cat_options_names.index(optionToSelect)
         return categNumb
-
-
+    
     def make_category_dict(self,category_div_order:int)->list:
         categories_list_locator=self.page.locator("div[class='select2-result-label']").all()
         categories_list=[]
@@ -513,9 +512,6 @@ class LoaderRipley:
         print([x["name"] for x in new_options])
         print("Opciones obtenidas")
         
-
-
-
     def get_options_locator_list2(self,locators_list:list)->list:
 
         for locator in locators_list:
@@ -706,9 +702,6 @@ class LoaderRipley:
         print("////////////")   
 
 
-
-
-        
     def get_all_required_fields(self):
 
         divs4_names=self.page.locator("label:visible[class='required']").all_inner_texts()
@@ -828,12 +821,21 @@ class LoaderRipley:
 
     def load_description(self)->str:
         description=self.dataToLoad['descripciones']
-        description_str=dictConverter().dict_to_string_bp(description)
+        description_str=dictManipulator.dict_to_string_bp(description)
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill(description_str)
         return description_str
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").type("---")
         #print("Descripción cargada")
+    
+
+    def get_about_this_item_str(self,number_paragraphs:int):
+        if "Acerca del producto" in self.dataToLoad.keys():
+            about_this_item_str=dictManipulator.dict_to_bp_w_paragraphs(self.dataToLoad["Acerca del producto"],number_paragraphs)
+            return about_this_item_str
+        else:
+            return self.dataToLoad["Resumen de 2 a 3 parrafos separados por viñetas"]
+            
 
     def load_package_dimensions(self,alto:int,ancho:int,largo:int):
         print("Cargando dimensiones del paquete...")
@@ -859,13 +861,17 @@ class LoaderRipley:
                 continue
             elif textField=='Descripcion':
                 static_description=self.load_description()
-                valueField=dimArgs['Descripción Corta'] + "\n"+ static_description        
+                about_this_item_str=self.get_about_this_item_str(3)
+                if about_this_item_str:
+                    valueField=about_this_item_str +"\n"+ static_description     
+                else:
+                    valueField=dimArgs['Descripción Corta'] +"\n"+ static_description     
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':
-                    amazon_title=self.product_info["titulo"]
-                    amazon_generated_title=self.product_info["Titulo corto entre 110 y 120 caracteres"]
-                    valueField=amazon_title if len(amazon_title)<=129 else amazon_generated_title
+                    #amazon_title=self.product_info["titulo"]
+                    amazon_generated_title=self.product_info["Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario"]
+                    valueField=amazon_generated_title
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
                 #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
@@ -892,7 +898,7 @@ class LoaderRipley:
                     short_description="Compra tu "+short_name+" en Ripley Internacional"
                 valueField=short_description
             elif textField=='Cantidad de la oferta':
-                valueField='0'
+                valueField='50'
             elif textField=='Peso (kg)':
                 #valueField=dimArgs['Peso (kg)'] if dimArgs['Peso (kg)']!="" and dimArgs['Peso (kg)']!="No Especifica" else "N/A"
                 amazon_weight=self.product_info["Peso en Kg del envio"]
@@ -1170,7 +1176,7 @@ class LoaderRipley:
 
     def load_model_number(self):
         content_product=mp.data_sku(self.dataToLoad['sku'])
-        field_to_extract="Número de modelo.No es el SKU ni el ASIN"
+        field_to_extract="Número de modelo o número de serie.No es el SKU ni el ASIN"
         model_number=get_dinamic_args_extraction2(options_type="options_0",content_product=str(content_product),fieldsFromMarketPlace=[{"name":field_to_extract,"locator":None,"options":[]}])[field_to_extract]
         print(model_number)
         if model_number!= self.dataToLoad['sku']:

@@ -1,5 +1,5 @@
 import time
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright,expect
 import json
 import requests
 import io
@@ -47,16 +47,39 @@ def get_overView(pw_page):
                 pass
     return overVies
 
+
+def scroll_to_bottom_slowly(pw_page, timeout_ms=20000):  # timeout_ms is the maximum allowed time in milliseconds
+    pw_page.evaluate(f"""
+        async () => {{
+            const startTime = new Date().getTime();  // Initialize start time
+            const timeout = {timeout_ms};  // Timeout in milliseconds
+            const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+            while (window.scrollY + window.innerHeight < document.body.scrollHeight) {{
+                window.scrollBy(0, 250);  // Corrected comment: Scroll down by 250 pixels
+                await delay(50);  // Corrected comment: Wait for 50 milliseconds
+                const elapsedTime = new Date().getTime() - startTime;
+                if (elapsedTime > timeout) {{  // Check if timeout is exceeded
+                    break;  // Stop scrolling if timeout is exceeded
+                }}
+            }}
+        }}
+    """)
+
 def get_field_from_search_bar(pw_page,field):
     #url https://www.amazon.com/ask/livesearch/detailPageSearch/search?query=peso&asin=B0815XFSGK&forumId=&liveSearchSessionId=c196fd3e-3b30-41c6-b949-216cd5287a70&liveSearchPageLoadId=b4aedb69-c00e-4229-bebe-6dd7a5205bda&searchSource=LIVE_SEARCH_SOURCE&askLanguage=es_US&isFromSecondaryPage=
     #scroll to the search bar
     try:
-        pw_page.evaluate("window.scrollTo(0, document.body.scrollHeight/2.2);")
+        scroll_to_bottom_slowly(pw_page)
+        #pw_page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
         input_searcher=pw_page.locator("input[type='search']")
-        input_searcher.fill(field,timeout=3000)
-        field_descriptions=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])").first
-        fields=field_descriptions.inner_text()
-    except:
+        expect(input_searcher).to_be_visible()
+        input_searcher.scroll_into_view_if_needed()
+        input_searcher.fill(field,timeout=5000)
+        field_locator=pw_page.locator("div[class='a-section askBtfSearchResultsViewableContent'] span:has(span[class='matches'])").first
+        expect(field_locator).to_be_visible(timeout=8000)
+        fields=field_locator.inner_text()
+    except Exception as e:
+        print(str(e))
         fields="No Especifica"
     return  fields
 
@@ -81,20 +104,22 @@ def get_technicalDetails(pw_page):
         technicalDetailsDict[technicalDetail.query_selector(f"{child}:nth-child(1)").inner_text()]=technicalDetail.query_selector("td:nth-child(2)").inner_text().replace("\u200e","")
     return technicalDetailsDict
 
-def get_abaoutProduct(pw_page):
+def get_aboutProduct(pw_page):
     
     selectorsOptions=["div#feature-bullets li span","div[id='productFactsDesktop_feature_div'] ul li>span"]
-    abaoutProductDict={}
+    aboutProductDict={}
     if len(pw_page.query_selector_all(selectorsOptions[0]))>0:
-        abaoutProduct=pw_page.query_selector_all(selectorsOptions[0])
+        aboutProduct=pw_page.query_selector_all(selectorsOptions[0])
     elif len(pw_page.query_selector_all(selectorsOptions[1]))>0:
-        abaoutProduct=pw_page.query_selector_all(selectorsOptions[1])
-    for i,abaoutP in enumerate(abaoutProduct):
+        aboutProduct=pw_page.query_selector_all(selectorsOptions[1])
+    else:
+        return None
+    for i,aboutP in enumerate(aboutProduct):
         try:
-            abaoutProductDict[dictManipulator.fisrt_substring_before_double_dot(abaoutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(abaoutP.inner_text())
+            aboutProductDict[dictManipulator.fisrt_substring_before_double_dot(aboutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(aboutP.inner_text())
         except:
-            abaoutProductDict[str(i)+".-"]=abaoutP.inner_text()
-    return abaoutProductDict
+            aboutProductDict[str(i)+".-"]=aboutP.inner_text()
+    return aboutProductDict
 
 def get_otherDetails(pw_page):
     otherDetails=pw_page.query_selector_all("table[class*='_product-comparison'] tr")
@@ -292,14 +317,14 @@ def download_sku(pw_page,sku):
     overView=get_overView(pw_page)
     note=get_note(pw_page)
     technicalDetails=get_technicalDetails(pw_page)
-    abaooutProduct=get_abaoutProduct(pw_page)
+    aboutProduct=get_aboutProduct(pw_page)
     otherDetails=get_otherDetails(pw_page)
     aditionalInfo=get_aditionalInfo(pw_page)
     bulletDetails=get_bulletDetails(pw_page)
     importantInfo=get_importantInfo(pw_page)
     comparitions=get_comparitions(pw_page)
     descriptions=get_descriptions(pw_page)
-    garanty=get_garanty(pw_page)    
+    #garanty=get_garanty(pw_page)    
     img_down(urls_images,skuFolder)
     weight_description=get_field_from_search_bar(pw_page,"peso")
     
@@ -312,21 +337,30 @@ def download_sku(pw_page,sku):
         "descripciones":descriptions,
         "Vista General":overView,
         "Detalles Tecnicos":technicalDetails,
-        "Acerca del producto":abaooutProduct,
+        "Acerca del producto":aboutProduct,
         "Otros detalles":otherDetails,
         "Contenido de la caja":bulletDetails,
         "Mas detalles Tecnicos":comparitions,
         "Informacion Importante":importantInfo,
         "Informacion Adicional":aditionalInfo,
-        "Garantia":garanty,
+        #"Garantia":garanty,
         "Nota":note,
         "Links Imagenes":urls_images,
         "Peso en Kg del envio":weight_description
     }
+
+    ##Erasing any key-value pair that contains any of the word in the list
+    dictManipulator.remove_pair_holding_word_from_dict(data,["garantia","garantía"])
+    ## Borrando peso ligero del subdiccionario otros detalles
+    if "Peso Ligero" in data["Otros detalles"].keys():
+        print("Borrando peso ligero del diccionario")
+        del data["Otros detalles"]["Peso Ligero"]
+
+    ####
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
 
-    if data['Peso en Kg del envio']=="No Especifica":
+    if data['Peso en Kg del envio'].upper()=="NO ESPECIFICA":
         data['Peso en Kg del envio']=data['Peso en Kg del producto']
     
     dataJsonPath=skuFolder+"/data.json"

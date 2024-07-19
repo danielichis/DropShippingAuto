@@ -8,6 +8,7 @@ from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_carpet_parsed
 from DropShippingAuto.src.utilsDropSh.managePaths import dictManipulator
 from DropShippingAuto.src.utilsDropSh.dinamySelections import search_best_option
+from utils.dinamicMassivArgsExtractions_rip import get_dinamic_answer 
 from utils.manipulateDicts import dictManipulator
 from utils.embeddings.embeding import get_top_n_match
 from utils.embeddings.embeding import get_best_category_shopify
@@ -100,21 +101,30 @@ class LoaderShopify:
         ulElementSelector="div[id='%s'] ul" %(key)
         list_providers=self.page.locator(selectorProviders).all_inner_texts()
         wildcardBrand="Genérico"
-        if "Marca" in self.dataToLoad.keys():
-            if self.dataToLoad['Marca']!="No especificado":
-                provider=self.dataToLoad['Marca']
-                if provider in list_providers:
-                    self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
-                else:
-                    self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
-            else:
-                self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+
+        # if "Marca" in self.dataToLoad.keys():
+        #     if self.dataToLoad['Marca']!="No especificado":
+        #         provider=self.dataToLoad['Marca']
+        #         if provider in list_providers:
+        #             self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
+        #         else:
+        #             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+        #     else:
+        #         self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+        # else:
+        #     self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+        provider=self.dataToLoad["Marca,proveedor o fabricante"]
+        if provider in list_providers:
+            self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
         else:
             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
+
+
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["Titulo corto entre 110 y 120 caracteres"])
+        amazon_generated_title=self.dataToLoad["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"]
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(amazon_generated_title)
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")
@@ -129,7 +139,7 @@ class LoaderShopify:
     
     def load_stock(self):
         self.page.locator(pshopy.cajaStock.selector).click()
-        self.page.locator(pshopy.cajaStock.selector).fill("1")
+        self.page.locator(pshopy.cajaStock.selector).fill("50")
     
     def load_sku(self):
         self.page.locator(pshopy.cajaSKU.selector).click()
@@ -139,8 +149,15 @@ class LoaderShopify:
         self.page.locator(pshopy.cajaPesoDelProducto.selector).click()
         amazon_peso=self.dataToLoad['Peso en Kg del envio']
         if amazon_peso=='No Especifica':
-            amazon_peso=0.1
+            amazon_peso="0.1"
         self.page.locator(pshopy.cajaPesoDelProducto.selector).fill(amazon_peso)
+
+    def get_about_this_item_str(self,number_paragraphs:int):
+        if "Acerca del producto" in self.dataToLoad.keys():
+            about_this_item_str=dictManipulator.dict_to_bp_w_paragraphs(self.dataToLoad["Acerca del producto"],number_paragraphs)
+            return about_this_item_str
+        else:
+            return self.dataToLoad["Resumen de 2 a 3 parrafos separados por viñetas"]
 
     def save_edition(self):
         saves=self.page.query_selector_all("//span[text()='Guardar']")
@@ -165,9 +182,8 @@ class LoaderShopify:
         self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option(str(self.sheetProductData['FORMA DE VENTA']))
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
-        descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(self.dataToLoad['titulo'])
+        frame_locator.locator("div[class='fr-element fr-view']").fill(self.get_about_this_item_str(4))
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
         with self.page.expect_response(saveUrl,timeout=20000) as response_info:
             try:

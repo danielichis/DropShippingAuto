@@ -59,7 +59,8 @@ class amazon_mkt_peruvians:
             "RIPLEY":self.load_to_ripley
         }
     def update_loaders_data(self):
-        dataAmzn=get_product_in_amazon_carpet_parsed(self.product['SKU'])
+        #dataAmzn=get_product_in_amazon_carpet_parsed(self.product['SKU'])
+        dataAmzn=self.amazonDataSku
         self.loaderDinner.dataToLoad=dataAmzn
         self.loaderShopify.dataToLoad=dataAmzn
         self.loaderDinner.sheetProductData=self.product
@@ -75,12 +76,20 @@ class amazon_mkt_peruvians:
     def go_to_amazon(self):
         self.amazonPage.goto("https://www.amazon.com")
     def download_amazon(self):
-        
         self.amazonPage.bring_to_front()
         r=get_sku_amazon_product(self.amazonPage,self.product)
-        post_peticion(r)
         if r['status_code']==200:
-            self.amazonDataSku=get_product_in_amazon_carpet_parsed(self.product['SKU'])
+                try:
+                    self.amazonDataSku=get_product_in_amazon_carpet_parsed(self.product['SKU'])
+                except:
+                    self.amazonDataSku=None
+                    r['status']="ERROR EN LA DESCARGA"
+                    r['condition']="yes"
+                    r['log']="INFORMACIÓN INSUFICIENTE"
+                    r['fecha']=time.strftime("%Y-%m-%d %H:%M:%S")
+                    r['status_code']=500
+                               
+        post_peticion(r)
         self.status_download_code=r['status_code']
     def go_to_shopify(self):
         self.shopifyPage.goto(mp.newProductShopify)
@@ -108,14 +117,12 @@ class amazon_mkt_peruvians:
         pass
 
     def go_to_ripley(self):
-        self.loaderRipley.start_playwright()
         self.loaderRipley.go_to_home()
 
     def load_to_ripley(self):
         self.ripleyPage.bring_to_front()  
         self.loaderRipley.load_main_ripley()
         post_peticion(self.loaderRipley.responseRipleyLoad)  
-
 
     def main_process(self):
         self.set_loaders()
