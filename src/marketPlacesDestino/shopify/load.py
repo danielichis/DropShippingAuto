@@ -120,7 +120,6 @@ class LoaderShopify:
             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
 
 
-
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
@@ -154,11 +153,11 @@ class LoaderShopify:
         self.page.locator(pshopy.cajaPesoDelProducto.selector).fill(amazon_peso)
 
     def get_about_this_item_str(self,number_paragraphs:int):
-        if self.dataToLoad["Acerca del producto"]:
+        if "Acerca del producto" in self.dataToLoad.keys():
             about_this_item_str=dictManipulator.dict_to_bp_w_paragraphs(self.dataToLoad["Acerca del producto"],number_paragraphs)
             return about_this_item_str
         else:
-            return self.dataToLoad["Resumen de 3 a 4 parrafos separados por viñetas"]
+            return self.dataToLoad["Resumen de 2 a 3 parrafos separados por viñetas"]
 
     def save_edition(self):
         saves=self.page.query_selector_all("//span[text()='Guardar']")
@@ -183,7 +182,6 @@ class LoaderShopify:
         self.page.frame_locator("iframe[name=\"app-iframe\"]").get_by_label("Disponibilidad").select_option(str(self.sheetProductData['FORMA DE VENTA']))
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
-        descriptions=dictManipulator.dict_to_string((self.dataToLoad['descripciones']))
         frame_locator.locator("div[class='fr-element fr-view']").click()
         frame_locator.locator("div[class='fr-element fr-view']").fill(self.get_about_this_item_str(4))
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"

@@ -112,6 +112,8 @@ def get_aboutProduct(pw_page):
         aboutProduct=pw_page.query_selector_all(selectorsOptions[0])
     elif len(pw_page.query_selector_all(selectorsOptions[1]))>0:
         aboutProduct=pw_page.query_selector_all(selectorsOptions[1])
+    else:
+        return None
     for i,aboutP in enumerate(aboutProduct):
         try:
             aboutProductDict[dictManipulator.fisrt_substring_before_double_dot(aboutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(aboutP.inner_text())

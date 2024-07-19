@@ -830,9 +830,12 @@ class LoaderRipley:
     
 
     def get_about_this_item_str(self,number_paragraphs:int):
-        if self.dataToLoad["Acerca del producto"]:
+        if "Acerca del producto" in self.dataToLoad.keys():
             about_this_item_str=dictManipulator.dict_to_bp_w_paragraphs(self.dataToLoad["Acerca del producto"],number_paragraphs)
             return about_this_item_str
+        else:
+            return self.dataToLoad["Resumen de 2 a 3 parrafos separados por viñetas"]
+            
 
     def load_package_dimensions(self,alto:int,ancho:int,largo:int):
         print("Cargando dimensiones del paquete...")

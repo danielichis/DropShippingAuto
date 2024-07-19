@@ -2,12 +2,12 @@ from utils.dinamicMassivArgsExtractions import get_dinamic_args_extraction
 
 def get_static_fields_with_openai(universeText):
     aditionalFields=["Titulo corto, maximo 30 caracteres","Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario","Breve resumen para vender","Peso en Kg del producto","Peso en Kg del envio"
-                     ,"Dimensiones del producto en cm","Marca,proveedor o fabricante","Vendedor",
+                     ,"Dimensiones del producto en cm","Marca,proveedor o fabricante",
                      "Tipo de producto","¿Las unidades de peso y dimensiones,entre otras requieren conversion para que el producto se muestre en un mercado latinoamericano,responder si/no?",
                      "Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario",]
     
-    if not universeText["Acerca del producto"]:
-        aditionalFields.append("Resumen de 3 a 4 parrafos separados por viñetas")
+    if not "Acerca del producto" in universeText.keys():
+        aditionalFields.append("Resumen de 2 a 3 parrafos separados por viñetas")
 
     listToSend=[]
     for field in aditionalFields:
