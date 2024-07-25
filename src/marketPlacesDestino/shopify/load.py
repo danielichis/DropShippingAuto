@@ -189,6 +189,7 @@ class LoaderShopify:
             try:
                 self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=8000)
             except:
+                frame_locator.locator("div[class='fr-element fr-view']").press("ArrowDown")
                 frame_locator.locator("div[class='fr-element fr-view']").press("Enter")
                 self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=5000)
         response = response_info.value
