@@ -863,9 +863,9 @@ class LoaderRipley:
                 static_description=self.load_description()
                 about_this_item_str=self.get_about_this_item_str(3)
                 if about_this_item_str:
-                    valueField=about_this_item_str +"\n"+ static_description     
+                    valueField=dictManipulator.remove_last_paragraph(about_this_item_str +"\n"+ static_description,3000)     
                 else:
-                    valueField=dimArgs['Descripción Corta'] +"\n"+ static_description     
+                    valueField=dictManipulator.remove_last_paragraph(dimArgs['Descripción Corta'] +"\n"+ static_description,3000)
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':
