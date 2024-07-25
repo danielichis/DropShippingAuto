@@ -81,11 +81,12 @@ class amazon_mkt_peruvians:
         if r['status_code']==200:
                 try:
                     self.amazonDataSku=get_product_in_amazon_carpet_parsed(self.product['SKU'])
-                except:
+                except Exception as e:
+                    print(str(e))
                     self.amazonDataSku=None
                     r['status']="ERROR EN LA DESCARGA"
                     r['condition']="yes"
-                    r['log']="INFORMACIÓN INSUFICIENTE"
+                    r['log']="INFORMACIÓN INSUFICIENTE"+"\n"+str(e)
                     r['fecha']=time.strftime("%Y-%m-%d %H:%M:%S")
                     r['status_code']=500
                                

@@ -898,7 +898,10 @@ class LoaderRipley:
                     short_description="Compra tu "+short_name+" en Ripley Internacional"
                 valueField=short_description
             elif textField=='Cantidad de la oferta':
-                valueField='50'
+                if self.configDataSheet['MODO PUBLICACION RIPLEY']=="DRAFT":
+                    valueField='0'
+                else:
+                    valueField='50'
             elif textField=='Peso (kg)':
                 #valueField=dimArgs['Peso (kg)'] if dimArgs['Peso (kg)']!="" and dimArgs['Peso (kg)']!="No Especifica" else "N/A"
                 amazon_weight=self.product_info["Peso en Kg del envio"]
