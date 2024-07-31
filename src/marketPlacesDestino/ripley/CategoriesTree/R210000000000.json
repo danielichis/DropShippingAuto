@@ -1,0 +1,154 @@
+[
+    {
+        "children": true,
+        "code": "R210100000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R210100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16421899,
+        "label": "ANDADORES Y VEHÍCULOS PARA BEBES",
+        "labels": {
+            "es": "ANDADORES Y VEHÍCULOS PARA BEBES",
+            "en": "WALKERS AND BABY VEHICLES",
+            "es_PE": "ANDADORES Y VEHÍCULOS PARA BEBES",
+            "en_US": "WALKERS AND BABY VEHICLES"
+        },
+        "parent": "R210000000000"
+    },
+    {
+        "children": true,
+        "code": "R210200000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R210200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16423399,
+        "label": "ARTÍCULOS DE BEBE PARA BAÑOS",
+        "labels": {
+            "es": "ARTÍCULOS DE BEBE PARA BAÑOS",
+            "en": "BABY BATH ITEMS",
+            "es_PE": "ARTÍCULOS DE BEBE PARA BAÑOS",
+            "en_US": "BABY BATH ITEMS"
+        },
+        "parent": "R210000000000"
+    },
+    {
+        "children": true,
+        "code": "R210300000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R210300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16423899,
+        "label": "ARTÍCULOS DE MATERNIDAD",
+        "labels": {
+            "es": "ARTÍCULOS DE MATERNIDAD",
+            "en": "MATERNITY ARTICLES",
+            "es_PE": "ARTÍCULOS DE MATERNIDAD",
+            "en_US": "MATERNITY ARTICLES"
+        },
+        "parent": "R210000000000"
+    },
+    {
+        "children": true,
+        "code": "R210400000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R210400000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16425899,
+        "label": "CHUPETES Y MORDEDORES",
+        "labels": {
+            "es": "CHUPETES Y MORDEDORES",
+            "en": "PACIFIERS AND TEETHERS",
+            "es_PE": "CHUPETES Y MORDEDORES",
+            "en_US": "PACIFIERS AND TEETHERS"
+        },
+        "parent": "R210000000000"
+    },
+    {
+        "children": true,
+        "code": "R211000000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R211000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16432899,
+        "label": "DORMITORIO PARA BEBE",
+        "labels": {
+            "es": "DORMITORIO PARA BEBE",
+            "en": "BABY BEDROOM",
+            "es_PE": "DORMITORIO PARA BEBE",
+            "en_US": "BABY BEDROOM"
+        },
+        "parent": "R210000000000"
+    },
+    {
+        "children": true,
+        "code": "R210600000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R210600000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16426899,
+        "label": "JUEGOS Y ESTIMULACIÓN",
+        "labels": {
+            "es": "JUEGOS Y ESTIMULACIÓN",
+            "en": "GAMES AND STIMULATION",
+            "es_PE": "JUEGOS Y ESTIMULACIÓN",
+            "en_US": "GAMES AND STIMULATION"
+        },
+        "parent": "R210000000000"
+    },
+    {
+        "children": true,
+        "code": "R210700000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R210700000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16428399,
+        "label": "LACTANCIA Y ALIMENTACIÓN",
+        "labels": {
+            "es": "LACTANCIA Y ALIMENTACIÓN",
+            "en": "BREASTFEEDING AND FOOD",
+            "es_PE": "LACTANCIA Y ALIMENTACIÓN",
+            "en_US": "BREASTFEEDING AND FOOD"
+        },
+        "parent": "R210000000000"
+    },
+    {
+        "children": true,
+        "code": "R210800000000",
+        "fullHierarchy": [
+            "",
+            "R210000000000",
+            "R210800000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16430399,
+        "label": "PASEO DEL BEBE",
+        "labels": {
+            "es": "PASEO DEL BEBE",
+            "en": "BABY RIDE",
+            "es_PE": "PASEO DEL BEBE",
+            "en_US": "BABY RIDE"
+        },
+        "parent": "R210000000000"
+    }
+]

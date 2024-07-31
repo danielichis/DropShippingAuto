@@ -766,6 +766,11 @@ class LoaderRipley:
         resizedImgPaths=self.dataToLoad["imagesPath"]["750x555"]
         image_locators=self.page.locator("input:enabled[type='file']").all()
         number_loadable_images=min(len(resizedImgPaths),len(image_locators))
+
+        if number_loadable_images<2:
+            print("Numero de imagenes de Amazon es 1,pero se cargará 2 veces.")
+            number_loadable_images=2
+
         print("Cantidad de img a subir: "+str(number_loadable_images))
         for i in range(number_loadable_images):            
             print("Cargando imagen "+str(i+1)+"...")
@@ -1270,6 +1275,7 @@ if __name__ == "__main__":
     RIPloader=LoaderRipley()
     RIPloader.start_playwright()
     RIPloader.go_to_home()
+    print("Sesion iniciada")
     # #number_products = int(input("Set number of products:"))
     # number_products=1
     # for i in range(number_products):

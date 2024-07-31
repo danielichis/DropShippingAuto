@@ -1,0 +1,59 @@
+[
+    {
+        "children": true,
+        "code": "R120300000000",
+        "fullHierarchy": [
+            "",
+            "R120000000000",
+            "R120300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16424899,
+        "label": "HOMBRE",
+        "labels": {
+            "es": "HOMBRE",
+            "en": "MEN",
+            "es_PE": "HOMBRE",
+            "en_US": "MEN"
+        },
+        "parent": "R120000000000"
+    },
+    {
+        "children": true,
+        "code": "R120200000000",
+        "fullHierarchy": [
+            "",
+            "R120000000000",
+            "R120200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16422899,
+        "label": "INFANTIL",
+        "labels": {
+            "es": "INFANTIL",
+            "en": "CHILDREN",
+            "es_PE": "INFANTIL",
+            "en_US": "CHILDREN"
+        },
+        "parent": "R120000000000"
+    },
+    {
+        "children": true,
+        "code": "R120400000000",
+        "fullHierarchy": [
+            "",
+            "R120000000000",
+            "R120400000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16429899,
+        "label": "MUJER",
+        "labels": {
+            "es": "MUJER",
+            "en": "WOMEN",
+            "es_PE": "MUJER",
+            "en_US": "WOMEN"
+        },
+        "parent": "R120000000000"
+    }
+]

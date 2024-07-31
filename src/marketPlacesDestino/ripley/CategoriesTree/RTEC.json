@@ -1,0 +1,116 @@
+[
+    {
+        "children": true,
+        "code": "R180000000000",
+        "fullHierarchy": [
+            "",
+            "RTEC",
+            "R180000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15056899,
+        "label": "CÁMARA Y ACCESORIOS",
+        "labels": {
+            "es": "CÁMARA Y ACCESORIOS",
+            "en": "CAMERA AND ACCESSORIES",
+            "es_PE": "CÁMARA Y ACCESORIOS",
+            "en_US": "CAMERA AND ACCESSORIES"
+        },
+        "parent": "RTEC"
+    },
+    {
+        "children": true,
+        "code": "R190000000000",
+        "fullHierarchy": [
+            "",
+            "RTEC",
+            "R190000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15057399,
+        "label": "COMPUTACIÓN Y SOFTWARES",
+        "labels": {
+            "es": "COMPUTACIÓN Y SOFTWARES",
+            "en": "COMPUTING AND SOFTWARE",
+            "es_PE": "COMPUTACIÓN Y SOFTWARES",
+            "en_US": "COMPUTING AND SOFTWARE"
+        },
+        "parent": "RTEC"
+    },
+    {
+        "children": true,
+        "code": "R170000000000",
+        "fullHierarchy": [
+            "",
+            "RTEC",
+            "R170000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15057899,
+        "label": "CONSOLAS Y VIDEOJUEGOS",
+        "labels": {
+            "es": "CONSOLAS Y VIDEOJUEGOS",
+            "en": "CONSOLES AND VIDEO GAMES",
+            "es_PE": "CONSOLAS Y VIDEOJUEGOS",
+            "en_US": "CONSOLES AND VIDEO GAMES"
+        },
+        "parent": "RTEC"
+    },
+    {
+        "children": true,
+        "code": "R230000000000",
+        "fullHierarchy": [
+            "",
+            "RTEC",
+            "R230000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15058399,
+        "label": "SMART HOME /DOMOTICA",
+        "labels": {
+            "es": "SMART HOME /DOMOTICA",
+            "en": "SMART HOME /DOMOTIC",
+            "es_PE": "SMART HOME /DOMOTICA",
+            "en_US": "SMART HOME /DOMOTIC"
+        },
+        "parent": "RTEC"
+    },
+    {
+        "children": true,
+        "code": "R220000000000",
+        "fullHierarchy": [
+            "",
+            "RTEC",
+            "R220000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15058899,
+        "label": "TELEFONÍA Y WEARABLES",
+        "labels": {
+            "es": "TELEFONÍA Y WEARABLES",
+            "en": "TELEPHONY AND WEARABLES",
+            "es_PE": "TELEFONÍA Y WEARABLES",
+            "en_US": "TELEPHONY AND WEARABLES"
+        },
+        "parent": "RTEC"
+    },
+    {
+        "children": true,
+        "code": "R040000000000",
+        "fullHierarchy": [
+            "",
+            "RTEC",
+            "R040000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15059399,
+        "label": "TV AUDIO Y VIDEO",
+        "labels": {
+            "es": "TV AUDIO Y VIDEO",
+            "en": "AUDIO AND VIDEO TV",
+            "es_PE": "TV AUDIO Y VIDEO",
+            "en_US": "AUDIO AND VIDEO TV"
+        },
+        "parent": "RTEC"
+    }
+]

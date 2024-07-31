@@ -350,7 +350,9 @@ def download_sku(pw_page,sku):
     }
 
     ##Erasing any key-value pair that contains any of the word in the list
-    dictManipulator.remove_pair_holding_word_from_dict(data,["garantia","garantía","Producto en amazon.com desde"])
+    pairs_to_remove=["garantia","garantía","Producto en amazon.com desde","ASIN","precio","Forma del articulo"]
+    pairs_to_remove_otrosdetalles=["Peso Ligero","Vendido por","Pantalla táctil","Excelente inversión","Calidad de pantalla","Vida útil de la batería","Para juegos","Calificaciones de los clientes","precio"]
+    dictManipulator.remove_pair_holding_word_from_dict(data,pairs_to_remove)
     ## Borrando peso ligero del subdiccionario otros detalles
     if "Peso Ligero" in data["Otros detalles"].keys():
         print("Borrando peso ligero del diccionario")

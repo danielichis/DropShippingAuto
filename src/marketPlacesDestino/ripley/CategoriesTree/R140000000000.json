@@ -1,0 +1,211 @@
+[
+    {
+        "children": true,
+        "code": "R140900000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140900000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16434399,
+        "label": "ACCESORIOS DE BOLSOS, CARTERAS Y VIAJE",
+        "labels": {
+            "es": "ACCESORIOS DE BOLSOS, CARTERAS Y VIAJE",
+            "en": "BAG ACCESSORIES, WALLETS AND TRIP",
+            "es_PE": "ACCESORIOS DE BOLSOS, CARTERAS Y VIAJE",
+            "en_US": "BAG ACCESSORIES, WALLETS AND TRIP"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R140200000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16397899,
+        "label": "BILLETERAS Y CHEQUERAS",
+        "labels": {
+            "es": "BILLETERAS Y CHEQUERAS",
+            "en": "WALLETS AND CHECKBOOKS",
+            "es_PE": "BILLETERAS Y CHEQUERAS",
+            "en_US": "WALLETS AND CHECKBOOKS"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R140100000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16398399,
+        "label": "CANGUROS",
+        "labels": {
+            "es": "CANGUROS",
+            "en": "KANGAROOS",
+            "es_PE": "CANGUROS",
+            "en_US": "KANGAROOS"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R140800000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140800000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16395399,
+        "label": "CARTERAS, BOLSOS Y MORRALES",
+        "labels": {
+            "es": "CARTERAS, BOLSOS Y MORRALES",
+            "en": "PORTFOLIOS, BAGS, AND BACKPACKS",
+            "es_PE": "CARTERAS, BOLSOS Y MORRALES",
+            "en_US": "PORTFOLIOS, BAGS, AND BACKPACKS"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R140700000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140700000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16395899,
+        "label": "ESTUCHES",
+        "labels": {
+            "es": "ESTUCHES",
+            "en": "CASES",
+            "es_PE": "ESTUCHES",
+            "en_US": "CASES"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R141100000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R141100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16394399,
+        "label": "LONCHERAS",
+        "labels": {
+            "es": "LONCHERAS",
+            "en": "LUNCHBOXES",
+            "es_PE": "LONCHERAS",
+            "en_US": "LUNCHBOXES"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R141000000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R141000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16394899,
+        "label": "MALETAS",
+        "labels": {
+            "es": "MALETAS",
+            "en": "SUITCASES",
+            "es_PE": "MALETAS",
+            "en_US": "SUITCASES"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R140400000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140400000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16396899,
+        "label": "MALETINES",
+        "labels": {
+            "es": "MALETINES",
+            "en": "BRIEFCASES",
+            "es_PE": "MALETINES",
+            "en_US": "BRIEFCASES"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": true,
+        "code": "R141200000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R141200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16435399,
+        "label": "MOCHILAS",
+        "labels": {
+            "es": "MOCHILAS",
+            "en": "BACKPACKS",
+            "es_PE": "MOCHILAS",
+            "en_US": "BACKPACKS"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R140300000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16397399,
+        "label": "MONEDEROS",
+        "labels": {
+            "es": "MONEDEROS",
+            "en": "PURSES",
+            "es_PE": "MONEDEROS",
+            "en_US": "PURSES"
+        },
+        "parent": "R140000000000"
+    },
+    {
+        "children": false,
+        "code": "R140600000000",
+        "fullHierarchy": [
+            "",
+            "R140000000000",
+            "R140600000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16396399,
+        "label": "NECESERES",
+        "labels": {
+            "es": "NECESERES",
+            "en": "TOILETRY BAGS",
+            "es_PE": "NECESERES",
+            "en_US": "TOILETRY BAGS"
+        },
+        "parent": "R140000000000"
+    }
+]
