@@ -1,0 +1,230 @@
+[
+    {
+        "children": false,
+        "code": "R251300000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R251300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 17195399,
+        "label": "ACCESORIOS",
+        "labels": {
+            "es": "ACCESORIOS",
+            "en": "ACCESSORIES",
+            "es_PE": "ACCESORIOS",
+            "en_US": "ACCESSORIES"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250100000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15587899,
+        "label": "ALPARGATAS",
+        "labels": {
+            "es": "ALPARGATAS",
+            "en": "ESPADRILLES",
+            "es_PE": "ALPARGATAS",
+            "en_US": "ESPADRILLES"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250200000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15587399,
+        "label": "BALLERINAS",
+        "labels": {
+            "es": "BALLERINAS",
+            "en": "BALLET FLATS",
+            "es_PE": "BALLERINAS",
+            "en_US": "BALLET FLATS"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250400000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250400000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15586899,
+        "label": "BOTAS Y BOTINES",
+        "labels": {
+            "es": "BOTAS Y BOTINES",
+            "en": "BOOTS AND BOOTIES",
+            "es_PE": "BOTAS Y BOTINES",
+            "en_US": "BOOTS AND BOOTIES"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R251000000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R251000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15586399,
+        "label": "INFANTIL",
+        "labels": {
+            "es": "INFANTIL",
+            "en": "CHILDREN",
+            "es_PE": "INFANTIL",
+            "en_US": "CHILDREN"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250500000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250500000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15585899,
+        "label": "MOCASINES",
+        "labels": {
+            "es": "MOCASINES",
+            "en": "MOCCASINS",
+            "es_PE": "MOCASINES",
+            "en_US": "MOCCASINS"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250800000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250800000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15584899,
+        "label": "PANTUFLAS",
+        "labels": {
+            "es": "PANTUFLAS",
+            "en": "SLIPPERS",
+            "es_PE": "PANTUFLAS",
+            "en_US": "SLIPPERS"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250600000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250600000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15584399,
+        "label": "SANDALIAS",
+        "labels": {
+            "es": "SANDALIAS",
+            "en": "SANDALS",
+            "es_PE": "SANDALIAS",
+            "en_US": "SANDALS"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": true,
+        "code": "R251100000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R251100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15583899,
+        "label": "ZAPATILLAS",
+        "labels": {
+            "es": "ZAPATILLAS",
+            "en": "SNEAKERS",
+            "es_PE": "ZAPATILLAS",
+            "en_US": "SNEAKERS"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250900000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250900000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15583399,
+        "label": "ZAPATOS",
+        "labels": {
+            "es": "ZAPATOS",
+            "en": "SHOES",
+            "es_PE": "ZAPATOS",
+            "en_US": "SHOES"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R250700000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R250700000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15582899,
+        "label": "ZAPATOS ESCOLARES",
+        "labels": {
+            "es": "ZAPATOS ESCOLARES",
+            "en": "SCHOOL SHOES",
+            "es_PE": "ZAPATOS ESCOLARES",
+            "en_US": "SCHOOL SHOES"
+        },
+        "parent": "R250000000000"
+    },
+    {
+        "children": false,
+        "code": "R251200000000",
+        "fullHierarchy": [
+            "",
+            "R250000000000",
+            "R251200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 15585399,
+        "label": "ZUECOS",
+        "labels": {
+            "es": "ZUECOS",
+            "en": "CLOGS",
+            "es_PE": "ZUECOS",
+            "en_US": "CLOGS"
+        },
+        "parent": "R250000000000"
+    }
+]

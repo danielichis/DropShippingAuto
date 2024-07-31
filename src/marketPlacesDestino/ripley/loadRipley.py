@@ -766,6 +766,11 @@ class LoaderRipley:
         resizedImgPaths=self.dataToLoad["imagesPath"]["750x555"]
         image_locators=self.page.locator("input:enabled[type='file']").all()
         number_loadable_images=min(len(resizedImgPaths),len(image_locators))
+
+        if number_loadable_images<2:
+            print("Numero de imagenes de Amazon es 1,pero se cargará 2 veces.")
+            number_loadable_images=2
+
         print("Cantidad de img a subir: "+str(number_loadable_images))
         for i in range(number_loadable_images):            
             print("Cargando imagen "+str(i+1)+"...")
@@ -863,9 +868,9 @@ class LoaderRipley:
                 static_description=self.load_description()
                 about_this_item_str=self.get_about_this_item_str(3)
                 if about_this_item_str:
-                    valueField=about_this_item_str +"\n"+ static_description     
+                    valueField=dictManipulator.remove_last_paragraph(about_this_item_str +"\n"+ static_description,3000)     
                 else:
-                    valueField=dimArgs['Descripción Corta'] +"\n"+ static_description     
+                    valueField=dictManipulator.remove_last_paragraph(dimArgs['Descripción Corta'] +"\n"+ static_description,3000)
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':
@@ -898,7 +903,10 @@ class LoaderRipley:
                     short_description="Compra tu "+short_name+" en Ripley Internacional"
                 valueField=short_description
             elif textField=='Cantidad de la oferta':
-                valueField='50'
+                if self.configDataSheet['MODO PUBLICACION RIPLEY']=="DRAFT":
+                    valueField='0'
+                else:
+                    valueField='50'
             elif textField=='Peso (kg)':
                 #valueField=dimArgs['Peso (kg)'] if dimArgs['Peso (kg)']!="" and dimArgs['Peso (kg)']!="No Especifica" else "N/A"
                 amazon_weight=self.product_info["Peso en Kg del envio"]
@@ -1267,6 +1275,7 @@ if __name__ == "__main__":
     RIPloader=LoaderRipley()
     RIPloader.start_playwright()
     RIPloader.go_to_home()
+    print("Sesion iniciada")
     # #number_products = int(input("Set number of products:"))
     # number_products=1
     # for i in range(number_products):

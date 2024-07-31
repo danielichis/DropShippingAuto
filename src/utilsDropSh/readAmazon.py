@@ -1,3 +1,4 @@
+import ast
 import json
 import csv
 from DropShippingAuto.src.utilsDropSh.managePaths import mp
@@ -6,8 +7,8 @@ from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 from utils.imgHandling.imgHandling import get_sorted_images_paths
 import os
 import re
-
 from utils.structures import get_element_with_more_fields
+from utils.dinamicMassivArgsExtractions_rip import dinamic_two_systems_description
 #read csv file
 
 def sku_folder(sku):
@@ -46,6 +47,7 @@ def get_product_in_amazon_carpet_parsed(product_sku):
     list_descripciones=[dataAmazon["descripciones"],dataAmazon["Vista General"],dataAmazon["Detalles Tecnicos"],dataAmazon["informacion del producto"]]
     #print(list_descripciones)
     dataAmazon["descripciones"]=get_element_with_more_fields(list_descripciones)
+    #print(dataAmazon["descripciones"])
     # el que tenga mas elementos 
 
     if "Dimensiones del artículo Largo x Ancho x Altura" in dataAmazon["Otros detalles"].keys():

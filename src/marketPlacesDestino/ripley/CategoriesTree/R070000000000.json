@@ -1,0 +1,59 @@
+[
+    {
+        "children": true,
+        "code": "R070100000000",
+        "fullHierarchy": [
+            "",
+            "R070000000000",
+            "R070100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 18428899,
+        "label": "ACCESORIOS DE MASCOTA",
+        "labels": {
+            "es": "ACCESORIOS DE MASCOTA",
+            "en": "PET ACCESSORIES",
+            "es_PE": "ACCESORIOS DE MASCOTA",
+            "en_US": "PET ACCESSORIES"
+        },
+        "parent": "R070000000000"
+    },
+    {
+        "children": false,
+        "code": "R070200000000",
+        "fullHierarchy": [
+            "",
+            "R070000000000",
+            "R070200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 18429399,
+        "label": "ALIMENTOS DE MASCOTA",
+        "labels": {
+            "es": "ALIMENTOS DE MASCOTA",
+            "en": "PET FOOD",
+            "es_PE": "ALIMENTOS DE MASCOTA",
+            "en_US": "PET FOOD"
+        },
+        "parent": "R070000000000"
+    },
+    {
+        "children": false,
+        "code": "R070300000000",
+        "fullHierarchy": [
+            "",
+            "R070000000000",
+            "R070300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 18429899,
+        "label": "MEDICAMENTOS Y COMPLEMENTOS",
+        "labels": {
+            "es": "MEDICAMENTOS Y COMPLEMENTOS",
+            "en": "MEDICINES AND SUPPLEMENTS",
+            "es_PE": "MEDICAMENTOS Y COMPLEMENTOS",
+            "en_US": "MEDICINES AND SUPPLEMENTS"
+        },
+        "parent": "R070000000000"
+    }
+]

@@ -1,0 +1,494 @@
+[
+    {
+        "children": true,
+        "code": "R200100000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R200100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16439399,
+        "label": "AUTOS DE JUGUETE",
+        "labels": {
+            "es": "AUTOS DE JUGUETE",
+            "en": "TOY CARS",
+            "es_PE": "AUTOS DE JUGUETE",
+            "en_US": "TOY CARS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": false,
+        "code": "R200200000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R200200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16627399,
+        "label": "BLOQUES Y CONSTRUCCIÓN",
+        "labels": {
+            "es": "BLOQUES Y CONSTRUCCIÓN",
+            "es_PE": "BLOQUES Y CONSTRUCCIÓN"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R200300000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R200300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16439899,
+        "label": "CASAS Y CARPAS PARA NIÑOS",
+        "labels": {
+            "es": "CASAS Y CARPAS PARA NIÑOS",
+            "en": "HOUSES AND TENTS FOR KIDS",
+            "es_PE": "CASAS Y CARPAS PARA NIÑOS",
+            "en_US": "HOUSES AND TENTS FOR KIDS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R200400000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R200400000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16606399,
+        "label": "CASTILLOS Y PISCINAS DE PELOTAS",
+        "labels": {
+            "es": "CASTILLOS Y PISCINAS DE PELOTAS",
+            "en": "CASTLES AND BALL POOLS",
+            "es_PE": "CASTILLOS Y PISCINAS DE PELOTAS",
+            "en_US": "CASTLES AND BALL POOLS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R200500000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R200500000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16607399,
+        "label": "DIBUJO, PINTURA Y MANUALIDADES",
+        "labels": {
+            "es": "DIBUJO, PINTURA Y MANUALIDADES",
+            "en": "DRAWING, PAINTING, AND CRAFTS",
+            "es_PE": "DIBUJO, PINTURA Y MANUALIDADES",
+            "en_US": "DRAWING, PAINTING, AND CRAFTS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202800000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202800000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 19205899,
+        "label": "ELECTRÓNICOS PARA NIÑOS",
+        "labels": {
+            "es": "ELECTRÓNICOS PARA NIÑOS",
+            "en": "ELECTRONICS FOR KIDS",
+            "es_PE": "ELECTRÓNICOS PARA NIÑOS",
+            "en_US": "ELECTRONICS FOR KIDS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": false,
+        "code": "R200800000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R200800000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16388899,
+        "label": "FIGURAS COLECCIONABLES",
+        "labels": {
+            "es": "FIGURAS COLECCIONABLES",
+            "en": "COLLECTIBLE FIGURES",
+            "es_PE": "FIGURAS COLECCIONABLES",
+            "en_US": "COLLECTIBLE FIGURES"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": false,
+        "code": "R200900000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R200900000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16388399,
+        "label": "FIGURAS DE ACCIÓN",
+        "labels": {
+            "es": "FIGURAS DE ACCIÓN",
+            "en": "ACTION FIGURES",
+            "es_PE": "FIGURAS DE ACCIÓN",
+            "en_US": "ACTION FIGURES"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202900000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202900000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 19210899,
+        "label": "INSTRUMENTOS MUSICALES",
+        "labels": {
+            "es": "INSTRUMENTOS MUSICALES",
+            "en": "MUSICAL INSTRUMENTS",
+            "es_PE": "INSTRUMENTOS MUSICALES",
+            "en_US": "MUSICAL INSTRUMENTS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201100000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16421399,
+        "label": "JUEGOS DE MESA Y CARTAS",
+        "labels": {
+            "es": "JUEGOS DE MESA Y CARTAS",
+            "en": "BOARD AND CARD GAMES",
+            "es_PE": "JUEGOS DE MESA Y CARTAS",
+            "en_US": "BOARD AND CARD GAMES"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201200000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16422399,
+        "label": "JUEGOS DE PLAZA Y AIRE LIBRE",
+        "labels": {
+            "es": "JUEGOS DE PLAZA Y AIRE LIBRE",
+            "en": "OUTDOOR PLAYGROUND GAMES AND ACTIVITIES",
+            "es_PE": "JUEGOS DE PLAZA Y AIRE LIBRE",
+            "en_US": "OUTDOOR PLAYGROUND GAMES AND ACTIVITIES"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201300000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16424399,
+        "label": "JUEGOS DE SALÓN",
+        "labels": {
+            "es": "JUEGOS DE SALÓN",
+            "en": "SALON GAMES",
+            "es_PE": "JUEGOS DE SALÓN",
+            "en_US": "SALON GAMES"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201400000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201400000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16425399,
+        "label": "JUEGOS PARA BEBES",
+        "labels": {
+            "es": "JUEGOS PARA BEBES",
+            "en": "BABY TOYS",
+            "es_PE": "JUEGOS PARA BEBES",
+            "en_US": "BABY TOYS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201500000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201500000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16426399,
+        "label": "JUGUETES ANTIESTRES E INGENIO",
+        "labels": {
+            "es": "JUGUETES ANTIESTRES E INGENIO",
+            "en": "STRESS RELIEVERS AND BRAIN TEASERS",
+            "es_PE": "JUGUETES ANTIESTRES E INGENIO",
+            "en_US": "STRESS RELIEVERS AND BRAIN TEASERS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": false,
+        "code": "R203000000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R203000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 19213399,
+        "label": "JUGUETES DE BROMAS",
+        "labels": {
+            "es": "JUGUETES DE BROMAS",
+            "en": "PRANK TOYS",
+            "es_PE": "JUGUETES DE BROMAS",
+            "en_US": "PRANK TOYS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201700000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201700000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16427399,
+        "label": "JUGUETES DE OFICIOS",
+        "labels": {
+            "es": "JUGUETES DE OFICIOS",
+            "en": "TRADES TOYS",
+            "es_PE": "JUGUETES DE OFICIOS",
+            "en_US": "TRADES TOYS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201800000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201800000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16427899,
+        "label": "LAMINAS Y ÁLBUMES",
+        "labels": {
+            "es": "LAMINAS Y ÁLBUMES",
+            "en": "SHEETS AND ALBUMS",
+            "es_PE": "LAMINAS Y ÁLBUMES",
+            "en_US": "SHEETS AND ALBUMS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R201900000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R201900000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16428899,
+        "label": "LANZADORES DE JUGUETE",
+        "labels": {
+            "es": "LANZADORES DE JUGUETE",
+            "en": "TOY LAUNCHERS",
+            "es_PE": "LANZADORES DE JUGUETE",
+            "en_US": "TOY LAUNCHERS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202000000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202000000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16429399,
+        "label": "MAGIA",
+        "labels": {
+            "es": "MAGIA",
+            "en": "MAGIC",
+            "es_PE": "MAGIA",
+            "en_US": "MAGIC"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": false,
+        "code": "R202100000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202100000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16387899,
+        "label": "MESAS Y SILLAS PARA NIÑOS",
+        "labels": {
+            "es": "MESAS Y SILLAS PARA NIÑOS",
+            "en": "KIDS' TABLES AND CHAIRS",
+            "es_PE": "MESAS Y SILLAS PARA NIÑOS",
+            "en_US": "KIDS' TABLES AND CHAIRS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202200000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202200000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16430899,
+        "label": "MUÑECOS Y MUÑECAS",
+        "labels": {
+            "es": "MUÑECOS Y MUÑECAS",
+            "en": "DOLLS",
+            "es_PE": "MUÑECOS Y MUÑECAS",
+            "en_US": "DOLLS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": false,
+        "code": "R202300000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202300000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16387399,
+        "label": "PELUCHES",
+        "labels": {
+            "es": "PELUCHES",
+            "en": "TEDDIES",
+            "es_PE": "PELUCHES",
+            "en_US": "TEDDIES"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202400000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202400000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16431399,
+        "label": "PISCINA Y JUEGOS DE AGUA",
+        "labels": {
+            "es": "PISCINA Y JUEGOS DE AGUA",
+            "en": "POOL AND WATER GAMES",
+            "es_PE": "PISCINA Y JUEGOS DE AGUA",
+            "en_US": "POOL AND WATER GAMES"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202500000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202500000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16431899,
+        "label": "SCALEXTRIC",
+        "labels": {
+            "es": "SCALEXTRIC",
+            "en": "SCALEXTRIC",
+            "es_PE": "SCALEXTRIC",
+            "en_US": "SCALEXTRIC"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202600000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202600000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16432399,
+        "label": "SOBRERUEDAS",
+        "labels": {
+            "es": "SOBRERUEDAS",
+            "en": "RIDE-ON TOYS",
+            "es_PE": "SOBRERUEDAS",
+            "en_US": "RIDE-ON TOYS"
+        },
+        "parent": "R200000000000"
+    },
+    {
+        "children": true,
+        "code": "R202700000000",
+        "fullHierarchy": [
+            "",
+            "R200000000000",
+            "R202700000000"
+        ],
+        "hasLabelTranslation": true,
+        "id": 16433399,
+        "label": "TÍTERES Y MARIONETAS",
+        "labels": {
+            "es": "TÍTERES Y MARIONETAS",
+            "en": "PUPPETS",
+            "es_PE": "TÍTERES Y MARIONETAS",
+            "en_US": "PUPPETS"
+        },
+        "parent": "R200000000000"
+    }
+]
