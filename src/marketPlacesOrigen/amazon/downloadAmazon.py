@@ -243,6 +243,13 @@ def get_garanty(pw_page):
         garanty=None
     return garanty
 
+def get_product_information(pw_page):
+    productInformation=pw_page.query_selector_all("table[id*='productDetails_detailBullets'] tr")
+    productInformationDict={}
+    for info in productInformation:
+        productInformationDict[info.query_selector("th").inner_text()]=info.query_selector("td").inner_text().replace("\u200e","")
+    return productInformationDict
+
 def download_sub_main_sku_amazon_product(pw_page,sku):
     try:    
         download_sku(pw_page,sku)
@@ -324,6 +331,7 @@ def download_sku(pw_page,sku):
     importantInfo=get_importantInfo(pw_page)
     comparitions=get_comparitions(pw_page)
     descriptions=get_descriptions(pw_page)
+    productInformation=get_product_information(pw_page)
     #garanty=get_garanty(pw_page)    
     img_down(urls_images,skuFolder)
     weight_description=get_field_from_search_bar(pw_page,"peso")
@@ -343,14 +351,14 @@ def download_sku(pw_page,sku):
         "Mas detalles Tecnicos":comparitions,
         "Informacion Importante":importantInfo,
         "Informacion Adicional":aditionalInfo,
-        #"Garantia":garanty,
+        "informacion del producto":productInformation,
         "Nota":note,
         "Links Imagenes":urls_images,
         "Peso en Kg del envio":weight_description
     }
 
     ##Erasing any key-value pair that contains any of the word in the list
-    dictManipulator.remove_pair_holding_word_from_dict(data,["garantia","garantía"])
+    dictManipulator.remove_pair_holding_word_from_dict(data,["garantia","garantía","ASIN","Opinión media de los clientes"])
     ## Borrando peso ligero del subdiccionario otros detalles
     if "Peso Ligero" in data["Otros detalles"].keys():
         print("Borrando peso ligero del diccionario")
