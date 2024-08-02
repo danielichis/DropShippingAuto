@@ -26,7 +26,7 @@ import ast
 
 homeRipley="https://ripleyperu-prod.mirakl.net/login"
 market_dashboard='https://ripleyperu-prod.mirakl.net/marketplace-dashboard/'
-sellProductPage="https://ripleyperu-prod.mirakl.net/mmp/shop/sell/product"
+
 class LoaderRipley:
     # def __init__(self,dataToLoad):
     #     self.dataToLoad=dataToLoad
@@ -60,9 +60,6 @@ class LoaderRipley:
             self.page.get_by_role("button",name="Siguiente").click()
             self.page.get_by_label("Password*").fill(user_password)
             self.page.get_by_role("button",name="Sign in").click()
-            self.page.wait_for_load_state("networkidle")
-            self.page.wait_for_load_state('domcontentloaded')
-            self.page.wait_for_load_state('load')
             print("Sesion iniciada")
         except:
             pass
@@ -72,44 +69,232 @@ class LoaderRipley:
         self.to_login()
         #self.page.get_by_role("link", name="Añadir una oferta").click()
         #CREATING PRODUCT FROM 'PRECIOS Y EXISTENCIAS' MENU
-        #self.page.get_by_role("button", name="Precios y existencias").click()
+        # self.page.get_by_role("button", name="Precios y existencias").click()
         # self.page.get_by_role("menuitem", name="Ofertas").click()
         # self.page.get_by_role("link", name="+ Añadir una oferta").click()
         #page3.get_by_role("link", name="+ Crear un producto").click()
 
-    def get_optimal_categories_path(self):
-        print("Obteniendo las rutas de las categorias de Ripley...")
-        with open(mp.ripleyAllCategoriesPathsStrJsonPath, 'r', encoding='utf-8') as file:
-            ripley_category_paths_str = json.load(file)
+    response_categories_dict=[]
 
-        if self.dataToLoad["clasificacion"]!="sin clasificacion":
-            classification=str(self.dataToLoad["clasificacion"])
+    def get_ripley_categories_response2(self)->bool:
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        amazon_categories=contentProduct['clasificacion']
+        if amazon_categories=="sin clasificacion":
+            print("No hay clasificación en Amazon")
+            print("Generando categoría con la API...")
+            description_gen="lista de tipo de producto o posibles categorías específicas para el producto según el diccionario enviado (ejemplo: laptops,carteras,electronica,jabones,etc) en formato string entre comillas para el producto,mínimo 3 ,máximo 5,todo entre corchetes,"
+            while(True): 
+                try:
+                    #generated_categories=get_dinamic_args_extraction2(options_type='options_0',content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":description_gen,"locator":None,"options":[]}])[description_gen]
+                    generated_categories=get_dinamic_answer(str(contentProduct),description_gen)
+                    print(generated_categories)
+                    product_categories=ast.literal_eval(generated_categories)
+                except Exception as e:
+                    print(str(e))
+                    print("Error al generar categoría con la API")
+                    print("Generando de nuevo")
+                else:
+                    break
+            print("Se generaron categorías exitosamente")
+            #product_categories=list(set(atomize_classification_wo_prepositions(generated_categories)))
         else:
-            initialPrompt="Esta es la informacion estructurada de un un producto de Amazon, por favor cual seria la mejor clasificacion para este producto ? :"
-            classification=initialPrompt+str(self.dataToLoad)
+            #Invirtiendo lista de amazon
+            print("Se encontró clasificación")
+            product_categories=amazon_categories[::-1]
+
+        print(product_categories)
+        #Going to product_offers page to obtain categories
+        self.page.goto("https://ripleyperu-prod.mirakl.net/mmp/shop/catalog/template/configure?modelType=PRODUCTS_OFFERS")
+        self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_load_state("load")
+        self.page.wait_for_load_state("domcontentloaded")
+        #Atomizando,quitando preposiciones y removiendo duplicados sin afectar el orden
+        no_duplicates_categories=remove_duplicates_preserve_order(atomize_classification_wo_prepositions(product_categories))
+        print(no_duplicates_categories)
+        # print("Ordenando categorías con la API...")
+        # gen_categories=dinamic_order_categories(str(contentProduct),no_duplicates_categories)
+        print(no_duplicates_categories)
+        #print("Transformando a lista de Python")
+        #possible_categories=ast.literal_eval(gen_categories)
+        possible_categories=[*product_categories,*no_duplicates_categories]
+        self.possible_categories=possible_categories
+        print(possible_categories)
+        for category_value in possible_categories:
+            encoded_category_value=format_url_with_encoded_values(category_value)
+            url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={encoded_category_value}&selectedLocale=es_PE&withRoot=false"
+            print(url_petition)
+            try:
+                with self.page.expect_response(url_petition,timeout=12000) as response_info:
+                    self.page.locator("input[name='filter']").fill(category_value)
+                response=response_info.value
+                response_categories_list=json.loads(response.text())
+                if response.status==200:
+                    if len(response_categories_list)>0:
+                        print("Categorías encontradas")
+                        self.selected_category_value=category_value
+                        self.response_categories_list=response_categories_list
+                        self.response_categories_dict.append({"category":category_value,"categories_list":response_categories_list})
+                        print('Se añadieron categorías')
+                else:
+                    print("Petición no exitosa")
+                    print("Probando con siguiente categoría")
+                    continue
+            except Exception as e:
+                print(str(e))
+                continue
+
+        print("Categorías no encontradas")
+        print("Llamando de nuevo a la funcion para generar categorías")
+        self.get_ripley_categories_response()
+        print("Generando categoria con API")
+        return False
+
+
+    def get_ripley_categories_response(self)->bool:
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        amazon_categories=contentProduct['clasificacion']
+        if amazon_categories=="sin clasificacion":
+            print("No hay clasificación en Amazon")
+            print("Generando categoría con la API...")
+            description_gen="lista de tipo de producto o posibles categorías específicas para el producto según el diccionario enviado (ejemplo: laptops,carteras,electronica,jabones,etc) en formato string entre comillas para el producto,mínimo 3 ,máximo 5,todo entre corchetes,"
+            while(True): 
+                try:
+                    #generated_categories=get_dinamic_args_extraction2(options_type='options_0',content_product=str(contentProduct),fieldsFromMarketPlace=[{"name":description_gen,"locator":None,"options":[]}])[description_gen]
+                    generated_categories=get_dinamic_answer(str(contentProduct),description_gen)
+                    print(generated_categories)
+                    product_categories=ast.literal_eval(generated_categories)
+                except Exception as e:
+                    print(str(e))
+                    print("Error al generar categoría con la API")
+                    print("Generando de nuevo")
+                else:
+                    break
+            print("Se generaron categorías exitosamente")
+            #product_categories=list(set(atomize_classification_wo_prepositions(generated_categories)))
+        else:
+            #Invirtiendo lista de amazon
+            print("Se encontró clasificación")
+            product_categories=amazon_categories[::-1]
+
+        print(product_categories)
+        #Going to product_offers page to obtain categories
+        self.page.goto("https://ripleyperu-prod.mirakl.net/mmp/shop/catalog/template/configure?modelType=PRODUCTS_OFFERS")
+        self.page.wait_for_load_state("networkidle")
+        self.page.wait_for_load_state("load")
+        self.page.wait_for_load_state("domcontentloaded")
+        #Atomizando,quitando preposiciones y removiendo duplicados sin afectar el orden
+        no_duplicates_categories=remove_duplicates_preserve_order(atomize_classification_wo_prepositions(product_categories))
+        print(no_duplicates_categories)
+        # print("Ordenando categorías con la API...")
+        # gen_categories=dinamic_order_categories(str(contentProduct),no_duplicates_categories)
+        print(no_duplicates_categories)
+        #print("Transformando a lista de Python")
+        #possible_categories=ast.literal_eval(gen_categories)
+        possible_categories=[*product_categories,*no_duplicates_categories]
+        self.possible_categories=possible_categories
+        print(possible_categories)
+        for category_value in possible_categories:
+            encoded_category_value=format_url_with_encoded_values(category_value)
+            url_petition=f"https://ripleyperu-prod.mirakl.net/mmp/private/catalog/hierarchy/search?search={encoded_category_value}&selectedLocale=es_PE&withRoot=false"
+            print(url_petition)
+            try:
+                with self.page.expect_response(url_petition,timeout=15000) as response_info:
+                    self.page.locator("input[name='filter']").fill(category_value)
+                response=response_info.value
+                response_categories_list=json.loads(response.text())
+                if response.status==200:
+                    if len(response_categories_list)>0:
+                        print("Categorías encontradas")
+                        self.selected_category_value=category_value
+                        self.response_categories_list=response_categories_list
+                        return True
+                else:
+                    print("Petición no exitosa")
+                    print("Probando con siguiente categoría")
+                    continue
+            except Exception as e:
+                print(str(e))
+                continue
+
+        print("Categorías no encontradas")
+        print("Llamando de nuevo a la funcion para generar categorías")
+        self.get_ripley_categories_response()
+        print("Generando categoria con API")
+        return False
         
-        print("Seleccionando la mejor ruta mediante Embeddings...")
+        
+
+    def make_ripley_categories_paths(self):
+        
+        categories_list=self.response_categories_list
+        
+        categories_paths_codes=[]
+        categories_paths_lists=[]
+        categories_paths_str=[]
+
+        for categ_dict in categories_list:
+            if categ_dict["children"]==False:
+                categories_paths_codes.append(categ_dict['fullHierarchy'])
+
+        print(categories_paths_codes)
+        print("Intercambiando codigos por etiquetas en cada ruta...")
+
+        for path in categories_paths_codes:
+            print(path)
+            categories_paths_lists.append(list(map(self.replace_code_for_label,path[1:])))
+
+        categories_paths_lists=categories_paths_lists
+        print("Rutas de categorías:")
+        print(categories_paths_lists)
+
+        for path in categories_paths_lists:
+            categories_paths_str.append(" > ".join(path))
+        print("String de rutas")
+        print(categories_paths_str)
+
+
+        categories_paths={
+            "lists":categories_paths_lists,
+            "strings":categories_paths_str
+        }
+
+        self.categories_paths=categories_paths
+        
+        print("Se crearon las rutas de categorías")
+        
+    def replace_code_for_label(self,category_code:str)->str:
+        print(category_code)
+        if category_code!='':
+            for categ_dict in self.response_categories_list:
+                if categ_dict["code"]==category_code:
+                    category_label=categ_dict["label"]
+                    print(category_label)
+                    break
+        else:
+            category_label=""
+
+        return category_label
+
+    def get_optimal_categories_path(self):
+        # last_categories=[category[-1]["similarity"] for category in self.all_category_paths]
+        # print(last_categories)
+        # print("work")
+        #category_to_embed=self.selected_category_value
+        print("Transformando el contenido del producto a string")
+        contentProduct=mp.data_sku(self.dataToLoad['sku'])
+        print(contentProduct)
+        print("Usando el contenido del producto en Embeddings")
         #top_string_path=get_best_similarity_option(self.categories_paths["strings"],category_to_embed)
-        part_size = len(ripley_category_paths_str) // 3
-        ripley_category_paths_str_1 = ripley_category_paths_str[:part_size]
-        ripley_category_paths_str_2 = ripley_category_paths_str[part_size:2*part_size]
-        ripley_category_paths_str_3 = ripley_category_paths_str[2*part_size:]
-        #product_type_extracted=self.dimArgs["Tipo de producto"]
-        nearest_option_1=get_best_similarity_option(ripley_category_paths_str_1,classification)
-        nearest_option_2=get_best_similarity_option(ripley_category_paths_str_2,classification)
-        nearest_option_3=get_best_similarity_option(ripley_category_paths_str_3,classification)
-        top_string_path=get_best_similarity_option([nearest_option_1,nearest_option_2,nearest_option_3],classification)
+        top_string_path=get_best_similarity_option(self.categories_paths["strings"],str(contentProduct))
         print(top_string_path)
-        top_categories_path=top_string_path.split(">")
+        top_categories_path=top_string_path.split(" > ")
         print(top_categories_path)
         return top_categories_path
 
     def add_product(self):
-        if self.page.url!=sellProductPage:
-            self.page.goto(sellProductPage)
         #self.page.get_by_role("button", name="Precios y existencias").click()
-        #self.page.get_by_role("menuitem", name="Ofertas").click()
-        #self.page.get_by_role("link", name="+ Añadir una oferta").click()
+        self.page.get_by_role("menuitem", name="Ofertas").click()
+        self.page.get_by_role("link", name="+ Añadir una oferta").click()
         self.page.get_by_role("link", name="+ Crear un producto").click()
         print("pagina cargada")
 
@@ -1011,37 +1196,43 @@ class LoaderRipley:
     def load_sku(self):
         print('--------')
         print("Cargando SKU..."+self.dataToLoad['sku'])
-        top_categories_path=self.get_optimal_categories_path()
-        self.add_product()
-        #for i in range(1):
-        #
-        #isGoodSelection=False
-        #while(not isGoodSelection):
-            #isGoodSelection=self.load_all_category()
-        self.load_defined_categories(top_categories_path)
-        self.get_all_required_fields()
-        self.split_required_fields()
-        self.load_offer_settings()
-        #self.load_description()
-        self.load_images()
-        self.load_base_price()
-        self.load_special_price()
-        self.load_model_number()
-        self.load_package_dimensions(30,36,16)
-        self.print_split_fields()
-        self.fill_fillable_fields()
-        self.fill_nonfillable_fields2()
-        self.load_color()
-        #self.generate_dinamic_answer("Descripción")
-        #self.generate_dinamic_answer("Descripción corta")
-        self.confirm_product()
-        print("-----------Producto cargado-----------------")
-        print("<<<<<<<<<<Se creó producto con SKU: "+self.dataToLoad['sku']+">>>>>>>>>>>")
-        print('--------')
-        print("Añadiendo otro producto...")
-        return self.dataToLoad['sku']
-        #self.raise_test_error()
-  
+        wereCategoriesFound=self.get_ripley_categories_response()
+        if wereCategoriesFound:
+            self.make_ripley_categories_paths()
+            top_categories_path=self.get_optimal_categories_path()
+            self.add_product()
+            #for i in range(1):
+            #
+            #isGoodSelection=False
+            #while(not isGoodSelection):
+                #isGoodSelection=self.load_all_category()
+            self.load_defined_categories(top_categories_path)
+            self.get_all_required_fields()
+            self.split_required_fields()
+            self.load_offer_settings()
+            #self.load_description()
+            self.load_images()
+            self.load_base_price()
+            self.load_special_price()
+            self.load_model_number()
+            self.load_package_dimensions(30,36,16)
+            self.print_split_fields()
+            self.fill_fillable_fields()
+            self.fill_nonfillable_fields2()
+            self.load_color()
+            #self.generate_dinamic_answer("Descripción")
+            #self.generate_dinamic_answer("Descripción corta")
+            self.confirm_product()
+            print("-----------Producto cargado-----------------")
+            print("<<<<<<<<<<Se creó producto con SKU: "+self.dataToLoad['sku']+">>>>>>>>>>>")
+            print('--------')
+            print("Añadiendo otro producto...")
+            return self.dataToLoad['sku']
+            #self.raise_test_error()
+        else:
+            print("No se encontraron categorías")
+            raise Exception("No se encontraron categorías")
+
     def load_main_ripley(self):
         try: 
             url=self.load_sku()   
@@ -1053,8 +1244,9 @@ class LoaderRipley:
             print("Error:"+str(e))
             print(str(tb))
             print("Error al cargar producto")
-            print("Retornando a la página de creación de producto...")
-            self.page.goto(sellProductPage)
+            print("Retornando a la página principal...")
+            self.page.goto(market_dashboard)
+            self.page.get_by_role("link", name="Añadir una oferta").click()
             print("Cargando otro producto...")
 
         responseLoad={
@@ -1083,7 +1275,6 @@ if __name__ == "__main__":
     RIPloader=LoaderRipley()
     RIPloader.start_playwright()
     RIPloader.go_to_home()
-    RIPloader.add_product()
     print("Sesion iniciada")
     # #number_products = int(input("Set number of products:"))
     # number_products=1
