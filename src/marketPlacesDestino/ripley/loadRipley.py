@@ -5,7 +5,7 @@ from utils.jsHandler import insertPropertiesToPage
 #from DropShippingAuto.src.utils.dinamySelections import search_best_option
 #from DropShippingAuto.src.otrasWeb.scrapUpc import get_upc
 #from DropShippingAuto.src.marketPlacesDestino.dinners.readAmazon import infoDinnersToLoad
-from utils.dinamicMassivArgsExtractions_rip import get_dinamic_args_extraction,list_attributes_ff_in_json,list_attributes_nff_in_json,get_dinamic_args_extraction2,list_attributes_fields_in_json,get_dinamic_answer,dinamic_order_categories
+from utils.dinamicMassivArgsExtractions_rip import get_dinamic_args_extraction,list_attributes_ff_in_json,list_attributes_nff_in_json,get_dinamic_args_extraction2,list_attributes_fields_in_json,get_dinamic_answer,dinamic_order_categories,dinamic_two_systems_description
 from utils.managePaths import mp
 from DropShippingAuto.src.marketPlacesDestino.ripley.StringHandling import extract_number_of_for,get_id_ul,get_first_enabled_locator,keyboard_delete_text,extract_words_regex,atomize_classification_wo_prepositions,remove_duplicates_preserve_order,format_url_with_encoded_values
 from DropShippingAuto.src.marketPlacesDestino.ripley.imgHandling import add_background_to_img
@@ -686,6 +686,9 @@ class LoaderRipley:
                     valueField=dictManipulator.remove_last_paragraph(about_this_item_str +"\n"+ static_description,3000)     
                 else:
                     valueField=dictManipulator.remove_last_paragraph(dimArgs['Descripción Corta'] +"\n"+ static_description,3000)
+                    
+                    valueField=dinamic_two_systems_description(valueField)
+                    
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':

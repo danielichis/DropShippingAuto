@@ -8,7 +8,7 @@ from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_carpet_parsed
 from DropShippingAuto.src.utilsDropSh.managePaths import dictManipulator
 from DropShippingAuto.src.utilsDropSh.dinamySelections import search_best_option
-from utils.dinamicMassivArgsExtractions_rip import get_dinamic_answer 
+from utils.dinamicMassivArgsExtractions_rip import get_dinamic_answer,dinamic_two_systems_description
 from utils.manipulateDicts import dictManipulator
 from utils.embeddings.embeding import get_top_n_match
 from utils.embeddings.embeding import get_best_category_shopify
@@ -183,7 +183,8 @@ class LoaderShopify:
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(self.get_about_this_item_str(4))
+        two_systems_acf_description=dinamic_two_systems_description(self.get_about_this_item_str(4))
+        frame_locator.locator("div[class='fr-element fr-view']").fill(two_systems_acf_description)
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
         with self.page.expect_response(saveUrl,timeout=20000) as response_info:
             try:
