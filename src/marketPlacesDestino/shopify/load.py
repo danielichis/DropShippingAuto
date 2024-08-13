@@ -48,10 +48,11 @@ class LoaderShopify:
     def load_shopify_category_suggestion(self):
         try:
             self.page.query_selector("input[name='productType']").click(timeout=3000)
-            aria_attribute=self.page.query_selector("input[name='productType']").get_attribute("aria-owns")
-            list_categories=self.page.locator("div[id='%s'] ul>li" %(aria_attribute)).all_inner_texts()
+            aria_attribute=self.page.query_selector("input[name='productType']").get_attribute("aria-controls")
+            #list_categories=self.page.locator("div[id='%s'] ul>li" %(aria_attribute)).all_inner_texts()
+            list_categories=self.page.locator("ul[id='%s']>li" %(aria_attribute)).all_inner_texts()
             categorieToSelect=get_best_category_shopify(self.dataToLoad['clasificacion'],list_categories,useSavedEmbeds=False)
-            selector="div[id='%s'] ul>li:has-text('%s')" %(aria_attribute,categorieToSelect)
+            selector="ul[id='%s']>li:has-text('%s')" %(aria_attribute,categorieToSelect)
             self.page.locator(selector).click(timeout=3000)
         except:
             pass
@@ -61,6 +62,8 @@ class LoaderShopify:
         self.page.locator("input[id='CollectionsAutocompleteField1']").click()
         currentCollections=self.page.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
         TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
+        #Añadiendo coleccion Lo Nuevo Unaluka por defecto a la lista de colecciones
+        TopCollections.append({'collecion': 'Lo Nuevo Unaluka', 'similarity': "Seleccionado por defecto"})
         #self.page.select_option("Colecciones",name="Colecciones")
         #self.page.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()    
         for collection in TopCollections:
@@ -96,9 +99,9 @@ class LoaderShopify:
         self.responseShopifyLoad=responseLoad
     def load_provider(self):
         self.page.locator("input[name='vendor']").click()
-        key=self.page.locator("input[name='vendor']").get_attribute("aria-owns")
-        selectorProviders="div[id='%s'] ul>li>div>div>div" %(key)
-        ulElementSelector="div[id='%s'] ul" %(key)
+        key=self.page.locator("input[name='vendor']").get_attribute("aria-controls")
+        selectorProviders="ul[id='%s']>li>div>div>div" %(key)
+        ulElementSelector="ul[id='%s']" %(key)
         list_providers=self.page.locator(selectorProviders).all_inner_texts()
         wildcardBrand="Genérico"
 
@@ -186,7 +189,7 @@ class LoaderShopify:
         two_systems_acf_description=dinamic_two_systems_description(self.get_about_this_item_str(4))
         frame_locator.locator("div[class='fr-element fr-view']").fill(two_systems_acf_description)
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
-        with self.page.expect_response(saveUrl,timeout=20000) as response_info:
+        with self.page.expect_response(saveUrl,timeout=30000) as response_info:
             try:
                 self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=8000)
             except:
