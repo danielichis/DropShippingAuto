@@ -30,20 +30,21 @@ class LoaderShopify:
         descs=self.dataToLoad['descripciones']
         if type(descs)!=dict:
             raise Exception("el parametro descs debe ser un diccionario")
-        listaObjetos=[]
-        listaObjetos.append({
-            "campo":"SKU",
-            "valor":": "+self.dataToLoad['sku']
-        })
-        for k,v in descs.items():
-            listaObjetos.append({
-                "campo":k.replace("'","").replace('"',""),
-                "valor":": "+v.replace("'","").replace('"',"")
-            })
-        self.page.frame_locator(pshopy.frameDescripcionProducto.selector).locator(pshopy.cajaDescripcionProducto.selector).click()
-        diccionario=str(listaObjetos)
-        codigo_js="var box=document.querySelector('iframe[id=product-description_ifr]').contentDocument.querySelector('body');var lista=document.createElement('ul');var listaDeObjetos = %s;for (const objeto of listaDeObjetos){var pelem=document.createElement('li');var stronge=document.createElement('strong');var valor=document.createTextNode(objeto.valor);stronge.textContent=objeto.campo;pelem.appendChild(stronge);pelem.appendChild(valor);lista.appendChild(pelem)};box.appendChild(lista);" %(diccionario)
-        self.page.evaluate(codigo_js)
+        # listaObjetos=[]
+        # listaObjetos.append({
+        #     "campo":"SKU",
+        #     "valor":": "+self.dataToLoad['sku']
+        # })
+        # for k,v in descs.items():
+        #     listaObjetos.append({
+        #         "campo":k.replace("'","").replace('"',""),
+        #         "valor":": "+v.replace("'","").replace('"',"")
+        #     })
+        description_str=dinamic_two_systems_description(dictManipulator.dict_to_string_bp(descs))
+        self.page.frame_locator(pshopy.frameDescripcionProducto.selector).locator(pshopy.cajaDescripcionProducto.selector).fill(description_str)
+        #diccionario=str(listaObjetos)
+        #codigo_js="var box=document.querySelector('iframe[id=product-description_ifr]').contentDocument.querySelector('body');var lista=document.createElement('ul');var listaDeObjetos = %s;for (const objeto of listaDeObjetos){var pelem=document.createElement('li');var stronge=document.createElement('strong');var valor=document.createTextNode(objeto.valor);stronge.textContent=objeto.campo;pelem.appendChild(stronge);pelem.appendChild(valor);lista.appendChild(pelem)};box.appendChild(lista);" %(diccionario)
+        #self.page.evaluate(codigo_js)
 
     def load_shopify_category_suggestion(self):
         try:
