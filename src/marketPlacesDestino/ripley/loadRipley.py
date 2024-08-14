@@ -641,6 +641,9 @@ class LoaderRipley:
 
     def load_description(self)->str:
         description=self.dataToLoad['descripciones']
+        #adding sku to description dictionary
+        sku_dict={"SKU":self.dataToLoad['sku']}
+        description.update(sku_dict)
         description_str=dictManipulator.dict_to_string_bp(description)
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill("---")
         #self.page.locator("#productAndOffersCommand-attributeValuesFormCommand-1103").fill(description_str)

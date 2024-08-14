@@ -5,7 +5,7 @@ Se brindan tablas con los campos que se deben considerar para generar los títul
 **Máximo de caracteres del título según marketplace:** 
 
 - Shopify : 200
-- Ripley  :  125
+- Ripley  :  120
 
 **SKINCARE**
 

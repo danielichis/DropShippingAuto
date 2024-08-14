@@ -29,7 +29,7 @@ class amazon_mkt_peruvians:
     def start_pages(self):
         self.go_to_amazon()
         self.go_to_shopify()
-        #self.go_to_dinners()
+        #self.go_to_dinners()\
         self.go_to_ripley()
     def set_loaders(self):
         self.loaderDinner=LoaderDinners(dataToLoad=None,
