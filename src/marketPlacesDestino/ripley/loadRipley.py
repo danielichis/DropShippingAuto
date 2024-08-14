@@ -690,7 +690,7 @@ class LoaderRipley:
                 else:
                     valueField=dictManipulator.remove_last_paragraph(dimArgs['Descripción Corta'] +"\n"+ static_description,3000)
                     
-                    valueField=dinamic_two_systems_description(valueField)
+                valueField=dinamic_two_systems_description(valueField)
                     
             elif textField=='sku_seller':
                 valueField=self.product_sku
