@@ -120,8 +120,12 @@ class LoaderShopify:
         # else:
         #     self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
         provider=self.dataToLoad["Marca,proveedor o fabricante"]
-        if provider in list_providers:
-            self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
+        #provider="TESTMARCA"
+        if provider.upper()!="NO ESPECIFICA":
+            if provider in list_providers:
+                self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
+            else:
+                self.page.locator("input[name='vendor']").fill(provider)
         else:
             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
 
