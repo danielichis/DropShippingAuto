@@ -4,8 +4,8 @@ Se brindan tablas con los campos que se deben considerar para generar los títul
 
 **Máximo de caracteres del título según marketplace:** 
 
-- Shopify : 200
-- Ripley  :  120
+- SHOPIFY : 200
+- RIPLEY  : 120
 
 **SKINCARE**
 
@@ -75,7 +75,7 @@ Individual
 | --- | --- | --- |
 | Echo Dot | 5ta Gen. | Charcoal |
 
-**AUDÍFONOS**
+**AUDÍFONOS,AURICULARES**
 
 | Nombre del producto | Modelo/Gen./Versión | Accesorios | Color |
 | --- | --- | --- | --- |

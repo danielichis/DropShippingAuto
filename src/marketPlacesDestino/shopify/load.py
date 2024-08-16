@@ -9,7 +9,7 @@ from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_ca
 from DropShippingAuto.src.utilsDropSh.managePaths import dictManipulator
 from DropShippingAuto.src.utilsDropSh.dinamySelections import search_best_option
 from utils.dinamicMassivArgsExtractions_rip import get_dinamic_answer,dinamic_two_systems_description
-from utils.dinamicMassivArgsExtractions import dinamic_two_systems_description_dict
+from utils.dinamicMassivArgsExtractions import dinamic_two_systems_description_dict,dinamic_title_per_mkp
 from utils.manipulateDicts import dictManipulator
 from utils.embeddings.embeding import get_top_n_match
 from utils.embeddings.embeding import get_best_category_shopify
@@ -129,8 +129,11 @@ class LoaderShopify:
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        amazon_generated_title=self.dataToLoad["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"]
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(amazon_generated_title)
+        content_product=str(self.dataToLoad)
+        generated_title=dinamic_title_per_mkp(content_product,"SHOPIFY")
+        if generated_title=="NO ENCONTRADO":
+            generated_title=self.dataToLoad["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"]
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(generated_title)
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")
