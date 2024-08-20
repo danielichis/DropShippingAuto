@@ -59,7 +59,8 @@ class LoaderRipley:
             user_password="Unaluk@Flash*"
             self.page.get_by_placeholder("Tu inicio de sesión").fill(user_name)
             self.page.get_by_role("button",name="Siguiente").click()
-            self.page.get_by_label("Password*").fill(user_password)
+            #self.page.get_by_label("Password*").fill(user_password)
+            self.page.locator("#password").fill(user_password)
             self.page.get_by_role("button",name="Sign in").click()
             self.page.wait_for_load_state("networkidle")
             self.page.wait_for_load_state('domcontentloaded')
