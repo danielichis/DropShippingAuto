@@ -272,7 +272,7 @@ class LoaderRealPlaza:
             data=json_data)
         
         baseUrl="https://inretail.mysellercenter.com/#/catalog/details/"
-        self.finalUrl=f"{baseUrl}{self.variant_id}"
+        self.finalUrl=f"{baseUrl}{self.product_id}"
         self.upc=self.json_variant_data['upc']
         stock_response=r.json()
         print("Stock actualizado")
