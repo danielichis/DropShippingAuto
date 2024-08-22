@@ -8,7 +8,8 @@ from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
 from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_carpet_parsed
 from DropShippingAuto.src.utilsDropSh.managePaths import dictManipulator
 from DropShippingAuto.src.utilsDropSh.dinamySelections import search_best_option
-from utils.dinamicMassivArgsExtractions_rip import get_dinamic_answer 
+from utils.dinamicMassivArgsExtractions_rip import get_dinamic_answer,dinamic_two_systems_description
+from utils.dinamicMassivArgsExtractions import dinamic_two_systems_description_dict,dinamic_title_per_mkp
 from utils.manipulateDicts import dictManipulator
 from utils.embeddings.embeding import get_top_n_match
 from utils.embeddings.embeding import get_best_category_shopify
@@ -28,6 +29,7 @@ class LoaderShopify:
         self.status="ERROR AL CARGAR"
     def load_descriptions(self):
         descs=self.dataToLoad['descripciones']
+        descs=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(descs))[1]
         if type(descs)!=dict:
             raise Exception("el parametro descs debe ser un diccionario")
         listaObjetos=[]
@@ -40,6 +42,7 @@ class LoaderShopify:
                 "campo":k.replace("'","").replace('"',""),
                 "valor":": "+v.replace("'","").replace('"',"")
             })
+        #description_str=dinamic_two_systems_description(dictManipulator.dict_to_string_bp(descs))
         self.page.frame_locator(pshopy.frameDescripcionProducto.selector).locator(pshopy.cajaDescripcionProducto.selector).click()
         diccionario=str(listaObjetos)
         codigo_js="var box=document.querySelector('iframe[id=product-description_ifr]').contentDocument.querySelector('body');var lista=document.createElement('ul');var listaDeObjetos = %s;for (const objeto of listaDeObjetos){var pelem=document.createElement('li');var stronge=document.createElement('strong');var valor=document.createTextNode(objeto.valor);stronge.textContent=objeto.campo;pelem.appendChild(stronge);pelem.appendChild(valor);lista.appendChild(pelem)};box.appendChild(lista);" %(diccionario)
@@ -48,10 +51,11 @@ class LoaderShopify:
     def load_shopify_category_suggestion(self):
         try:
             self.page.query_selector("input[name='productType']").click(timeout=3000)
-            aria_attribute=self.page.query_selector("input[name='productType']").get_attribute("aria-owns")
-            list_categories=self.page.locator("div[id='%s'] ul>li" %(aria_attribute)).all_inner_texts()
+            aria_attribute=self.page.query_selector("input[name='productType']").get_attribute("aria-controls")
+            #list_categories=self.page.locator("div[id='%s'] ul>li" %(aria_attribute)).all_inner_texts()
+            list_categories=self.page.locator("ul[id='%s']>li" %(aria_attribute)).all_inner_texts()
             categorieToSelect=get_best_category_shopify(self.dataToLoad['clasificacion'],list_categories,useSavedEmbeds=False)
-            selector="div[id='%s'] ul>li:has-text('%s')" %(aria_attribute,categorieToSelect)
+            selector="ul[id='%s']>li:has-text('%s')" %(aria_attribute,categorieToSelect)
             self.page.locator(selector).click(timeout=3000)
         except:
             pass
@@ -61,6 +65,8 @@ class LoaderShopify:
         self.page.locator("input[id='CollectionsAutocompleteField1']").click()
         currentCollections=self.page.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
         TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
+        #Añadiendo coleccion Lo Nuevo Unaluka por defecto a la lista de colecciones
+        TopCollections.append({'collecion': 'Lo Nuevo Unaluka', 'similarity': "Seleccionado por defecto"})
         #self.page.select_option("Colecciones",name="Colecciones")
         #self.page.locator("div:has(>ul[aria-labelledby='CollectionsAutocompleteField1Label'])").scroll_into_view_if_needed()    
         for collection in TopCollections:
@@ -96,9 +102,9 @@ class LoaderShopify:
         self.responseShopifyLoad=responseLoad
     def load_provider(self):
         self.page.locator("input[name='vendor']").click()
-        key=self.page.locator("input[name='vendor']").get_attribute("aria-owns")
-        selectorProviders="div[id='%s'] ul>li>div>div>div" %(key)
-        ulElementSelector="div[id='%s'] ul" %(key)
+        key=self.page.locator("input[name='vendor']").get_attribute("aria-controls")
+        selectorProviders="ul[id='%s']>li>div>div>div" %(key)
+        ulElementSelector="ul[id='%s']" %(key)
         list_providers=self.page.locator(selectorProviders).all_inner_texts()
         wildcardBrand="Genérico"
 
@@ -114,8 +120,12 @@ class LoaderShopify:
         # else:
         #     self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
         provider=self.dataToLoad["Marca,proveedor o fabricante"]
-        if provider in list_providers:
-            self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
+        #provider="TESTMARCA"
+        if provider.upper()!="NO ESPECIFICA":
+            if provider in list_providers:
+                self.page.locator(ulElementSelector).get_by_label(provider).all()[0].click()
+            else:
+                self.page.locator("input[name='vendor']").fill(provider)
         else:
             self.page.locator(ulElementSelector).get_by_label(wildcardBrand).all()[0].click()
 
@@ -123,8 +133,11 @@ class LoaderShopify:
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        amazon_generated_title=self.dataToLoad["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"]
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(amazon_generated_title)
+        content_product=str(self.dataToLoad)
+        generated_title=dinamic_title_per_mkp(content_product,"SHOPIFY")
+        if generated_title=="NO ENCONTRADO":
+            generated_title=self.dataToLoad["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"]
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(generated_title)
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")
@@ -183,9 +196,10 @@ class LoaderShopify:
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        frame_locator.locator("div[class='fr-element fr-view']").fill(self.get_about_this_item_str(4))
+        two_systems_acf_description=dinamic_two_systems_description(self.get_about_this_item_str(4))
+        frame_locator.locator("div[class='fr-element fr-view']").fill(two_systems_acf_description)
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
-        with self.page.expect_response(saveUrl,timeout=20000) as response_info:
+        with self.page.expect_response(saveUrl,timeout=30000) as response_info:
             try:
                 self.page.locator("//button/span[text()='Save']").all()[0].click(timeout=8000)
             except:
