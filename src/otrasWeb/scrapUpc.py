@@ -52,3 +52,7 @@ def test_skus():
     for sku in skus:
         get_upc_from_barcode_index(sku)
         get_upc_from_upcitemdb(sku)
+
+if __name__=="__main__":
+    r=get_upc("B0B5FDB92L")
+    print(r)

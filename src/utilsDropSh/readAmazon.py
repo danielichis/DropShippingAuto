@@ -70,7 +70,6 @@ def get_product_in_amazon_carpet_parsed(product_sku):
     dataAmazon['dimensions_cm']=dimensions_cm
     imagesPath=get_images_paths(product_sku)
     dataAmazon['imagesPath']=imagesPath
-    dataAmazon['upc']=get_upc(product_sku)
 
     return dataAmazon
  

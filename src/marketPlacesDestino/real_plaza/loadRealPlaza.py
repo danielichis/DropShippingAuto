@@ -1,9 +1,18 @@
 import os
+import traceback
 from playwright.sync_api import sync_playwright,expect
+import requests
+from DropShippingAuto.src.utilsDropSh.readAmazon import get_product_in_amazon_carpet_parsed
 from utils.jsHandler import insertPropertiesToPage
 from random import randrange
 from datetime import date,timedelta
 from utils.managePaths import mp
+from utils.manipulateDicts import dictManipulator
+from utils.datesHandling import dateManag
+from utils.randomUtils import randomInt
+from utils.dinamicMassivArgsExtractions import get_ia_anwsers_extended
+from DropShippingAuto.src.marketPlacesDestino.real_plaza.smartSelects import get_best_path_real_plaza_category
+from utils.imgHandling.imgHandling import image_file_to_binary
 import json
 import time
 homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
@@ -17,17 +26,20 @@ class LoaderRealPlaza:
         self.p=p
         self.sheetProductData=sheetProductData
         self.configDataSheet=configSheetData
+        self.imagesLoadedUrl=[]
+        self.variant_id=None
     def start_playwright(self):
         self.p = sync_playwright().start()
         user_dir=mp.get_current_chrome_profile_path()
-        #self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,record_video_dir='videos/',slow_mo=50)
-        self.browser= self.p.chromium.launch(headless=False)
+        self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,slow_mo=50)
         self.page=self.browser.new_page()
-    def login_real_plaza(self):
-        pass
 
     def handle_login_real_plaza(self):
         self.cookies=self.page.context.cookies()
+        if self.page.url.find("https://inretail.mysellercenter.com/#/dashboard")!=-1:
+            print("Ya se encuentra logueado")
+            self.token= self.page.evaluate("() => JSON.parse(sessionStorage['vue-session-key'])['token']")
+            return
         self.page.locator("form[name='userLogin'] button").click()
         if self.page.url.find("https://irmarketplace.us.auth0.com/login?state")!=-1:
             print("Se encuentra en la página de autenticación")
@@ -48,9 +60,222 @@ class LoaderRealPlaza:
         header={"Authorization":f"Bearer {self.token}",
                 "Content-Type":"application/json"}
         r=self.page.request.get(urlEndpoint,headers=header)
-        print(r.json())
+        #print(r.json())
+        search_categories_response=r.json()
         #make get request to get categories with page.route
         print("Categoría buscada")
+    def select_category_to_get_specifications(self):
+        self.real_plaza_category=get_best_path_real_plaza_category(str(self.dataToLoad['clasificacion']))
+        urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/specifications/"
+        header={"Authorization":f"Bearer {self.token}",
+                "Content-Type":"application/json"}
+        params = {
+        'sortOrder': 'asc',
+        'sortBy': 'name.keyword',
+        'from': '0',
+        'size': '100',
+        'isActive': 'true',
+        'categoryId': self.real_plaza_category['id'],
+        'isStockKeepingUnit': 'false',
+             }
+        r=self.page.request.get(urlEndpoint,headers=header,params=params)
+        self.specificationsFields=r.json()
+        self.requiredFields=[field for field in self.specificationsFields if field["isRequired"]==True]
+        specificationsRespone=r.json()
+        print("Categoría Seleccionada")
+    def get_answers_from_specifications(self):
+        list_of_fields=[]
+        for field in self.specificationsFields:
+            fieldToFill={}
+            if field["isRequired"]==True:
+                if field["specificationFieldValues"]==[]:
+                    fieldToFill['name']=field['name']
+                    fieldToFill['fieldType']="input"
+                    fieldToFill['options']=[]
+                    fieldToFill['id']=field['id']
+                else:
+                    fieldToFill['name']=field['name']
+                    fieldToFill['fieldType']="select"
+                    fieldToFill['options']=field["specificationFieldValues"]
+                    fieldToFill['id']=field['id']
+                list_of_fields.append(fieldToFill)
+        answers=get_ia_anwsers_extended(str(self.dataToLoad),list_of_fields)
+        self.answers=answers
+    def create_product_api(self):
+        for element in self.specificationsFields:
+            if element["isRequired"]==True:
+                anwserElementValue=self.answers[element["name"]]['details']['AIResponse']['value']
+                fielTypeName=element["specificationFieldType"]["fieldTypeName"]
+                if fielTypeName=="Texto" or fielTypeName=="Input":
+                    element["specificationFieldValues"]=[{"value":anwserElementValue}]
+                elif fielTypeName=="Radio" or fielTypeName=="CheckBox":
+                    anwserElementId=self.answers[element["name"]]['details']['AIResponse']['fieldValueId']
+                    element["specificationFieldValues"]=[{"fieldValueId":anwserElementId,"value":anwserElementValue,"isActive":True}]
+                else:
+                    anwserElementId=self.answers[element["name"]]['details']['AIResponse']['fieldValueId']
+                    element["specificationFieldValues"]=[{"fieldValueId":anwserElementId,"value":anwserElementValue,"isActive":True}]
+            else:
+                element["specificationFieldValues"]=[{"value":""}]
+        descriptions=self.dataToLoad["descripciones"]
+        string_description=dictManipulator.dict_to_string_bp(descriptions)
+        json_data = {
+        'id': None,
+        'skus': [],
+        'category': {
+            'id': self.real_plaza_category['id'],
+            'name': self.real_plaza_category['name'],
+            'namePath': self.real_plaza_category['namePath'],
+        },
+        'brand': {
+            'id': self.brand_to_set['id'],
+            'name': self.brand_to_set['name'],
+            'isActive': self.brand_to_set['isActive'],
+        },
+        'productSpecifications':self.specificationsFields,
+        'marketplaces': [
+            {
+                'id': 'promart',
+                'name': 'Promart',
+                'accountName': 'promart',
+                'active': True,
+                'productCommission': None,
+            },
+            {
+                'id': 'plazavea',
+                'name': 'Plaza Vea',
+                'accountName': 'plazavea',
+                'active': True,
+                'productCommission': None,
+            },
+            {
+                'id': 'oechsle',
+                'name': 'Oechsle',
+                'accountName': 'oechsle',
+                'active': True,
+                'productCommission': None,
+            },
+            {
+            'id': 'fp-inkafarma',
+            'name': 'InkaFarma',
+            'accountName': 'fp-inkafarma',
+            'active': True,
+            'productCommission': None,
+            },
+            {
+            "id": "realplaza",
+            "name": "RealPlaza",
+            "accountName": "realplaza",
+            "active": True,
+            "productCommission": None
+            }
+        ],
+        'name': self.dataToLoad['Titulo corto, maximo 30 caracteres'],
+        'description': f'<p>{string_description}</p>',
+    }
+        r=self.page.request.post(
+            "https://inretail.mysellercenter.com/sellercenter/api/v1/products/",
+        headers={"Authorization":f"Bearer {self.token}","Content-Type":"application/json"},
+        data=json_data)
+        self.product_id=r.json()["id"]
+        product_create_response=r.json()
+        print(f"Producto creado:{self.product_id}")
+    def load_images_api(self):
+        path_files=os.path.join(mp.sku_folder_path,self.dataToLoad['sku'],"images","resized_1000x1000")
+        imagesListFiles=os.listdir(path_files)
+        filesToPost=[]
+        dictFiles={}
+        for image in imagesListFiles:
+            fullPath=os.path.join(path_files,image)
+            contentImage = image_file_to_binary(fullPath)
+            file=('file',(image,contentImage,'image/jpeg'))
+            dictFiles[image]=contentImage
+            filesToPost.append(file)
+        header={"Authorization":f"Bearer {self.token}"}
+        urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/sku/{self.variant_id}/images"
+        r = requests.post(
+                        urlEndpoint,
+                        headers=header,
+                        files=filesToPost,
+                            )
+        self.imagesLoadedUrl=[image['imageUrl'] for image in r.json()]
+        load_image_response=r.json()
+        print("Imágenes cargadas")
+    def make_json_to_variant(self):
+        try:
+            peso_gr=int(float(self.dataToLoad['Peso en Kg del envio'].replace("Kg",""))*1000)
+        except:
+            peso_gr=200
+        try:
+            dimensions_cm=self.dataToLoad['Dimensiones del producto en cm'].replace("cm","").split("x")
+            dimensions_cm[0]=int(float(dimensions_cm[0])*1)
+            dimensions_cm[1]=int(float(dimensions_cm[1])*1)
+            dimensions_cm[2]=int(float(dimensions_cm[2])*1)
+        except:
+            dimensions_cm=[20,20,20]
+        self.json_variant_data = {
+                    'id': None,
+                    'price': {
+                        'listPrice': str(self.sheetProductData['PRECIO LISTA MARKETPLACE']),
+                        'price': str(self.sheetProductData['PRECIO FINAL MARKETPLACE']),
+                        'priceValidFrom': dateManag.todayString,
+                        'priceValidUntil': dateManag.oneMonthLaterfromNowString,
+                    },
+                    'dimension': {
+                        'height': str(dimensions_cm[0]),
+                        'width': str(dimensions_cm[1]),
+                        'length': str(dimensions_cm[2]),
+                        'cubicWeight': str(dimensions_cm[0]*dimensions_cm[1]*dimensions_cm[2]),
+                        'weight': str(peso_gr),
+                    },
+                    'images': [],
+                    'skuSpecifications': [],
+                    'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
+                    'skuName': self.dataToLoad['Titulo corto, maximo 30 caracteres'],
+                    'status': 'PENDING_APPROVAL',
+                }
+        
+        print(f"Json de variante creado para el producto :{self.product_id}")
+    def variant_api(self,method):
+        header={"Authorization":f"Bearer {self.token}",
+                "Content-Type":"application/json"}
+        if method=="create":
+            urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/products/{self.product_id}/sku"
+            self.make_json_to_variant()
+        elif method=="update":
+            urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/sku/{self.variant_id}"
+            self.json_variant_data['images']=self.imagesLoadedUrl
+        if method=="create":
+            r=self.page.request.post(
+                urlEndpoint,
+                headers=header,
+                data=self.json_variant_data)
+            self.variant_id=r.json()["id"]
+        elif method=="update":
+            r=self.page.request.put(
+                urlEndpoint,
+                headers=header,
+                data=self.json_variant_data)
+        create_variant_response=r.json()
+        print(f"Variante creada/actualizada:{self.variant_id} para el producto:{self.product_id}")
+    def set_stock_api(self):
+        urlStockEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/sku/inventories/{self.variant_id}"
+        json_data = {
+                'totalQuantity': '50',
+                'reservedQuantity': 0,
+            }
+        header={"Authorization":f"Bearer {self.token}",
+                "Content-Type":"application/json"}
+        
+        r=self.page.request.put(
+            urlStockEndpoint,
+            headers=header,
+            data=json_data)
+        
+        baseUrl="https://inretail.mysellercenter.com/#/catalog/details/"
+        self.finalUrl=f"{baseUrl}{self.variant_id}"
+        self.upc=self.json_variant_data['upc']
+        stock_response=r.json()
+        print("Stock actualizado")
     def get_children_category_trought_api(self,categoryId:str):
         urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=100&parentId={categoryId}"
         header={"Authorization":f"Bearer {self.token}",
@@ -84,318 +309,68 @@ class LoaderRealPlaza:
         self.page.get_by_role("link", name="Administrar Productos").click()
         self.page.get_by_role("button", name="Crear Producto").click()
         print("pagina cargada")
-        #self.page.get_by_role("button", name=" Crear Producto").click()
-        #self.page.get_by_role("button", name=" Empezar").click()
-
-    def load_product_name(self):
-        #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
-        self.page.get_by_role("textbox", name="Nombre").fill("productName")
-
-    def load_description(self):
-        #self.page.locator("input[id='nombreFormatterHelp']").fill("productName")
-        properties={
-                "name":"description1",
-                "value":"23434"
-            }
-        insertPropertiesToPage("div[class='ql-editor ql-blank']",properties,self.page)
-        print("Se insertó descripción")
-
-    def load_category(self)->bool:
-        time.sleep(1)
-
-        try:
-            categoryListLocator=self.page.locator("div[class='list-group']>div[class='list-group-item']").all()
-        except:
-            print("Ya no hay más categorías por seleccionar")
-            return False
-            
-        categoryList=[]
-        
-        for category in categoryListLocator:
-            try:
-                button=category.locator("button[class='btn-subcategory']")
-            except:
-                button=None
-
-            categoryList.append({"name":category.locator("span").inner_text(),
-                                "button":button})
-        print(categoryList)
-        categNumb=randrange(0,len(categoryList))
-        print(categNumb)
-
-        try:
-            categoryList[categNumb]["button"].click(timeout=2000)
-        except:
-            self.page.get_by_text(categoryList[categNumb]["name"],exact=True).click()
-            print("Se llegó al último nivel de dicha categoría")
-            print("Categoria seleccionada:"+categoryList[categNumb]["name"])
-            return False
-    
-        print("Categoria seleccionada:"+categoryList[categNumb]["name"])
-        return True
-
-    def load_all_category(self):
-
-        self.page.get_by_label("Categoría", exact=True).get_by_role("textbox").click()
-        while True:
-            missingCategories=self.load_category()
-            if not missingCategories:
+    def search_brand(self):
+        urlEndpoint='https://inretail.mysellercenter.com/sellercenter/api/v1/brands'
+        params = {
+        'text': self.dataToLoad['Marca,proveedor o fabricante'],
+        }
+        header={"Authorization":f"Bearer {self.token}",
+                "Content-Type":"application/json"}
+        brands=self.page.request.get(urlEndpoint,headers=header,params=params)
+        branded=False
+        for brand in brands.json():
+            if brand["name"].upper()==self.dataToLoad['Marca,proveedor o fabricante'].upper():
+                self.brand_to_set={"id":brand["id"],"name":brand["name"],"isActive":brand["isActive"]}
+                branded=True
                 break
-        print("Se cargaron todas las categorías")
-        self.page.wait_for_load_state("networkidle")
-
-        
-    def load_brand(self):
-        self.page.locator("div[id='inputBrand']").click()
-        brands_text=self.page.locator("div[id='inputBrand'] li[class='multiselect__element']").all_inner_texts()
-        print(brands_text)
-        try:
-            brand_index = brands_text.index("YONKER")
-            print(brand_index)
-        except:
-            brand_index = -1
-        self.page.locator(f"li:nth-child({brand_index+1}) > .multiselect__option").click()
-
-    def load_site(self):
-        time.sleep(1)
-        sites_list=self.page.locator("div[id='__BVID__206_']>label>span>span").all()
-        #select all sites
-        for site in sites_list:
-            site.click()
-        # sites_list_text=self.page.locator("div[id='__BVID__206_']>label>span>span").all_inner_texts()
-        # print(sites_list_text)
-        # print("Seleccionando RealPlaza")
-        # sites_list[4].click()
-
-    def get_additional_fields(self):
-        time.sleep(2)
-        expect(self.page.locator("div[class='row mt-3 attr-row']").first).not_to_be_empty()
-        additional_fields_locator=self.page.locator("div[class='row mt-3 attr-row']").all()
-        additional_fields_text=self.page.locator("div[class='row mt-3 attr-row'] legend").all_inner_texts()
-        additional_fields=[]
-        
-        for additional_field in additional_fields_locator:
-
-            if len(additional_field.locator("div[role='alert']").all())>0:
-                mandatory=True
-            else:
-                mandatory=False
-
-            type=additional_field.locator("input").first.get_attribute("type")
-            if type!="text" or type!="number":
-                #options=additional_field.locator("input span").all_inner_texts()
-                options=additional_field.locator("span span").all_inner_texts()
-            else:
-                options=[]
-            name=additional_field.locator("legend").inner_text()
-            additional_fields.append({"name":name,
-                                      "mandatory":mandatory,
-                                      "type":type,
-                                      "options":options,
-                                      "fieldObject":additional_field})
-            
-        mandatory_fields=[field for field in additional_fields if field["mandatory"]==True]
-        
-        print("Campos adicionales " + str(len(additional_fields)))
-        print(additional_fields)
-        print("-------------------")
-
-        print("Campos obligatorios " + str(len(mandatory_fields)))
-        print(mandatory_fields)
-        print("-------------------")
-        #storing mandatory and additional fields on the object
-        self.mandatory_fields=mandatory_fields
-        self.additional_fields=additional_fields
-    
-    def load_additional_fields(self):
-        pass
-    def fill_mandatory_fields(self):
-        
-        for field in self.mandatory_fields:
-            type=field["type"]
-            
-            if type=="text":
-                field["fieldObject"].locator("input").fill("test")
-            elif type=="number":
-                field["fieldObject"].locator("input").fill("2")
-            elif type=="checkbox":
-                #field["fieldObject"].locator("input").first().check()
-                for check_label in field["options"]:
-                    print(check_label)
-                    #field["fieldObject"].locator("input").all()[0].check()
-                    #field["fieldObject"].get_by_label(check_label,exact=True).check()
-                    field["fieldObject"].get_by_text(check_label,exact=True).first.click()
-            elif type=="radio":
-                #field["fieldObject"].locator("input").first().check()
-                radio_label=label=field["options"][0]
-                print(radio_label)
-                #field["fieldObject"].locator("input").all()[0].check()
-                #field["fieldObject"].get_by_text(radio_label,exact=True).click()
-                field["fieldObject"].get_by_text(radio_label,exact=True).first.click()
-            else:
-                print(type)
-                field["fieldObject"].locator("input").fill("test")
-                
-        print("Campos obligatorios llenados")
-
-    def create_product(self):
-        self.page.get_by_role("button", name="Guardar").click()
-        self.page.get_by_role("button", name="OK").click()
-        print("Producto guardado")
-        self.page.wait_for_load_state("networkidle")
-
-    def create_variant(self):
-
-        self.page.locator("#__BVID__237_").fill("22") #UPC
-        self.page.get_by_label("Crear variante para el").locator("#nombreFormatterHelp").fill("eee") #nombre
-        #Precios
-        self.page.get_by_role("textbox", name="Precio regular").fill("250")
-        self.page.get_by_role("textbox", name="Precio con descuento").fill("200")
-
-        #Obteniendo fechas
-        from_date = date.today()
-        until_date=from_date+timedelta(days=5)
-        from_str=from_date.strftime("%Y-%m-%d")
-        until_str=until_date.strftime("%Y-%m-%d")
-        from_day_str=from_date.strftime("%#d")
-        until_day_str=until_date.strftime("%#d")
-        print("Fechas de descuento:", from_str,until_str)
-        print("dias:",from_day_str,until_day_str)
-        #LLenando fechas
-        #solve later
-        #self.page.get_by_role("textbox", name="Descuento valido desde").fill(from_str)
-        #self.page.get_by_role("textbox", name="Descuento válido hasta").fill(until_str)
-        #Llenando fechas 2
-        self.page.get_by_label("Descuento válido desde").get_by_role("textbox").click()
-        self.page.locator(f"td[title='{from_str}']").first.click()
-        self.page.get_by_label("Descuento válido hasta").get_by_role("textbox").click()
-        self.page.locator(f"td[title='{until_str}']").first.click()
-        #Medidas
-        self.page.get_by_role("textbox", name="Alto cm").fill("22")
-        self.page.get_by_role("textbox", name="Ancho cm").fill("22")
-        self.page.get_by_role("textbox", name="Largo cm").fill("22")
-        self.page.get_by_role("textbox", name="Peso gr").fill("22")
-        #Imagen
-        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
-        self.load_img()
-        #Select button 
-        self.page.get_by_label("Crear variante para el").get_by_role("button", name="Crear Variante").click()
-        self.page.wait_for_load_state("networkidle")
-        #save variant
-        self.page.get_by_role("button", name="Guardar").click()
-        self.page.get_by_role("button", name="OK").click()
-        self.page.wait_for_load_state("networkidle")
-        #storing SKU and ID of product
-        self.variant_sku=self.page.locator("td[data-label='SKU']>div").inner_text()
-        self.page.get_by_text("Datos del Producto").click()
-        self.product_id=self.page.locator("input[id='idInput']").input_value()
-        print("SKU del producto creado: "+self.variant_sku)
-        print("ID del producto creado: "+ self.product_id)
-        
-    def load_img(self):
-        #self.page.get_by_role("textbox", name="Seleccione un archivo").click()
-        test_sku_path=os.path.join(mp.sku_folder_path,"B0BGHRMJ1B","images","originals")
-        imagesList=os.listdir(test_sku_path)
-        fullPaths=[]
-        for image in imagesList:
-            fullPath=os.path.join(test_sku_path,image)
-            fullPaths.append(fullPath)
-        self.page.locator("input[type='file']").first.set_input_files(fullPaths[0])
-
-    def update_inventory_number(self):
-        self.page.get_by_role("navigation").get_by_text("Inventario", exact=True).click()
-        self.page.get_by_role("link", name="Administrar Inventario").click()
-        self.page.wait_for_load_state("networkidle")
-        print("Buscando producto por ID")
-        self.page.locator("tr[role='row']").filter(has_text=self.product_id).locator("td[aria-colindex='5'] button").click()
-        #self.page.locator("tr[role='row']").all()[0].locator("td[aria-colindex='8'] button").click()
-        print("Se abrió la ventana de editar inventario")
-        print("buscando variante por SKU")
-        self.page.locator("tr[role='row']").filter(has_text=self.variant_sku).locator("td[aria-colindex='5'] span[class='inventoryTotal']").click()
-        self.page.get_by_role("textbox", name="Nuevo valor de inventario").fill("1")
-        self.page.get_by_role("button", name="Guardar").click()
-        self.page.wait_for_load_state("networkidle")
-        print("Inventario de variante actualizado a 1")
+        if not branded:
+            self.brand_to_set={
+                                "id": "biOrOY8Bi4M-DKCliT1Y",
+                                "name": "GENERICO",
+                                "isActive": False
+                            }
+        print(self.brand_to_set)
+        print("Marca encontrada")
     def end_playwright(self):
         self.browser.close()
         self.p.stop()
         print("Playwright cerrado")
     def load_main_real_plaza(self):
-        self.go_to_home()
-        self.handle_login_real_plaza()
-        self.go_to_create_product()
-        print("---Paso 1: Crear Producto---")
-        #self.get_tree_categories()
-        #self.sear_category("laptops")
-        self.load_product_name()
-        self.load_all_category()
-        self.get_additional_fields()
-        self.load_additional_fields()
-        self.fill_mandatory_fields()
-        self.load_description()
-        self.load_brand()
-        self.load_site()
-        self.create_product()   
-        print("Producto Creado")
-        print("---Paso 2: Crear Variantes---")
-        self.create_variant()
-        print("---Variante creada---")
-        self.update_inventory_number()
-        print("Producto creado y variante creada")
-        print("Regresando a la página de crear producto")
-        self.go_to_home()
-        self.go_to_create_product()
-        self.end_playwright()   
-def test_get_tree_categories():
-    pass
-class LoaderRP:
-    def __init__(self,dataToLoad):
-        self.dataToLoad=dataToLoad
-        
-    def load_aditional_fields(self):
-        self.page.wait_for_selector("div[class='col-md-6 ng-star-inserted']")
-        aditionalFields=self.page.query_selector_all("div[class='col-md-6 ng-star-inserted']")
-        lista_atributos_adicionales=self.page.locator("//div[@class='col-md-6 ng-star-inserted']//span[text()='*']/parent::span").all_inner_texts()
-        lista_obligatorios=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div span[class='ng-star-inserted']")
-        lista_inputs=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div input")
-        lista_selects=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div select")
-        lista_opcionales=self.page.query_selector("div[class='col-md-6 ng-star-inserted'] div>span:not(:has(>span))")
-        fieldsData=[]
-        for field in aditionalFields:
-            textField=field.query_selector("span").inner_text()
-            if "*" in textField:
-                mandatory=True
-            else:
-                mandatory=False
-            numOfSelects=len(field.query_selector_all("select"))
-            if numOfSelects>0:
-                select=field.query_selector("select")
-                options=options=[x.inner_text() for x in select.query_selector_all("option")]
-                type="select"
-            else:
-                options=[]
-                type="input"
-            fieldData={
-                "name":textField.replace("*","").strip(),
-                "mandatory":mandatory,
-                "options":options,
-                "type":type
-            }
-            fieldsData.append(fieldData)
-        
-        with open("fieldsData.json", "w",encoding="utf-8") as f:
-            json.dump(fieldsData, f, indent=4, ensure_ascii=False)
-        print(fieldsData)
-
-
-def other_tests():
-    test_sku_path=os.path.join(mp.sku_folder_path,"B0BGHRMJ1B","images","originals")
-    imagesList=os.listdir(test_sku_path)
-    print(imagesList)
-
+        try:
+            self.search_brand()
+            self.select_category_to_get_specifications()   
+            self.get_answers_from_specifications()
+            self.create_product_api()
+            self.variant_api("create")
+            self.load_images_api()
+            self.set_stock_api()
+            self.status="CARGADO CORRECTAMENTE"
+            tb="Ok"
+        except Exception as e:
+            print("Error en el proceso de carga en Real Plaza")
+            self.status="ERROR"
+            tb=traceback.format_exc()
+            print(tb)
+            self.finalUrl="-"
+            self.upc="-"
+        self.responseLoad={
+            "sku":self.dataToLoad['sku'],
+            "status":self.status,
+            "url":self.finalUrl,
+            "marketplace":"Real Plaza",
+            "condition":"new",
+            "log":tb,
+            "fecha":time.strftime("%Y-%m-%d %H:%M:%S"),
+            "upc":self.upc
+                        }
 if __name__ == "__main__":
-    #other_tests()
-    RPmloader=LoaderRealPlaza()
+    with open("dataToDownloadAndLoad.json","r") as f:
+        sheetData=json.load(f)
+    dataAmazonTest=get_product_in_amazon_carpet_parsed(sheetData['dataToLoad'][0]['SKU'])
+    RPmloader=LoaderRealPlaza(dataToLoad=dataAmazonTest,sheetProductData=sheetData['dataToLoad'][0],configSheetData=sheetData['configData'])
     RPmloader.start_playwright()
+    RPmloader.go_to_home()
+    RPmloader.handle_login_real_plaza()
     RPmloader.load_main_real_plaza()
+    RPmloader.end_playwright()
     

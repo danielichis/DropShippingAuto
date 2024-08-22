@@ -26,11 +26,13 @@ class amazon_mkt_peruvians:
         self.shopifyPage=self.context.new_page()
         self.dinnersPage=self.context.new_page()
         self.ripleyPage=self.context.new_page()
+        self.realPlazaPage=self.context.new_page()
     def start_pages(self):
         self.go_to_amazon()
         self.go_to_shopify()
         #self.go_to_dinners()
-        self.go_to_ripley()
+        #self.go_to_ripley()
+        self.go_to_real_plaza()
     def set_loaders(self):
         self.loaderDinner=LoaderDinners(dataToLoad=None,
                                   page=self.dinnersPage,
@@ -48,15 +50,16 @@ class amazon_mkt_peruvians:
                                   configSheetData=self.configDataSheet,
                                   context=self.context,
                                   p=self.p)
-        # self.loaderRealPlaza=LoaderRealPlaza(dataToLoad=None,
-        #                           page=self.realPlazaPage,
-        #                           sheetProductData=None,
-        #                           configSheetData=self.configDataSheet,
-        #                           context=self.context,p=self.p)
+        self.loaderRealPlaza=LoaderRealPlaza(dataToLoad=None,
+                                  page=self.realPlazaPage,
+                                  sheetProductData=None,
+                                  configSheetData=self.configDataSheet,
+                                  context=self.context,p=self.p)
         self.loadersFuntions={
             "DINNERS":self.load_to_dinners,
             "SHOPIFY":self.load_to_shopify,
-            "RIPLEY":self.load_to_ripley
+            "RIPLEY":self.load_to_ripley,
+            "REAL_PLAZA":self.load_to_real_plaza
         }
     def update_loaders_data(self):
         #dataAmzn=get_product_in_amazon_carpet_parsed(self.product['SKU'])
@@ -67,6 +70,8 @@ class amazon_mkt_peruvians:
         self.loaderShopify.sheetProductData=self.product
         self.loaderRipley.dataToLoad=dataAmzn
         self.loaderRipley.sheetProductData=self.product
+        self.loaderRealPlaza.dataToLoad=dataAmzn
+        self.loaderRealPlaza.sheetProductData=self.product
     def get_sheet_data(self):
         if self.sheetData ==None:
             print("No sheet data, leyendo localmente")
@@ -81,16 +86,17 @@ class amazon_mkt_peruvians:
         if r['status_code']==200:
                 try:
                     self.amazonDataSku=get_product_in_amazon_carpet_parsed(self.product['SKU'])
-                except Exception as e:
-                    print(str(e))
+                except:
                     self.amazonDataSku=None
                     r['status']="ERROR EN LA DESCARGA"
                     r['condition']="yes"
-                    r['log']="INFORMACIÓN INSUFICIENTE"+"\n"+str(e)
+                    r['log']="INFORMACIÓN INSUFICIENTE"
                     r['fecha']=time.strftime("%Y-%m-%d %H:%M:%S")
                     r['status_code']=500
-                               
-        post_peticion(r)
+                    r['upc']="-"
+        r2=r.copy()
+        r2.pop("status_code")
+        post_peticion(r2)
         self.status_download_code=r['status_code']
     def go_to_shopify(self):
         self.shopifyPage.goto(mp.newProductShopify)
@@ -100,6 +106,9 @@ class amazon_mkt_peruvians:
         self.dinnersPage.goto(mp.newProductDinners)
         self.dinnersPage.wait_for_load_state("load")
         self.loaderDinner.handle_login_dinners()
+    def go_to_real_plaza(self):
+        self.loaderRealPlaza.go_to_home()
+        self.loaderRealPlaza.handle_login_real_plaza()
         #expect web element to be present
     def load_to_shopify(self):
         self.shopifyPage.bring_to_front()
@@ -112,10 +121,11 @@ class amazon_mkt_peruvians:
         self.dinnersPage.goto(mp.newProductDinners)
         post_peticion(self.loaderDinner.responseDinnersLoad)
 
-    def go_to_real_plaza(self):
-        self.realPlazaPage.goto(mp.newProductRealPlaza)
     def load_to_real_plaza(self):
-        pass
+        self.realPlazaPage.bring_to_front()
+        
+        self.loaderRealPlaza.load_main_real_plaza()
+        post_peticion(self.loaderRealPlaza.responseLoad)
 
     def go_to_ripley(self):
         self.loaderRipley.go_to_home()
@@ -154,4 +164,4 @@ if __name__ == "__main__":
     print("cargando productosSS")
     amp=amazon_mkt_peruvians(sheetData)
     amp.main_process()
-        
+    
