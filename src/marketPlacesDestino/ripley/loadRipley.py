@@ -692,17 +692,12 @@ class LoaderRipley:
                 else:
                     valueField=dictManipulator.remove_last_paragraph(dimArgs['Descripción Corta'] +"\n"+ static_description,3000)
                     
-                valueField=dinamic_two_systems_description(valueField)
+                #valueField=dinamic_two_systems_description(valueField)
                     
             elif textField=='sku_seller':
                 valueField=self.product_sku
             elif textField=='Nombre':
-                    #amazon_title=self.product_info["titulo"]
-                    content_product=str(self.dataToLoad)
-                    generated_title=dinamic_title_per_mkp(content_product,"RIPLEY")
-                    if generated_title=="NO ENCONTRADO":
-                        generated_title=self.product_info["Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario"]
-                    valueField=generated_title
+                valueField=self.dataToLoad["titulos_generados"]["ripley"]
             elif textField=='Descripción Corta':
                 print("generando Descripcion corta...")
                 #valueField=dimArgs['Descripción Corta'] if len(dimArgs['Descripción Corta'])<=180 else self.generate_dinamic_answer("Descripción corta resumida en máximo 180 caracteres incluyendo espacios en blanco")
