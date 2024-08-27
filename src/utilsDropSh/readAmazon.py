@@ -42,16 +42,6 @@ def get_product_in_amazon_carpet_parsed(product_sku):
         dataAmazon['Peso Kg']=peso_kg
     else:
         peso_kg="200"
-    #list_descripciones=[dataAmazon["descripciones"],dataAmazon["Vista General"],dataAmazon["Acerca del producto"],dataAmazon["Detalles Tecnicos"]]
-    #we are not considering "Acerca del producto" because there could be redundant information
-    list_descripciones=[dataAmazon["descripciones"],dataAmazon["Vista General"],dataAmazon["Detalles Tecnicos"],dataAmazon["informacion del producto"]]
-    #print(list_descripciones)
-    if dataAmazon["informacion del producto"]!={}:
-        dataAmazon["descripciones"]=dataAmazon["informacion del producto"]
-    else:
-        dataAmazon["descripciones"]=get_element_with_more_fields(list_descripciones)
-    #print(dataAmazon["descripciones"])
-    # el que tenga mas elementos 
 
     if "Dimensiones del artículo Largo x Ancho x Altura" in dataAmazon["Otros detalles"].keys():
         dimensions=dataAmazon["Otros detalles"]["Dimensiones del artículo Largo x Ancho x Altura"]
