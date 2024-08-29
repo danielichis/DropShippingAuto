@@ -6,6 +6,7 @@ Se brindan tablas con los campos que se deben considerar para generar los títul
 
 - SHOPIFY : 200
 - RIPLEY  : 120
+- REAL PLAZA  : 90
 
 **SKINCARE**
 
@@ -50,12 +51,6 @@ Individual
 | Asus | ROG | Laptop Gamer | Zephyrus M16 | G614JI-AS94 | 16" | 16:10 FHD | 165HZ | Intel Core i9/ Ryzen 7 5600  | 16GB RAM | 1TB SSD | RTX 3060TI | RGB Keyboard | Black | (2022) |
 | Asus | ROG | Laptop Business | Zephyrus M16 | G614JI-AS95 | 16” | 16:10 FHD | 165HZ | R7 5600 | 16GB RAM | 1TB SSD | RTX 3060TI | Killer Wifi 6 |  | (2023) |
 
-**Nota para títulos extensos (Solo para laptops,en caso se supere el máximo de caracteres requerido):** 
-
-- Abreviar procesador
-- Eliminar color
-- Eliminar tasa de refresco
-- Quitar espacios
 
 **MAC**
 
@@ -86,3 +81,20 @@ Individual
 | Nombre del producto | Procesador y generación | Modelo | Velocidad del procesador | Caché del procesador | Socket |
 | --- | --- | --- | --- | --- | --- |
 | Procesador Intel | Core I7 | 8700 | 3.2GHZ | 12MB | LGA 1151 |
+
+
+
+**Nota para títulos extensos (Solo para laptops,en caso se supere el máximo de caracteres requerido):** 
+
+- Abreviar procesador
+- Eliminar color
+- Eliminar tasa de refresco
+- Quitar espacios
+
+**Nota para títulos extensos (Productos que no son laptops):** 
+
+- Quitar campos del título generado sucesivamente hasta cumplir el máximo de caracteres según marketplace.
+
+**CONSIDERACIONES ESPECIALES POR MARKETPLACE:** 
+
+- REAL PLAZA : El simbolo de pulgadas (") no se admite ,cambiarlo por "pulg.","pulgadas" o "p."

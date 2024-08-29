@@ -6,14 +6,17 @@ import io
 from tqdm import tqdm
 import os
 from DropShippingAuto.src.utilsDropSh.manageProducts import get_data_to_download
+from utils.dinamicMassivArgsExtractions import generate_dinamic_title_per_mkp,dinamic_two_systems_description_dict
 from DropShippingAuto.src.utilsDropSh.magic_fields import get_static_fields_with_openai
 from PIL import Image
 from DropShippingAuto.src.utilsDropSh.imageConverters import resize_image
 from utils.managePaths import mp
 from utils.manipulateDicts import dictManipulator
 from utils.imgHandling.imgHandling import resize_original_images_per_mkp
+from utils.structures import get_element_with_more_fields
 import traceback
 import csv
+from utils.manipulateDicts import dictManipulator
 
 def get_overView(pw_page):
     overViewSelectors=["div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr","div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr"]
@@ -353,7 +356,7 @@ def download_sku(pw_page,sku):
         "Informacion Adicional":aditionalInfo,
         "informacion del producto":productInformation,
         "Nota":note,
-        "Links Imagenes":urls_images,
+        #"Links Imagenes":urls_images,
         "Peso en Kg del envio":weight_description
     }
 
@@ -372,7 +375,42 @@ def download_sku(pw_page,sku):
 
     if data['Peso en Kg del envio'].upper()=="NO ESPECIFICA":
         data['Peso en Kg del envio']=data['Peso en Kg del producto']
-    
+
+    print("Generando títulos según lineamientos...")
+    marketplaces_list=["SHOPIFY","RIPLEY","REAL PLAZA"]
+    titles_first_options=[data["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"],
+                          data["Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario"],
+                          data["Titulo,corregido si está mal redactado, entre 80 y 90 caracteres con unidades convertidas de ser necesario"]
+                          ]
+
+    # for i,mkp in enumerate(marketplaces_list):
+    #     generated_title=generate_dinamic_title_per_mkp(str(data),mkp)
+    #     if generated_title.upper()=="NO ENCONTRADO":
+    #         generated_title=titles_first_options[i]
+    #     print(f"Titulo generado para {mkp}: {generated_title}")
+    #     data["titulos_generados"][f"title_{mkp.lower()}"]=generated_title
+
+    title_shopify=generate_dinamic_title_per_mkp(str(data),"SHOPIFY") if generate_dinamic_title_per_mkp(str(data),"SHOPIFY").upper()!="NO ENCONTRADO" else titles_first_options[0]
+    title_ripley=generate_dinamic_title_per_mkp(str(data),"RIPLEY") if generate_dinamic_title_per_mkp(str(data),"RIPLEY").upper()!="NO ENCONTRADO" else titles_first_options[1]
+    title_realplaza=generate_dinamic_title_per_mkp(str(data),"REAL PLAZA") if generate_dinamic_title_per_mkp(str(data),"REAL PLAZA").upper()!="NO ENCONTRADO" else titles_first_options[2]
+   
+    data["titulos_generados"]={
+        "shopify":title_shopify,
+        "ripley":title_ripley,
+        "realplaza":title_realplaza
+    }
+
+    print("Escogiendo sub-diccionario de mayor tamaño...")
+    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"]]
+    if data["informacion del producto"]!={}:
+        description_dict=data["informacion del producto"]
+    else:
+        description_dict=get_element_with_more_fields(list_descripciones)
+
+    data["descripciones"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(description_dict))
+    data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
+
+    print("Guardando información en archivo json...")
     dataJsonPath=skuFolder+"/data.json"
     with open(dataJsonPath, "w",encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)

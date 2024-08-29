@@ -29,7 +29,6 @@ class LoaderShopify:
         self.status="ERROR AL CARGAR"
     def load_descriptions(self):
         descs=self.dataToLoad['descripciones']
-        descs=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(descs))[1]
         if type(descs)!=dict:
             raise Exception("el parametro descs debe ser un diccionario")
         listaObjetos=[]
@@ -133,11 +132,7 @@ class LoaderShopify:
     def load_title(self):
         self.page.wait_for_selector(pshopy.cajaNombreProducto.selector)
         #cambiar a un iframe
-        content_product=str(self.dataToLoad)
-        generated_title=dinamic_title_per_mkp(content_product,"SHOPIFY")
-        if generated_title=="NO ENCONTRADO":
-            generated_title=self.dataToLoad["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"]
-        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(generated_title)
+        self.page.query_selector(pshopy.cajaNombreProducto.selector).fill(self.dataToLoad["titulos_generados"]["shopify"])
     
     def load_images(self):
         self.page.wait_for_selector("span>input[type='file']")
@@ -196,7 +191,7 @@ class LoaderShopify:
         webelement=self.page.locator("iframe[title='ACF: Metafields Custom Fields']")
         frame_locator=webelement.content_frame
         frame_locator.locator("div[class='fr-element fr-view']").click()
-        two_systems_acf_description=dinamic_two_systems_description(self.get_about_this_item_str(4))
+        two_systems_acf_description=self.get_about_this_item_str(4)
         frame_locator.locator("div[class='fr-element fr-view']").fill(two_systems_acf_description)
         saveUrl="https://app.advancedcustomfield.com/admin/save-metafield-template"
         with self.page.expect_response(saveUrl,timeout=30000) as response_info:
