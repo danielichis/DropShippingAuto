@@ -370,6 +370,7 @@ def download_sku(pw_page,sku):
         del data["Otros detalles"]["Peso Ligero"]
 
     ####
+    print("Extrayendo campos adicionales con OpenAI...")
     more_fields=get_static_fields_with_openai(data)
     data.update(more_fields)
 
@@ -382,23 +383,22 @@ def download_sku(pw_page,sku):
                           data["Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario"],
                           data["Titulo,corregido si está mal redactado, entre 80 y 90 caracteres con unidades convertidas de ser necesario"]
                           ]
+    
+    data["titulos_generados"]={}
 
-    # for i,mkp in enumerate(marketplaces_list):
-    #     generated_title=generate_dinamic_title_per_mkp(str(data),mkp)
-    #     if generated_title.upper()=="NO ENCONTRADO":
-    #         generated_title=titles_first_options[i]
-    #     print(f"Titulo generado para {mkp}: {generated_title}")
-    #     data["titulos_generados"][f"title_{mkp.lower()}"]=generated_title
+    for i,mkp in enumerate(marketplaces_list):
+        generated_title=generate_dinamic_title_per_mkp(str(data),mkp)
+        if generated_title.upper()=="NO ENCONTRADO":
+            generated_title=titles_first_options[i]
+        print(f"Titulo generado para {mkp}: {generated_title}")
+        data["titulos_generados"][mkp.lower()]=generated_title
 
-    title_shopify=generate_dinamic_title_per_mkp(str(data),"SHOPIFY") if generate_dinamic_title_per_mkp(str(data),"SHOPIFY").upper()!="NO ENCONTRADO" else titles_first_options[0]
-    title_ripley=generate_dinamic_title_per_mkp(str(data),"RIPLEY") if generate_dinamic_title_per_mkp(str(data),"RIPLEY").upper()!="NO ENCONTRADO" else titles_first_options[1]
-    title_realplaza=generate_dinamic_title_per_mkp(str(data),"REAL PLAZA") if generate_dinamic_title_per_mkp(str(data),"REAL PLAZA").upper()!="NO ENCONTRADO" else titles_first_options[2]
-   
-    data["titulos_generados"]={
-        "shopify":title_shopify,
-        "ripley":title_ripley,
-        "realplaza":title_realplaza
-    }
+    #data["titulos_generados"]={
+    #    "shopify":title_shopify,
+    #    "ripley":title_ripley,
+    #    "realplaza":title_realplaza
+    #}
+    print(data["titulos_generados"])
 
     print("Escogiendo sub-diccionario de mayor tamaño...")
     list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"]]

@@ -170,7 +170,7 @@ class LoaderShopify:
     def save_edition(self):
         saves=self.page.query_selector_all("//span[text()='Guardar']")
         saves[len(saves)-1].click()
-        self.page.wait_for_selector("span[class*='Polaris-Banner--textSuccessOnBgFill']+h2",timeout=8000)
+        self.page.wait_for_selector("span[class*='Polaris-Banner--textSuccessOnBgFill']+h2",timeout=12000)
     def go_to_custom_fields(self):
         baseUrl="https://admin.shopify.com/store/unaluka/apps/arena-custom-fields/products_editor/"
         currentUrl=self.page.url
