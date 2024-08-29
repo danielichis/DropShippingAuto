@@ -101,6 +101,22 @@ class LoaderRealPlaza:
                 list_of_fields.append(fieldToFill)
         answers=get_ia_anwsers_extended(str(self.dataToLoad),list_of_fields)
         self.answers=answers
+    
+    def get_about_this_item_str(self,number_paragraphs:int):
+        if "Acerca del producto" in self.dataToLoad.keys():
+            about_this_item_str=dictManipulator.dict_to_bp_w_paragraphs(self.dataToLoad["Acerca del producto"],number_paragraphs)
+            return about_this_item_str
+        else:
+            return self.dataToLoad["Resumen de 2 a 3 parrafos separados por viñetas"]
+
+    def get_description_str(self)->str:
+        description_dict=self.dataToLoad['descripciones']
+        #adding sku to description_dict dictionary
+        sku_dict={"SKU":self.dataToLoad['sku']}
+        sku_dict.update(description_dict)
+        description_str=dictManipulator.dict_to_string_bp(sku_dict)
+        return description_str  
+
     def create_product_api(self):
         for element in self.specificationsFields:
             if element["isRequired"]==True:
@@ -116,8 +132,10 @@ class LoaderRealPlaza:
                     element["specificationFieldValues"]=[{"fieldValueId":anwserElementId,"value":anwserElementValue,"isActive":True}]
             else:
                 element["specificationFieldValues"]=[{"value":""}]
-        descriptions=self.dataToLoad["descripciones"]
-        string_description=dictManipulator.dict_to_string_bp(descriptions)
+        description_str=self.get_description_str()
+        about_this_item_str=self.get_about_this_item_str(4)
+        
+        string_description=about_this_item_str +"\n"+description_str
         json_data = {
         'id': None,
         'skus': [],
@@ -162,7 +180,7 @@ class LoaderRealPlaza:
             "productCommission": None
             }
         ],
-        'name': self.dataToLoad['titulos_generados']['realplaza'],
+        'name': self.dataToLoad['titulos_generados']['real plaza'],
         'description': f'<p>{string_description}</p>',
     }
         r=self.page.request.post(
@@ -224,7 +242,7 @@ class LoaderRealPlaza:
                     'images': [],
                     'skuSpecifications': [],
                     'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
-                    'skuName': self.dataToLoad['titulos_generados']['realplaza'],
+                    'skuName': self.dataToLoad['titulos_generados']['real plaza'],
                     'status': 'PENDING_APPROVAL',
                 }
         
