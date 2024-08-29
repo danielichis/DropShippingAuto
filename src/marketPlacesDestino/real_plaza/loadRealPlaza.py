@@ -198,26 +198,27 @@ class LoaderRealPlaza:
             peso_gr=int(float(self.dataToLoad['Peso en Kg del envio'].replace("Kg",""))*1000)
         except:
             peso_gr=200
+        defaulDimensions=[30,36,16]
         try:
             dimensions_cm=self.dataToLoad['Dimensiones del producto en cm'].replace("cm","").split("x")
             dimensions_cm[0]=int(float(dimensions_cm[0])*1)
             dimensions_cm[1]=int(float(dimensions_cm[1])*1)
             dimensions_cm[2]=int(float(dimensions_cm[2])*1)
         except:
-            dimensions_cm=[20,20,20]
+            dimensions_cm=defaulDimensions
         self.json_variant_data = {
                     'id': None,
                     'price': {
                         'listPrice': str(self.sheetProductData['PRECIO LISTA MARKETPLACE']),
                         'price': str(self.sheetProductData['PRECIO FINAL MARKETPLACE']),
                         'priceValidFrom': dateManag.todayString,
-                        'priceValidUntil': dateManag.oneMonthLaterfromNowString,
+                        'priceValidUntil': dateManag.twoYearsLaterfromNowString,
                     },
                     'dimension': {
-                        'height': str(dimensions_cm[0]),
-                        'width': str(dimensions_cm[1]),
-                        'length': str(dimensions_cm[2]),
-                        'cubicWeight': str(dimensions_cm[0]*dimensions_cm[1]*dimensions_cm[2]),
+                        'height': str(defaulDimensions[0]),
+                        'width': str(defaulDimensions[1]),
+                        'length': str(defaulDimensions[2]),
+                        'cubicWeight': str(defaulDimensions[0]*defaulDimensions[1]*defaulDimensions[2]),
                         'weight': str(peso_gr),
                     },
                     'images': [],
