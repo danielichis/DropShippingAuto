@@ -45,13 +45,13 @@ class LoaderRealPlaza:
             print("Se encuentra en la página de autenticación")
             self.page.locator("input[name='email']").fill("mkpinter@unaluka.com")
             self.page.locator("input[name='password']").fill("Inretail123*")
-        self.page.wait_for_load_state("networkidle")
-        print("Haciendo clik para loguearse")
-        with self.page.expect_response("https://irmarketplace.us.auth0.com/oauth/token") as response_info:
-            self.page.locator("g[id='Login']").click()
-        response = response_info.value
-        tokenLogin=response.json()["access_token"]
-        self.token=tokenLogin
+            self.page.wait_for_load_state("networkidle")
+            print("Haciendo clik para loguearse")
+            with self.page.expect_response("https://irmarketplace.us.auth0.com/oauth/token") as response_info:
+                self.page.locator("g[id='Login']").click()
+            response = response_info.value
+            tokenLogin=response.json()["access_token"]
+            self.token=tokenLogin
 
     def sear_category(self,category:str):
         urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=10&text=laptops"
@@ -155,13 +155,6 @@ class LoaderRealPlaza:
                 'productCommission': None,
             },
             {
-            'id': 'fp-inkafarma',
-            'name': 'InkaFarma',
-            'accountName': 'fp-inkafarma',
-            'active': True,
-            'productCommission': None,
-            },
-            {
             "id": "realplaza",
             "name": "RealPlaza",
             "accountName": "realplaza",
@@ -169,7 +162,7 @@ class LoaderRealPlaza:
             "productCommission": None
             }
         ],
-        'name': self.dataToLoad['Titulo corto, maximo 30 caracteres'],
+        'name': self.dataToLoad['titulos_generados']['realplaza'],
         'description': f'<p>{string_description}</p>',
     }
         r=self.page.request.post(
@@ -230,7 +223,7 @@ class LoaderRealPlaza:
                     'images': [],
                     'skuSpecifications': [],
                     'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
-                    'skuName': self.dataToLoad['Titulo corto, maximo 30 caracteres'],
+                    'skuName': self.dataToLoad['titulos_generados']['realplaza'],
                     'status': 'PENDING_APPROVAL',
                 }
         
@@ -361,7 +354,8 @@ class LoaderRealPlaza:
             "condition":"new",
             "log":tb,
             "fecha":time.strftime("%Y-%m-%d %H:%M:%S"),
-            "upc":self.upc
+            "upc":self.upc,
+            "codigo variante":self.variant_id
                         }
 if __name__ == "__main__":
     with open("dataToDownloadAndLoad.json","r") as f:
