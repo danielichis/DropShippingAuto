@@ -379,7 +379,7 @@ def download_sku(pw_page,sku):
 
     print("Generando títulos según lineamientos...")
     marketplaces_list=["SHOPIFY","RIPLEY","REAL PLAZA"]
-    titles_first_options=[data["Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario"],
+    titles_first_options=[data["Titulo,corregido si está mal redactado, en un máximo de 150 caracteres con unidades convertidas de ser necesario"],
                           data["Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario"],
                           data["Titulo,corregido si está mal redactado, entre 80 y 90 caracteres con unidades convertidas de ser necesario"]
                           ]

@@ -4,7 +4,7 @@ def get_static_fields_with_openai(universeText):
     aditionalFields=["Titulo corto, maximo 30 caracteres","Breve resumen para vender","Peso en Kg del producto","Peso en Kg del envio"
                      ,"Dimensiones del producto en cm","Marca,proveedor o fabricante",
                      "Tipo de producto","¿Las unidades de peso y dimensiones,entre otras requieren conversion para que el producto se muestre en un mercado latinoamericano,responder si/no?",
-                     "Titulo,corregido si está mal redactado, en un máximo de 200 caracteres con unidades convertidas de ser necesario",
+                     "Titulo,corregido si está mal redactado, en un máximo de 150 caracteres con unidades convertidas de ser necesario",
                      "Titulo,corregido si está mal redactado, entre 110 y 120 caracteres con unidades convertidas de ser necesario",
                      "Titulo,corregido si está mal redactado, entre 80 y 90 caracteres con unidades convertidas de ser necesario"]
     
