@@ -91,25 +91,84 @@ def get_children_w_path(parent):
         print(parent["code"]+"has no children")
         
     
-
-
 def get_categories_tree(root_categories_dict):
     for root_cat in root_categories_dict:
         get_children_w_path(root_cat)
 
+def get_product_type_list():
+
+
+    cookies = {
+        '_ga': 'GA1.3.1709013107.1717449309',
+        '_ga': 'GA1.1.1709013107.1717449309',
+        '_hjSessionUser_1266356': 'eyJpZCI6IjQwY2JiZjY1LTE5ZWQtNTU5Yy1iYWRiLTNjMjM0YTVmY2RlMCIsImNyZWF0ZWQiOjE3MTc0NDkzODM1MzQsImV4aXN0aW5nIjp0cnVlfQ==',
+        '_ga_8THW8XBF2T': 'deleted',
+        '_ga_8THW8XBF2T': 'deleted',
+        '_gid': 'GA1.3.1567928137.1725305542',
+        'XSRF-TOKEN': '86c71d5d-1148-4a18-89e3-3d8ae2bf5d82',
+        '_hjSession_1266356': 'eyJpZCI6IjFiNmRmMTMxLTU2YmMtNGRiNC1iZTRmLTQ0YjlmZTM5NjhiOCIsImMiOjE3MjUzMTQwNjkwNTksInMiOjEsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MX0=',
+        '_ga_8THW8XBF2T': 'GS1.1.1725314073.38.1.1725314224.0.0.0',
+        'Authorization': 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJta3BpbnRlckB1bmFsdWthLmNvbSIsImF1ZCI6InJpcGxleXBlcnUtcHJvZCIsImF1dGhlbnRpY2F0aW9uLW9yaWdpbiI6Ik1JUkFLTF9TU08iLCJleHRyYSI6eyJ0b3MiOiJ0cnVlIiwiYXV0aDAtaWQtdG9rZW4iOiJleUpoYkdjaU9pSlNVekkxTmlJc0luUjVjQ0k2SWtwWFZDSXNJbXRwWkNJNklrNVVWVEJOVlVwRlVsVk5lVkpFVmtaUk1FVXpUWHBhUjAxVVJrWk9SR3QzVFRCT1JGRnFhelJOZWsxNVVsUkdSVkpGU1ROU1p5SjkuZXlKb2RIUndjem92TDIxcGNtRnJiQzVqYjIwdmNtOXNaWE1pT2xzaVpHOWpkVzFsYm5SaGRHbHZianBTVDB4RlgxTkZURXhGVWlKZExDSm9kSFJ3Y3pvdkwyMXBjbUZyYkM1amIyMHZiM0pwWjJsdUlqb2liV2x5WVd0c1gzTnpieUlzSW1oMGRIQnpPaTh2YldseVlXdHNMbU52YlM5c2IyTmhiR1VpT2lKbGN5SXNJbVZ0WVdsc0lqb2liV3R3YVc1MFpYSkFkVzVoYkhWcllTNWpiMjBpTENKbGJXRnBiRjkyWlhKcFptbGxaQ0k2ZEhKMVpTd2lhWE56SWpvaWFIUjBjSE02THk5c2IyZHBiaTV0YVhKaGEyd3VibVYwTHlJc0ltRjFaQ0k2SWxWT1VFSTBTMkpUZWpFd1drVjRSbmxTYzA1Uk5rcElZa3RDWlZjNU5HNXhJaXdpYVdGMElqb3hOekkxTXpFME1EWTFMQ0psZUhBaU9qRTNNalV6TlRBd05qVXNJbk4xWWlJNkltRjFkR2d3ZkRZell6Z3dNR0UzWm1ZNE1qSmpabUUyTWpReFltWm1NaUlzSW1GamNpSTZJbWgwZEhBNkx5OXpZMmhsYldGekxtOXdaVzVwWkM1dVpYUXZjR0Z3WlM5d2IyeHBZMmxsY3k4eU1EQTNMekEyTDIxMWJIUnBMV1poWTNSdmNpSXNJbUZ0Y2lJNld5SnRabUVpWFN3aWMybGtJam9pU0VadFNGTnVibkozY1hSM1FURnhXVjgzUWxOalh6SkZXVmt6Y1VSZldHOGlMQ0p1YjI1alpTSTZJbTVGZDFCQ05HaHdZM0Z5TUMxWmFFSlRZMGwwT0Zod01HMURXWGxTVUhOTU5XUnBjVE5uTTFKSFlUQWlmUS5OWGNrcm9jTzZWZU5RUmxYRFdIRU96OVpQM1hiWUF2aldnVTEtX3BjT2VhcG1XcjVmZ0VRem13azdYWXhuZkp6RTRfQUk0UmkxWlBHelF4UTRLNXVSWU5qY1pka2F6X1l5aUNpLVhJcTlmMkdSU1F3SlZCbUhHaVYwUUQwaHRBTlFKNUdlLUVOQ1plaWl5QXJINk1wbHhaZVo5VEtCVkNCd0JuSmMwRF8tVTU1VVVvY1gzdnRIc21MRlJlYU9URWN4SFY2NkFOUTBCQnBWeWFmXzBXTWh5N0tHQ05saFZZYldtRjVfNEdmd2I4Q0tmMDIyZW9XNVFJVHV5VXR1QnpkOVJtLTZLb1ZFa3NiYW5IN3VZZ1lPREZmNG95dHU3N2VUYnJnMGxXb0xqVk8wczExcVg0NUhyUm8xclF1THNOSk56Z3prN3l3cmhWRXFwTlVLQmZZdncifSwiZXhwIjoxNzI1MzE3MzYzLCJzaWQiOiI3ZjZkOTIzOS0yYjIyLTRlODktOTM5Ny1iZmYwYTc4YzU5ZmEifQ.VaEeouSQghenIYVjXg1fQbTGw8Jn73A3a-LaoYOPysTH1pRtLjJ1HDKClXTurEQxy9z21ca4FKQQzvPC2JfCtw',
+        'JSESSIONID': '064389472AFC7DFABDC8D644BB4FF64D',
+        '_ga_P32X25ZF51': 'GS1.3.1725313953.95.1.1725315564.0.0.0',
+    }
+
+    headers = {
+        'accept': 'application/json, text/javascript, */*; q=0.01',
+        'accept-language': 'es-419,es;q=0.9',
+        # 'cookie': '_ga=GA1.3.1709013107.1717449309; _ga=GA1.1.1709013107.1717449309; _hjSessionUser_1266356=eyJpZCI6IjQwY2JiZjY1LTE5ZWQtNTU5Yy1iYWRiLTNjMjM0YTVmY2RlMCIsImNyZWF0ZWQiOjE3MTc0NDkzODM1MzQsImV4aXN0aW5nIjp0cnVlfQ==; _ga_8THW8XBF2T=deleted; _ga_8THW8XBF2T=deleted; _gid=GA1.3.1567928137.1725305542; XSRF-TOKEN=86c71d5d-1148-4a18-89e3-3d8ae2bf5d82; _hjSession_1266356=eyJpZCI6IjFiNmRmMTMxLTU2YmMtNGRiNC1iZTRmLTQ0YjlmZTM5NjhiOCIsImMiOjE3MjUzMTQwNjkwNTksInMiOjEsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MX0=; _ga_8THW8XBF2T=GS1.1.1725314073.38.1.1725314224.0.0.0; Authorization=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJta3BpbnRlckB1bmFsdWthLmNvbSIsImF1ZCI6InJpcGxleXBlcnUtcHJvZCIsImF1dGhlbnRpY2F0aW9uLW9yaWdpbiI6Ik1JUkFLTF9TU08iLCJleHRyYSI6eyJ0b3MiOiJ0cnVlIiwiYXV0aDAtaWQtdG9rZW4iOiJleUpoYkdjaU9pSlNVekkxTmlJc0luUjVjQ0k2SWtwWFZDSXNJbXRwWkNJNklrNVVWVEJOVlVwRlVsVk5lVkpFVmtaUk1FVXpUWHBhUjAxVVJrWk9SR3QzVFRCT1JGRnFhelJOZWsxNVVsUkdSVkpGU1ROU1p5SjkuZXlKb2RIUndjem92TDIxcGNtRnJiQzVqYjIwdmNtOXNaWE1pT2xzaVpHOWpkVzFsYm5SaGRHbHZianBTVDB4RlgxTkZURXhGVWlKZExDSm9kSFJ3Y3pvdkwyMXBjbUZyYkM1amIyMHZiM0pwWjJsdUlqb2liV2x5WVd0c1gzTnpieUlzSW1oMGRIQnpPaTh2YldseVlXdHNMbU52YlM5c2IyTmhiR1VpT2lKbGN5SXNJbVZ0WVdsc0lqb2liV3R3YVc1MFpYSkFkVzVoYkhWcllTNWpiMjBpTENKbGJXRnBiRjkyWlhKcFptbGxaQ0k2ZEhKMVpTd2lhWE56SWpvaWFIUjBjSE02THk5c2IyZHBiaTV0YVhKaGEyd3VibVYwTHlJc0ltRjFaQ0k2SWxWT1VFSTBTMkpUZWpFd1drVjRSbmxTYzA1Uk5rcElZa3RDWlZjNU5HNXhJaXdpYVdGMElqb3hOekkxTXpFME1EWTFMQ0psZUhBaU9qRTNNalV6TlRBd05qVXNJbk4xWWlJNkltRjFkR2d3ZkRZell6Z3dNR0UzWm1ZNE1qSmpabUUyTWpReFltWm1NaUlzSW1GamNpSTZJbWgwZEhBNkx5OXpZMmhsYldGekxtOXdaVzVwWkM1dVpYUXZjR0Z3WlM5d2IyeHBZMmxsY3k4eU1EQTNMekEyTDIxMWJIUnBMV1poWTNSdmNpSXNJbUZ0Y2lJNld5SnRabUVpWFN3aWMybGtJam9pU0VadFNGTnVibkozY1hSM1FURnhXVjgzUWxOalh6SkZXVmt6Y1VSZldHOGlMQ0p1YjI1alpTSTZJbTVGZDFCQ05HaHdZM0Z5TUMxWmFFSlRZMGwwT0Zod01HMURXWGxTVUhOTU5XUnBjVE5uTTFKSFlUQWlmUS5OWGNrcm9jTzZWZU5RUmxYRFdIRU96OVpQM1hiWUF2aldnVTEtX3BjT2VhcG1XcjVmZ0VRem13azdYWXhuZkp6RTRfQUk0UmkxWlBHelF4UTRLNXVSWU5qY1pka2F6X1l5aUNpLVhJcTlmMkdSU1F3SlZCbUhHaVYwUUQwaHRBTlFKNUdlLUVOQ1plaWl5QXJINk1wbHhaZVo5VEtCVkNCd0JuSmMwRF8tVTU1VVVvY1gzdnRIc21MRlJlYU9URWN4SFY2NkFOUTBCQnBWeWFmXzBXTWh5N0tHQ05saFZZYldtRjVfNEdmd2I4Q0tmMDIyZW9XNVFJVHV5VXR1QnpkOVJtLTZLb1ZFa3NiYW5IN3VZZ1lPREZmNG95dHU3N2VUYnJnMGxXb0xqVk8wczExcVg0NUhyUm8xclF1THNOSk56Z3prN3l3cmhWRXFwTlVLQmZZdncifSwiZXhwIjoxNzI1MzE3MzYzLCJzaWQiOiI3ZjZkOTIzOS0yYjIyLTRlODktOTM5Ny1iZmYwYTc4YzU5ZmEifQ.VaEeouSQghenIYVjXg1fQbTGw8Jn73A3a-LaoYOPysTH1pRtLjJ1HDKClXTurEQxy9z21ca4FKQQzvPC2JfCtw; JSESSIONID=064389472AFC7DFABDC8D644BB4FF64D; _ga_P32X25ZF51=GS1.3.1725313953.95.1.1725315564.0.0.0',
+        'priority': 'u=1, i',
+        'referer': 'https://ripleyperu-prod.mirakl.net/mmp/shop/sell/product/create',
+        'sec-ch-ua': '"Chromium";v="125", "Not.A/Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
+        'x-xsrf-token': '86c71d5d-1148-4a18-89e3-3d8ae2bf5d82',
+    }
+
+    params = {
+        'namedListId': '1646',
+        'searchString': '',
+        'pageSize': '100',
+        'offset': '100',
+        '_': '1725314220979',
+    }
+
+    response = requests.get(
+        'https://ripleyperu-prod.mirakl.net/mmp/shop/setting/named-list/value/search-json',
+        params=params,
+        cookies=cookies,
+        headers=headers,
+    )
+
+    print(response.status_code)
+    if response.status_code==200:
+        print(response.json())
+        print("Lista de productos obtenidos.")
+        return response.json()
+    else:
+        print("Error al obtener la lista de productos.")
+    
+
+
 if __name__ == "__main__":
     #responseLoad=generate_response(params,cookies,headers)
     #response_to_json(responseLoad,"root_categories")
-    file_path="DropShippingAuto/src/marketPlacesDestino/ripley/CategoriesTree/root_categories.json"
-    with open(file_path, 'r', encoding='utf-8') as file:
-        root_categories_dict = json.load(file)
-    print(root_categories_dict)
+    # file_path="DropShippingAuto/src/marketPlacesDestino/ripley/CategoriesTree/root_categories.json"
+    # with open(file_path, 'r', encoding='utf-8') as file:
+    #     root_categories_dict = json.load(file)
+    # print(root_categories_dict)
 
-    #create path key for each root category
-    for root_cat in root_categories_dict:
-        root_cat["path"]=[root_cat["label"]]
-    print(root_categories_dict)
+    # #create path key for each root category
+    # for root_cat in root_categories_dict:
+    #     root_cat["path"]=[root_cat["label"]]
+    # print(root_categories_dict)
 
 
-    get_categories_tree(root_categories_dict)
-    response_to_json(root_categories_dict,"CategoryTreeWithPaths")
+    # get_categories_tree(root_categories_dict)
+    # response_to_json(root_categories_dict,"CategoryTreeWithPaths")
+    product_type_list=get_product_type_list()
