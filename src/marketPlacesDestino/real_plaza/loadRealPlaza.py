@@ -118,8 +118,9 @@ class LoaderRealPlaza:
         return description_str  
 
     def create_product_api(self):
+        allFielldsConfig=True
         for element in self.specificationsFields:
-            if element["isRequired"]==True:
+            if element["isRequired"]==True or allFielldsConfig==True:
                 anwserElementValue=self.answers[element["name"]]['details']['AIResponse']['value']
                 fielTypeName=element["specificationFieldType"]["fieldTypeName"]
                 if fielTypeName=="Texto" or fielTypeName=="Input":
