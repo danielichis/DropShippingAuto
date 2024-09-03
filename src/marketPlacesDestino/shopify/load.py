@@ -50,6 +50,7 @@ class LoaderShopify:
     def load_shopify_category_suggestion(self):
         try:
             self.page.query_selector("input[name='productType']").click(timeout=3000)
+            #first aria-owns, second aria-controls,now aria-activedescendant
             aria_attribute=self.page.query_selector("input[name='productType']").get_attribute("aria-controls")
             #list_categories=self.page.locator("div[id='%s'] ul>li" %(aria_attribute)).all_inner_texts()
             list_categories=self.page.locator("ul[id='%s']>li" %(aria_attribute)).all_inner_texts()

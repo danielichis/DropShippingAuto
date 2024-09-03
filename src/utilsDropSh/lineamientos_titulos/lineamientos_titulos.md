@@ -4,7 +4,7 @@ Se brindan tablas con los campos que se deben considerar para generar los títul
 
 **Máximo de caracteres del título según marketplace:** 
 
-- SHOPIFY : 200
+- SHOPIFY : 150
 - RIPLEY  : 120
 - REAL PLAZA  : 90
 
