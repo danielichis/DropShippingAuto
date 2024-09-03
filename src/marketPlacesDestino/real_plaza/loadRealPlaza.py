@@ -28,6 +28,7 @@ class LoaderRealPlaza:
         self.configDataSheet=configSheetData
         self.imagesLoadedUrl=[]
         self.variant_id=None
+        self.allFielldsConfig=True
     def start_playwright(self):
         self.p = sync_playwright().start()
         user_dir=mp.get_current_chrome_profile_path()
@@ -87,15 +88,17 @@ class LoaderRealPlaza:
         list_of_fields=[]
         for field in self.specificationsFields:
             fieldToFill={}
-            if field["isRequired"]==True:
+            if field["isRequired"]==True or self.allFielldsConfig==True:
                 if field["specificationFieldValues"]==[]:
                     fieldToFill['name']=field['name']
                     fieldToFill['fieldType']="input"
+                    fieldToFill['description']=field['description']
                     fieldToFill['options']=[]
                     fieldToFill['id']=field['id']
                 else:
                     fieldToFill['name']=field['name']
                     fieldToFill['fieldType']="select"
+                    fieldToFill['description']=field['description']
                     fieldToFill['options']=field["specificationFieldValues"]
                     fieldToFill['id']=field['id']
                 list_of_fields.append(fieldToFill)
@@ -118,9 +121,8 @@ class LoaderRealPlaza:
         return description_str  
 
     def create_product_api(self):
-        allFielldsConfig=True
         for element in self.specificationsFields:
-            if element["isRequired"]==True or allFielldsConfig==True:
+            if element["isRequired"]==True or self.allFielldsConfig==True:
                 anwserElementValue=self.answers[element["name"]]['details']['AIResponse']['value']
                 fielTypeName=element["specificationFieldType"]["fieldTypeName"]
                 if fielTypeName=="Texto" or fielTypeName=="Input":
@@ -128,6 +130,8 @@ class LoaderRealPlaza:
                 elif fielTypeName=="Radio" or fielTypeName=="CheckBox":
                     anwserElementId=self.answers[element["name"]]['details']['AIResponse']['fieldValueId']
                     element["specificationFieldValues"]=[{"fieldValueId":anwserElementId,"value":anwserElementValue,"isActive":True}]
+                elif fielTypeName=="Número":
+                    element["specificationFieldValues"]=[{"value":int(float(anwserElementValue))}]
                 else:
                     anwserElementId=self.answers[element["name"]]['details']['AIResponse']['fieldValueId']
                     element["specificationFieldValues"]=[{"fieldValueId":anwserElementId,"value":anwserElementValue,"isActive":True}]
