@@ -5,8 +5,10 @@ Se brindan tablas con los campos que se deben considerar para generar los títul
 **Máximo de caracteres del título según marketplace:** 
 
 - SHOPIFY : 150
-- RIPLEY  : 120
+- RIPLEY  : 115
 - REAL PLAZA  : 90
+
+**LINEAMIENTOS PARA TÍTULOS DE SHOPIFY Y RIPLEY**
 
 **SKINCARE**
 
@@ -98,3 +100,21 @@ Individual
 **CONSIDERACIONES ESPECIALES POR MARKETPLACE:** 
 
 - REAL PLAZA : El simbolo de pulgadas (") no se admite ,cambiarlo por "pulg.","pulgadas" o "p."
+
+
+**LINEAMIENTOS PARA TÍTULOS DE REAL PLAZA**
+
+-La estructura para los títulos en Real Plaza es independiente del tipo de producto,y siempre tendrá la siguiente forma : Producto + Marca + Modelo + Atributo Destacado. 
+
+Consideraciones: No colocar caracteres especiales como "&""," "#", u otros
+
+Ejemplos :
+
+
+| Producto | Marca | Modelo | Atributo Destacado |
+| --- | --- | --- | --- |
+| Celular | Samsung Galaxy |  A50 | 64GB AZUL |
+| Teclado Mecánico RGB  | Asus | Rog Strix | con Switches Marrones |
+| Laptop | HP | LXT234565 | 120GB Plateado |
+| Casco de Bicicleta | BKS |  | Niños Talla S |
+

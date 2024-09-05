@@ -18,6 +18,7 @@ import time
 homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
 
+
 class LoaderRealPlaza:
     def __init__(self,dataToLoad=None,page=None,context=None,p=None,sheetProductData=None,configSheetData=None):
         self.dataToLoad=dataToLoad
@@ -88,6 +89,10 @@ class LoaderRealPlaza:
         list_of_fields=[]
         for field in self.specificationsFields:
             fieldToFill={}
+
+            if field['description']==None:
+                field['description']=field["name"]
+
             if field["isRequired"]==True or self.allFielldsConfig==True:
                 if field["specificationFieldValues"]==[]:
                     fieldToFill['name']=field['name']
@@ -103,6 +108,10 @@ class LoaderRealPlaza:
                     fieldToFill['id']=field['id']
                 list_of_fields.append(fieldToFill)
         answers=get_ia_anwsers_extended(str(self.dataToLoad),list_of_fields)
+        #setting warrant string
+        if "Garantía" in answers.keys():
+           answers["Garantía"]['details']['AIResponse']['value']="7 días por defecto de fábrica."
+        #
         self.answers=answers
     
     def get_about_this_item_str(self,number_paragraphs:int):
@@ -120,6 +129,29 @@ class LoaderRealPlaza:
         description_str=dictManipulator.dict_to_string_bp(sku_dict)
         return description_str  
 
+    def get_numeric_field_answer(self,answer:str,isRequired:bool):
+        try:
+            numeric_answer=round(float(answer))
+            isNumber=True
+        except Exception as e:
+            print(str(e))
+            print(answer + " no es un número")
+            isNumber=False
+
+        print("Campo numerico requerido :"+str(isRequired))
+        print("Valor es un string conteniendo un número :"+str(isNumber))
+        
+        if isRequired:
+            if isNumber:
+                return numeric_answer
+            else:
+                return 1
+        else:
+            if isNumber:
+                return numeric_answer
+            else:
+                return ""
+        
     def create_product_api(self):
         for element in self.specificationsFields:
             if element["isRequired"]==True or self.allFielldsConfig==True:
@@ -131,7 +163,8 @@ class LoaderRealPlaza:
                     anwserElementId=self.answers[element["name"]]['details']['AIResponse']['fieldValueId']
                     element["specificationFieldValues"]=[{"fieldValueId":anwserElementId,"value":anwserElementValue,"isActive":True}]
                 elif fielTypeName=="Número":
-                    element["specificationFieldValues"]=[{"value":int(float(anwserElementValue))}]
+                    anwserElementValue=self.get_numeric_field_answer(anwserElementValue,element["isRequired"])
+                    element["specificationFieldValues"]=[{"value":anwserElementValue}]
                 else:
                     anwserElementId=self.answers[element["name"]]['details']['AIResponse']['fieldValueId']
                     element["specificationFieldValues"]=[{"fieldValueId":anwserElementId,"value":anwserElementValue,"isActive":True}]
