@@ -56,7 +56,7 @@ class LoaderRipley:
         try:
             print("Iniciando sesion...")
             user_name="mkpinter@unaluka.com"
-            user_password="Unaluk@Flash*"
+            user_password="Unaluk@Flash2024*"
             self.page.get_by_placeholder("Tu inicio de sesión").fill(user_name)
             self.page.get_by_role("button",name="Siguiente").click()
             #self.page.get_by_label("Password*").fill(user_password)
