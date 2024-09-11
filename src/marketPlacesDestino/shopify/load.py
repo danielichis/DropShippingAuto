@@ -54,7 +54,15 @@ class LoaderShopify:
             aria_attribute=self.page.query_selector("input[name='productType']").get_attribute("aria-controls")
             #list_categories=self.page.locator("div[id='%s'] ul>li" %(aria_attribute)).all_inner_texts()
             list_categories=self.page.locator("ul[id='%s']>li" %(aria_attribute)).all_inner_texts()
-            categorieToSelect=get_best_category_shopify(self.dataToLoad['clasificacion'],list_categories,useSavedEmbeds=False)
+
+            if self.dataToLoad["clasificacion"]!="sin clasificacion":
+                classification=str(self.dataToLoad["clasificacion"])
+            else:
+                initialPrompt="Esta es la informacion estructurada de un un producto de Amazon, por favor cual seria la mejor clasificacion para este producto ? :"
+                classification=initialPrompt+str(self.dataToLoad)
+
+            #categorieToSelect=get_best_category_shopify(self.dataToLoad['clasificacion'],list_categories,useSavedEmbeds=False)
+            categorieToSelect=get_best_category_shopify(classification,list_categories,useSavedEmbeds=False)
             selector="ul[id='%s']>li:has-text('%s')" %(aria_attribute,categorieToSelect)
             self.page.locator(selector).click(timeout=3000)
         except:
