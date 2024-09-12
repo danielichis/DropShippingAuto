@@ -67,7 +67,14 @@ class LoaderRealPlaza:
         #make get request to get categories with page.route
         print("Categoría buscada")
     def select_category_to_get_specifications(self):
-        self.real_plaza_category=get_best_path_real_plaza_category(str(self.dataToLoad['clasificacion']))
+
+        if self.dataToLoad["clasificacion"]!="sin clasificacion":
+            classification=str(self.dataToLoad["clasificacion"])
+        else:
+            initialPrompt="Esta es la informacion estructurada de un un producto de Amazon, por favor cual seria la mejor clasificacion para este producto ? :"
+            classification=initialPrompt+str(self.dataToLoad)
+
+        self.real_plaza_category=get_best_path_real_plaza_category(classification)
         urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/specifications/"
         header={"Authorization":f"Bearer {self.token}",
                 "Content-Type":"application/json"}
