@@ -300,6 +300,7 @@ def get_sku_amazon_product(pw_page,product):
         newProduct=r['newProduct']
         tb=r['log']
         status_code=r['status_code']
+
     else:
         status="DESCARGADO CORRECTAMENTE"
         newProduct="no"
