@@ -243,9 +243,11 @@ class LoaderShopify:
             if self.page.query_selector_all("h1[class='ui-heading']")[0].inner_text()=="Selecciona una cuenta":
                 self.page.locator("div[class='user-card ']").click()
             else:
-                self.page.locator("input[id='account_email']").fill("picking@unaluka.com")
+                #self.page.locator("input[id='account_email']").fill("picking@unaluka.com")
+                self.page.locator("input[id='account_email']").fill("contenido@unaluka.com")
                 self.page.locator("span[class='ui-button__text']").click()
-                self.page.locator("input[id='account_password']").fill("A123456789")
+                #self.page.locator("input[id='account_password']").fill("A123456789")
+                self.page.locator("input[id='account_password']").fill("Contenido@1@")
                 self.page.locator("span[class='ui-button__text']").click()
                 print("cuenta seleccionada")
 def test_main_shopify(dataSheet=None):

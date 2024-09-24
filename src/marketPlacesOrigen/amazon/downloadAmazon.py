@@ -401,7 +401,7 @@ def download_sku(pw_page,sku):
     print(data["titulos_generados"])
 
     print("Escogiendo sub-diccionario de mayor tamaño...")
-    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"]]
+    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"],data["Contenido de la caja"]]
     if data["informacion del producto"]!={}:
         description_dict=data["informacion del producto"]
     else:
