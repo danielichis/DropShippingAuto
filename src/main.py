@@ -95,6 +95,8 @@ class amazon_mkt_peruvians:
                     r['fecha']=time.strftime("%Y-%m-%d %H:%M:%S")
                     r['status_code']=500
                     r['upc']="-"
+        else:
+            self.amazonDataSku=None
         r2=r.copy()
         r2.pop("status_code")
         post_peticion(r2)

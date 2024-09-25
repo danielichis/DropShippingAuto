@@ -158,7 +158,7 @@ def get_urls(pw_page):
     for url in urls:
         urlsList.append(url.get_attribute("data-old-hires"))
 
-
+    #testing case for when images dont appear
     #urlsList=[]
     if len(urlsList)>0:
         return urlsList
@@ -272,7 +272,7 @@ def download_sub_main_sku_amazon_product(pw_page,sku):
         status="ERROR EN LA DESCARGA"
         status_code=500
         save_screenshot(pw_page,sku)
-        pw_page.close()
+        #pw_page.close()
     return {
         "status":status,
         "newProduct":newProduct,
