@@ -101,7 +101,7 @@ class LoaderRealPlaza:
                 field['description']=field["name"]
 
             if field["isRequired"]==True or self.allFielldsConfig==True:
-                if field["specificationFieldValues"]==[]:
+                if field["specificationFieldValues"]==[] or field["specificationFieldValues"]==None:
                     fieldToFill['name']=field['name']
                     fieldToFill['fieldType']="input"
                     fieldToFill['description']=field['description']

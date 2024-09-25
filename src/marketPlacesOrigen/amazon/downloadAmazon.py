@@ -157,7 +157,13 @@ def get_urls(pw_page):
     urlsList=[]
     for url in urls:
         urlsList.append(url.get_attribute("data-old-hires"))
-    return urlsList
+
+
+    #urlsList=[]
+    if len(urlsList)>0:
+        return urlsList
+    else:
+        raise Exception("No se encontraron URLs para las imágenes")
 
 def get_importantInfo(pw_page):
     importantInfo=pw_page.query_selector_all("div#important-information div.a-section:not(:has(a))")
