@@ -19,6 +19,10 @@ homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
 
 
+def letter_to_number_string(s):
+    # Convert each letter to its corresponding number and join them into a string
+    return ''.join(str(ord(char) - ord('a') + 1)  if char.isalpha() else char for char in s.lower())
+
 class LoaderRealPlaza:
     def __init__(self,dataToLoad=None,page=None,context=None,p=None,sheetProductData=None,configSheetData=None):
         self.dataToLoad=dataToLoad
@@ -286,7 +290,8 @@ class LoaderRealPlaza:
                     },
                     'images': [],
                     'skuSpecifications': [],
-                    'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
+                    #'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
+                    'upc': dateManag.todayStringWOHyphen,
                     'skuName': self.dataToLoad['titulos_generados']['real plaza'],
                     'status': 'PENDING_APPROVAL',
                 }
@@ -344,7 +349,7 @@ class LoaderRealPlaza:
             child_of_child["children"]=self.get_children_category_trought_api(child_of_child['id'])
             for child in child_of_child["children"]:
                 self.get_childrens(child)
-            
+
     def get_tree_categories(self):
         rootUrl="https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=100&root=true"
         header={"Authorization":f"Bearer {self.token}",
@@ -375,15 +380,16 @@ class LoaderRealPlaza:
                 "Content-Type":"application/json"}
         brands=self.page.request.get(urlEndpoint,headers=header,params=params)
         branded=False
-        for brand in brands.json():
-            if brand["name"].upper()==self.dataToLoad['Marca,proveedor o fabricante'].upper():
-                self.brand_to_set={"id":brand["id"],"name":brand["name"],"isActive":brand["isActive"]}
-                branded=True
-                break
+        if self.dataToLoad['Marca,proveedor o fabricante'].upper()!="AMAZON":
+            for brand in brands.json():
+                if brand["name"].upper()==self.dataToLoad['Marca,proveedor o fabricante'].upper():
+                    self.brand_to_set={"id":brand["id"],"name":brand["name"],"isActive":brand["isActive"]}
+                    branded=True
+                    break
         if not branded:
             self.brand_to_set={
                                 "id": "biOrOY8Bi4M-DKCliT1Y",
-                                "name": "GENERICO",
+                                "name": "GENÉRICO",
                                 "isActive": False
                             }
         print(self.brand_to_set)

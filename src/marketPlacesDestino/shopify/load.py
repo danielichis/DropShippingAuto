@@ -80,7 +80,7 @@ class LoaderShopify:
         for collection in TopCollections:
             #self.page.get_by_role("combobox", name="Colecciones").fill()
             try:
-                self.page.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click(timeout=3000)
+                self.page.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click(timeout=4000)
             except Exception as e:
                 tb=traceback.format_exc()
                 print(tb)
