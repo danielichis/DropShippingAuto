@@ -388,7 +388,7 @@ class LoaderRealPlaza:
                 break
         if not branded:
             self.brand_to_set={
-                                "id": "biOrOY8Bi4M-DKCliT1Y",
+                                "id": "oWJ8BZIBZb6wgF39YS99",
                                 "name": "GENÉRICO",
                                 "isActive": False
                             }
