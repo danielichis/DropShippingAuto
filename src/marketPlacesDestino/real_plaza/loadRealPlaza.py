@@ -108,7 +108,8 @@ class LoaderRealPlaza:
                 if field["specificationFieldValues"]==[] or field["specificationFieldValues"]==None:
                     fieldToFill['name']=field['name']
                     fieldToFill['fieldType']="input"
-                    fieldToFill['description']=field['description']
+                    max_characters_str = ".Respuesta en máximo 90 caracteres" if 'Solo colocar valores numéricos'  not in field['description'] else ""
+                    fieldToFill['description']=field['description']+max_characters_str
                     fieldToFill['options']=[]
                     fieldToFill['id']=field['id']
                 else:
@@ -380,12 +381,11 @@ class LoaderRealPlaza:
                 "Content-Type":"application/json"}
         brands=self.page.request.get(urlEndpoint,headers=header,params=params)
         branded=False
-        if self.dataToLoad['Marca,proveedor o fabricante'].upper()!="AMAZON":
-            for brand in brands.json():
-                if brand["name"].upper()==self.dataToLoad['Marca,proveedor o fabricante'].upper():
-                    self.brand_to_set={"id":brand["id"],"name":brand["name"],"isActive":brand["isActive"]}
-                    branded=True
-                    break
+        for brand in brands.json():
+            if brand["name"].upper()==self.dataToLoad['Marca,proveedor o fabricante'].upper():
+                self.brand_to_set={"id":brand["id"],"name":brand["name"],"isActive":brand["isActive"]}
+                branded=True
+                break
         if not branded:
             self.brand_to_set={
                                 "id": "biOrOY8Bi4M-DKCliT1Y",
