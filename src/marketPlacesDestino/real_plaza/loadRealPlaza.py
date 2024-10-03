@@ -292,7 +292,7 @@ class LoaderRealPlaza:
                     'images': [],
                     'skuSpecifications': [],
                     #'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
-                    'upc': dateManag.todayStringWOHyphen,
+                    'upc': dateManag.today_date_string_wo_hyphen(),
                     'skuName': self.dataToLoad['titulos_generados']['real plaza'],
                     'status': 'PENDING_APPROVAL',
                 }
@@ -437,4 +437,3 @@ if __name__ == "__main__":
     RPmloader.handle_login_real_plaza()
     RPmloader.load_main_real_plaza()
     RPmloader.end_playwright()
-    
