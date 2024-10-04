@@ -19,6 +19,10 @@ homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
 import re
 
 
+def letter_to_number_string(s):
+    # Convert each letter to its corresponding number and join them into a string
+    return ''.join(str(ord(char) - ord('a') + 1)  if char.isalpha() else char for char in s.lower())
+
 class LoaderRealPlaza:
     def __init__(self,dataToLoad=None,page=None,context=None,p=None,sheetProductData=None,configSheetData=None):
         self.dataToLoad=dataToLoad
@@ -101,10 +105,11 @@ class LoaderRealPlaza:
                 field['description']=field["name"]
 
             if field["isRequired"]==True or self.allFielldsConfig==True:
-                if field["specificationFieldValues"]==[]:
+                if field["specificationFieldValues"]==[] or field["specificationFieldValues"]==None:
                     fieldToFill['name']=field['name']
                     fieldToFill['fieldType']="input"
-                    fieldToFill['description']=field['description']
+                    max_characters_str = ".Respuesta en máximo 90 caracteres" if 'Solo colocar valores numéricos'  not in field['description'] else ""
+                    fieldToFill['description']=field['description']+max_characters_str
                     fieldToFill['options']=[]
                     fieldToFill['id']=field['id']
                 else:
@@ -286,7 +291,8 @@ class LoaderRealPlaza:
                     },
                     'images': [],
                     'skuSpecifications': [],
-                    'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
+                    #'upc': str(randomInt(100000,999999))+self.dataToLoad['sku'],
+                    'upc': dateManag.today_date_string_wo_hyphen(),
                     'skuName': self.dataToLoad['titulos_generados']['real plaza'],
                     'status': 'PENDING_APPROVAL',
                 }
@@ -344,7 +350,7 @@ class LoaderRealPlaza:
             child_of_child["children"]=self.get_children_category_trought_api(child_of_child['id'])
             for child in child_of_child["children"]:
                 self.get_childrens(child)
-            
+
     def get_tree_categories(self):
         rootUrl="https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=100&root=true"
         header={"Authorization":f"Bearer {self.token}",
@@ -382,8 +388,8 @@ class LoaderRealPlaza:
                 break
         if not branded:
             self.brand_to_set={
-                                "id": "biOrOY8Bi4M-DKCliT1Y",
-                                "name": "GENERICO",
+                                "id": "oWJ8BZIBZb6wgF39YS99",
+                                "name": "GENÉRICO",
                                 "isActive": False
                             }
         print(self.brand_to_set)
@@ -431,4 +437,3 @@ if __name__ == "__main__":
     RPmloader.handle_login_real_plaza()
     RPmloader.load_main_real_plaza()
     RPmloader.end_playwright()
-    

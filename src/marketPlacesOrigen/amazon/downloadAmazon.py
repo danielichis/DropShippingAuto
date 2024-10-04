@@ -157,7 +157,22 @@ def get_urls(pw_page):
     urlsList=[]
     for url in urls:
         urlsList.append(url.get_attribute("data-old-hires"))
-    return urlsList
+    print(urlsList)
+    #testing case for when images dont appear
+    #urlsList=[]
+
+
+    # <img alt="Microsoft Tablet Surface Go 4 - Full HD de 10,5&amp;#34; - 8 GB - 64 GB de almacenamiento - Platino" src="https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX425_.jpg" data-old-hires="" onload="markFeatureRenderForImageBlock(); 
+    # if(this.width/this.height > 1.0){this.className += ' a-stretch-horizontal'}else{this.className += ' a-stretch-vertical'};this.onload='';setCSMReq('af');if(typeof addlongPoleTag === 'function'){ addlongPoleTag('af','desktop-image-atf-marker');};setCSMReq('cf')" data-a-image-name="landingImage" class="a-dynamic-image a-stretch-horizontal" id="landingImage" 
+    # data-a-dynamic-image="{&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX569_.jpg&quot;:[569,569],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX425_.jpg&quot;:[425,425],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX466_.jpg&quot;:[466,466],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX679_.jpg&quot;:[679,679],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SY355_.jpg&quot;:[355,355],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX522_.jpg&quot;:[522,522],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SY450_.jpg&quot;:[450,450]}" style="max-width: 380px; max-height: 274.867px;">
+
+    if len(urlsList)>0:
+        if len(urlsList)==1 and urlsList[0]=="":
+            raise Exception("No se encontraron URLs para las imágenes")
+        else:
+            return urlsList
+    else:
+        raise Exception("No se encontraron URLs para las imágenes")
 
 def get_importantInfo(pw_page):
     importantInfo=pw_page.query_selector_all("div#important-information div.a-section:not(:has(a))")
@@ -270,7 +285,7 @@ def download_sub_main_sku_amazon_product(pw_page,sku):
         status="ERROR EN LA DESCARGA"
         status_code=500
         save_screenshot(pw_page,sku)
-        pw_page.close()
+        #pw_page.close()
     return {
         "status":status,
         "newProduct":newProduct,
@@ -406,11 +421,15 @@ def download_sku(pw_page,sku):
     print(data["titulos_generados"])
 
     print("Escogiendo sub-diccionario de mayor tamaño...")
-    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"],data["Acerca del producto"]]
+    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"],data["Contenido de la caja"]]
     if data["informacion del producto"]!={}:
         description_dict=data["informacion del producto"]
     else:
         description_dict=get_element_with_more_fields(list_descripciones)
+
+    if description_dict=={} or description_dict==None:
+        raise Exception("No se encontraron descripciones,información insuficiente")
+
 
     data["descripciones"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(description_dict))
     data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
