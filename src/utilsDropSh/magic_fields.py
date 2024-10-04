@@ -13,7 +13,7 @@ def get_static_fields_with_openai(universeText):
 
     listToSend=[]
     for field in aditionalFields:
-        listToSend.append({"name":field,"fieldType":"input","options":[]})
+        listToSend.append({"name":field,"fieldType":"input","options":[],"description":""})
     fields=get_dinamic_args_extraction(str(universeText),listToSend)
     
     return fields

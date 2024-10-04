@@ -163,9 +163,12 @@ def get_importantInfo(pw_page):
     importantInfo=pw_page.query_selector_all("div#important-information div.a-section:not(:has(a))")
     importantInfoList=[]
     for info in importantInfo:
-        importantInfoList.append({
-            info.query_selector("h4").inner_text():info.query_selector("p:nth-child(3)").inner_text()
-        })
+        try:
+            importantInfoList.append({
+                info.query_selector("h4").inner_text():info.query_selector("p:nth-child(3)").inner_text()
+            })
+        except:
+            pass
     return importantInfoList
 
 def img_down(links,skuFolder):
@@ -262,6 +265,7 @@ def download_sub_main_sku_amazon_product(pw_page,sku):
         status_code=200
     except Exception as e:
         tb=traceback.format_exc()
+        print(tb)
         newProduct="yes"
         status="ERROR EN LA DESCARGA"
         status_code=500
@@ -402,7 +406,7 @@ def download_sku(pw_page,sku):
     print(data["titulos_generados"])
 
     print("Escogiendo sub-diccionario de mayor tamaño...")
-    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"]]
+    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"],data["Acerca del producto"]]
     if data["informacion del producto"]!={}:
         description_dict=data["informacion del producto"]
     else:
