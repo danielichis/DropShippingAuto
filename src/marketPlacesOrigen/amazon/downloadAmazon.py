@@ -122,6 +122,10 @@ def get_aboutProduct(pw_page):
             aboutProductDict[dictManipulator.fisrt_substring_before_double_dot(aboutP.inner_text())]=dictManipulator.all_substring_affer_double_dot(aboutP.inner_text())
         except:
             aboutProductDict[str(i)+".-"]=aboutP.inner_text()
+    
+    # if aboutProductDict==None:
+    #     aboutProductDict=""
+
     return aboutProductDict
 
 def get_otherDetails(pw_page):
@@ -416,7 +420,9 @@ def download_sku(pw_page,sku):
     print(data["titulos_generados"])
 
     print("Escogiendo sub-diccionario de mayor tamaño...")
-    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],data["informacion del producto"],data["Contenido de la caja"]]
+    list_descripciones=[data["descripciones"],data["Vista General"],data["Detalles Tecnicos"],
+                        data["informacion del producto"],data["Contenido de la caja"],
+                        data["Mas detalles Tecnicos"]]
     if data["informacion del producto"]!={}:
         description_dict=data["informacion del producto"]
     else:
@@ -427,7 +433,11 @@ def download_sku(pw_page,sku):
 
 
     data["descripciones"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(description_dict))
-    data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
+    
+    if "Acerca del producto" in data.keys():
+        data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
+    else:
+        data["Acerca del producto"]=data["Resumen de 2 a 3 parrafos separados por viñetas"]
 
     print("Guardando información en archivo json...")
     dataJsonPath=skuFolder+"/data.json"
