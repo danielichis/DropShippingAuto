@@ -437,7 +437,7 @@ def download_sku(pw_page,sku):
     if "Acerca del producto" in data.keys():
         data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
     else:
-        data["Acerca del producto"]=data["Resumen de 2 a 3 parrafos separados por viñetas"]
+        print("El campo 'Acerca del producto' se borró porque no se encontró información")
 
     print("Guardando información en archivo json...")
     dataJsonPath=skuFolder+"/data.json"
