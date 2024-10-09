@@ -71,8 +71,12 @@ class LoaderShopify:
     def select_shopify_collections(self):
         amazonDatSku=self.dataToLoad
         self.page.locator("input[id='CollectionsAutocompleteField1']").click()
-        currentCollections=self.page.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
-        TopCollections=get_top_n_match(amazonDatSku,currentCollections,3)
+        #currentCollections=self.page.locator("ul[aria-labelledby='CollectionsAutocompleteField1Label'] li span div").all_inner_texts()
+        with open("DropShippingAuto/src/marketPlacesDestino/shopify/currentCollections.json","r",encoding="utf-8") as json_file:
+            currentCollections=json.load(json_file)
+        collectionsToRemove=["Lo Nuevo Unaluka","Más vendidos","Valentine Day Sale","Trending now","Últimos lanzamientos","¡Lo más Trendy en Unaluka!","¡Todo gaming en Unaluka!",]
+        filteredCollections=[collection for collection in currentCollections if collection not in collectionsToRemove]
+        TopCollections=get_top_n_match(amazonDatSku,filteredCollections,3)
         #Añadiendo coleccion Lo Nuevo Unaluka por defecto a la lista de colecciones
         TopCollections.append({'collecion': 'Lo Nuevo Unaluka', 'similarity': "Seleccionado por defecto"})
         #self.page.select_option("Colecciones",name="Colecciones")
@@ -80,6 +84,7 @@ class LoaderShopify:
         for collection in TopCollections:
             #self.page.get_by_role("combobox", name="Colecciones").fill()
             try:
+                self.page.locator("input[id='CollectionsAutocompleteField1']").fill(collection['collecion'])
                 self.page.get_by_role("option", name=collection['collecion'],exact=True).locator("div").nth(1).click(timeout=4000)
             except Exception as e:
                 tb=traceback.format_exc()
@@ -87,6 +92,8 @@ class LoaderShopify:
                 pass
             #page_shopi.locator(f"//span/div[text()={collection['collecion']}]").click()
             #page_shopi.get_by_role("combobox", name="Colecciones").fill("")
+
+   
     def load_main_sku_shopify(self):
         try:
             url=self.load_sub_main_shopify()
