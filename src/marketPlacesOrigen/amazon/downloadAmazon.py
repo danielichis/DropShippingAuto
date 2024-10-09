@@ -182,9 +182,12 @@ def get_importantInfo(pw_page):
     importantInfo=pw_page.query_selector_all("div#important-information div.a-section:not(:has(a))")
     importantInfoList=[]
     for info in importantInfo:
-        importantInfoList.append({
-            info.query_selector("h4").inner_text():info.query_selector("p:nth-child(3)").inner_text()
-        })
+        try:
+            importantInfoList.append({
+                info.query_selector("h4").inner_text():info.query_selector("p:nth-child(3)").inner_text()
+            })
+        except:
+            pass
     return importantInfoList
 
 def img_down(links,skuFolder):
@@ -281,6 +284,7 @@ def download_sub_main_sku_amazon_product(pw_page,sku):
         status_code=200
     except Exception as e:
         tb=traceback.format_exc()
+        print(tb)
         newProduct="yes"
         status="ERROR EN LA DESCARGA"
         status_code=500
@@ -319,6 +323,7 @@ def get_sku_amazon_product(pw_page,product):
         newProduct=r['newProduct']
         tb=r['log']
         status_code=r['status_code']
+
     else:
         status="DESCARGADO CORRECTAMENTE"
         newProduct="no"

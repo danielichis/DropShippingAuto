@@ -23,7 +23,17 @@ def get_product_in_amazon_carpet_parsed(product_sku):
 
     return dataAmazon
  
-
+def get_product_in_amazon_to_call_ai(product_sku):
+    skuFolder=sku_folder(product_sku)
+    dataJsonPath=skuFolder+"/data.json"
+    with open(dataJsonPath, "r",encoding="utf-8") as f:
+        dataAmazon= json.load(f)
+    imagesPath=get_images_paths(product_sku)
+    dataAmazon['imagesPath']=imagesPath
+    #get upc
+    upc=get_upc(product_sku)
+    dataAmazon['upc']=upc
+    return dataAmazon
 
 
 def get_images_paths(product):
