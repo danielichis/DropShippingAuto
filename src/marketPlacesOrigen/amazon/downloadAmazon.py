@@ -434,15 +434,18 @@ def download_sku(pw_page,sku):
         description_dict=get_element_with_more_fields(list_descripciones)
 
     if description_dict=={} or description_dict==None:
-        raise Exception("No se encontraron descripciones,información insuficiente")
+        raise Exception("No se encontraron descripciones,información insuficiente 1")
 
 
     data["descripciones"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(description_dict))
-    
+
     if "Acerca del producto" in data.keys():
         data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
     else:
         print("El campo 'Acerca del producto' se borró porque no se encontró información")
+
+    if description_dict=={} or description_dict==None:
+        raise Exception("No se encontraron descripciones,información insuficiente 2")
 
     print("Guardando información en archivo json...")
     dataJsonPath=skuFolder+"/data.json"

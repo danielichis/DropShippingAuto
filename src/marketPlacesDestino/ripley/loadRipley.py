@@ -377,7 +377,7 @@ class LoaderRipley:
                         continue
                     #id=locator["key_values"]["aria-owns"]
 
-
+                    
                     print(id)
                     print([x["name"] for x in options])
                     #locator["combobox"]=combobox_locator
