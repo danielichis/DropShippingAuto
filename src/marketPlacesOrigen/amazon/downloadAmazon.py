@@ -450,8 +450,11 @@ def download_sku(pw_page,sku):
         raise Exception("No se encontraron descripciones,información insuficiente 1")
 
 
-    data["descripciones"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(description_dict))
-
+    new_description=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(description_dict))
+    if new_description=={} or new_description==None:
+        print("No se pude reconvertir el diccionario,devolviendo diccionario original")
+        data["descripciones"]=description_dict
+    
     if "Acerca del producto" in data.keys():
         data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
     else:
