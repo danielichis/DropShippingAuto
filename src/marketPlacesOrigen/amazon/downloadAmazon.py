@@ -454,9 +454,13 @@ def download_sku(pw_page,sku):
     if new_description=={} or new_description==None:
         print("No se pude reconvertir el diccionario,devolviendo diccionario original")
         data["descripciones"]=description_dict
+    else:
+        data["descripciones"]=new_description
     
     if "Acerca del producto" in data.keys():
-        data["Acerca del producto"]=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
+        new_aboutProduct=dictManipulator.extract_largest_dict_string(dinamic_two_systems_description_dict(data["Acerca del producto"]))
+        if new_aboutProduct!={} and new_aboutProduct!=None:
+            data["Acerca del producto"]=new_aboutProduct 
     else:
         print("El campo 'Acerca del producto' se borró porque no se encontró información")
 
