@@ -150,7 +150,7 @@ class amazon_mkt_peruvians:
                     self.download_amazon()
                     self.update_loaders_data()
                 if self.status_download_code==200:
-                    print(f"cargando productos...")
+                    print(f"cargando producptos...")
                     self.loadersFuntions[product['MARKETPLACE']]()
         except Exception as e:
             tb=traceback.format_exc()

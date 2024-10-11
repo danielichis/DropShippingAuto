@@ -17,6 +17,7 @@ from utils.structures import get_element_with_more_fields
 import traceback
 import csv
 from utils.manipulateDicts import dictManipulator
+import shutil
 
 def get_overView(pw_page):
     overViewSelectors=["div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr","div[id='productOverview_feature_div'] div[class='a-section a-spacing-small a-spacing-top-small'] tr"]
@@ -157,6 +158,7 @@ def get_urls(pw_page):
     minipics=pw_page.query_selector_all("li[data-csa-c-action=image-block-alt-image-hover]")
     for mini in minipics:
         mini.hover()
+        time.sleep(0.2)
     urls=pw_page.query_selector_all("img[data-old-hires]")
     urlsList=[]
     for url in urls:
@@ -172,11 +174,15 @@ def get_urls(pw_page):
 
     if len(urlsList)>0:
         if len(urlsList)==1 and urlsList[0]=="":
-            raise Exception("No se encontraron URLs para las imágenes")
+            return None
+            #pass
+            #raise Exception("No se encontraron URLs para las imágenes")
         else:
             return urlsList
     else:
-        raise Exception("No se encontraron URLs para las imágenes")
+        return None
+        #pass
+        #raise Exception("No se encontraron URLs para las imágenes")
 
 def get_importantInfo(pw_page):
     importantInfo=pw_page.query_selector_all("div#important-information div.a-section:not(:has(a))")
@@ -194,15 +200,22 @@ def img_down(links,skuFolder):
     skuImageFolder=os.path.join(skuFolder,"images","originals")
     os.makedirs(skuFolder,exist_ok=True)
     os.makedirs(skuImageFolder,exist_ok=True)
-    for link in links:
-        if link!="":
-            response  = requests.get(link).content 
-            image_file = io.BytesIO(response)
-            image  = Image.open(image_file)   
-            sku=link.split('/')[-1]
-            imagePath=os.path.join(skuImageFolder,sku)
-            with open(imagePath , "wb") as f:
-                image.save(f , "JPEG")
+    if links!=None:
+        print("Se encontraron links de imágenes para descargar")
+        for link in links:
+            if link!="":
+                response  = requests.get(link).content 
+                image_file = io.BytesIO(response)
+                image  = Image.open(image_file)   
+                sku=link.split('/')[-1]
+                imagePath=os.path.join(skuImageFolder,sku)
+                with open(imagePath , "wb") as f:
+                    image.save(f , "JPEG")
+    else:
+        print("No se encontraron links de imágenes para descargar")
+        print("Colocando imagen por defecto")
+        shutil.copy(mp.defaultNoImgPath,skuImageFolder)
+    
     resize_original_images_per_mkp(skuFolder)
 
 
