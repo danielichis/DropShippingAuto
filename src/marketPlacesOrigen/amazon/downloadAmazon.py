@@ -17,6 +17,7 @@ from utils.structures import get_element_with_more_fields
 import traceback
 import csv
 from utils.manipulateDicts import dictManipulator
+from DropShippingAuto.src.marketPlacesOrigen.amazon.inverse_api.tesst import get_amazon_html,get_url_images
 import shutil
 
 def get_overView(pw_page):
@@ -154,35 +155,36 @@ def get_bulletDetails(pw_page):
             pass
     return bulletInfoDict
 
-def get_urls(pw_page):
-    minipics=pw_page.query_selector_all("li[data-csa-c-action=image-block-alt-image-hover]")
-    for mini in minipics:
-        mini.hover()
-        time.sleep(0.2)
-    urls=pw_page.query_selector_all("img[data-old-hires]")
-    urlsList=[]
-    for url in urls:
-        urlsList.append(url.get_attribute("data-old-hires"))
-    print(urlsList)
-    #testing case for when images dont appear
-    #urlsList=[]
+# def get_urls(pw_page):
+#     # minipics=pw_page.query_selector_all("li[data-csa-c-action=image-block-alt-image-hover]")
+#     # for mini in minipics:
+#     #     mini.hover()
+#     #     time.sleep(0.2)
+#     # urls=pw_page.query_selector_all("img[data-old-hires]")
+#     # urlsList=[]
+#     # for url in urls:
+#     #     urlsList.append(url.get_attribute("data-old-hires"))
+#     # print(urlsList)
 
+#     # if len(urlsList)>0:
+#     #     if len(urlsList)==1 and urlsList[0]=="":
+#     #         return None
+#     #     else:
+#     #         return urlsList
+#     # else:
+#     #     return None
 
-    # <img alt="Microsoft Tablet Surface Go 4 - Full HD de 10,5&amp;#34; - 8 GB - 64 GB de almacenamiento - Platino" src="https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX425_.jpg" data-old-hires="" onload="markFeatureRenderForImageBlock(); 
-    # if(this.width/this.height > 1.0){this.className += ' a-stretch-horizontal'}else{this.className += ' a-stretch-vertical'};this.onload='';setCSMReq('af');if(typeof addlongPoleTag === 'function'){ addlongPoleTag('af','desktop-image-atf-marker');};setCSMReq('cf')" data-a-image-name="landingImage" class="a-dynamic-image a-stretch-horizontal" id="landingImage" 
-    # data-a-dynamic-image="{&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX569_.jpg&quot;:[569,569],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX425_.jpg&quot;:[425,425],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX466_.jpg&quot;:[466,466],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX679_.jpg&quot;:[679,679],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SY355_.jpg&quot;:[355,355],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SX522_.jpg&quot;:[522,522],&quot;https://m.media-amazon.com/images/I/51z-H1CywML._AC_SY450_.jpg&quot;:[450,450]}" style="max-width: 380px; max-height: 274.867px;">
-
-    if len(urlsList)>0:
-        if len(urlsList)==1 and urlsList[0]=="":
-            return None
-            #pass
-            #raise Exception("No se encontraron URLs para las imágenes")
-        else:
-            return urlsList
-    else:
+def get_urls_backend(sku:str):
+    try:
+        amazon_html=get_amazon_html(sku)
+        url_images=get_url_images(amazon_html=amazon_html)
+        print("Links obtenidos")
+        print(url_images)
+        return url_images
+    except:
+        print("Error obteniendo imágenes")
         return None
-        #pass
-        #raise Exception("No se encontraron URLs para las imágenes")
+
 
 def get_importantInfo(pw_page):
     importantInfo=pw_page.query_selector_all("div#important-information div.a-section:not(:has(a))")
@@ -353,7 +355,8 @@ def download_sku(pw_page,sku):
     urlProducto=f"https://www.amazon.com/dp/{sku}"
     skuFolder=os.path.join(mp.sku_folder_path,sku)
     pw_page.goto(urlProducto)
-    urls_images=get_urls(pw_page)
+    #urls_images=get_urls(pw_page)
+    urls_images=get_urls_backend(sku)
     print("\nPagina cargada en el producto "+sku)
     classificaction=get_classificaction(pw_page)
     try:
