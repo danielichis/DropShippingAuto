@@ -112,7 +112,7 @@ class LoaderRipley:
         #self.page.get_by_role("button", name="Precios y existencias").click()
         #self.page.get_by_role("menuitem", name="Ofertas").click()
         #self.page.get_by_role("link", name="+ Añadir una oferta").click()
-        self.page.get_by_role("link", name="+ Crear un producto").click()
+        #self.page.get_by_role("link", name="+ Crear un producto").click()
         print("pagina cargada")
 
     def select_category_fc_n_embbedings(self,category_dict:dict)->int:
