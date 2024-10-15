@@ -155,24 +155,24 @@ def get_bulletDetails(pw_page):
             pass
     return bulletInfoDict
 
-# def get_urls(pw_page):
-#     # minipics=pw_page.query_selector_all("li[data-csa-c-action=image-block-alt-image-hover]")
-#     # for mini in minipics:
-#     #     mini.hover()
-#     #     time.sleep(0.2)
-#     # urls=pw_page.query_selector_all("img[data-old-hires]")
-#     # urlsList=[]
-#     # for url in urls:
-#     #     urlsList.append(url.get_attribute("data-old-hires"))
-#     # print(urlsList)
+def get_urls(pw_page):
+    minipics=pw_page.query_selector_all("li[data-csa-c-action=image-block-alt-image-hover]")
+    for mini in minipics:
+        mini.hover()
+        time.sleep(0.2)
+    urls=pw_page.query_selector_all("img[data-old-hires]")
+    urlsList=[]
+    for url in urls:
+        urlsList.append(url.get_attribute("data-old-hires"))
+    print(urlsList)
 
-#     # if len(urlsList)>0:
-#     #     if len(urlsList)==1 and urlsList[0]=="":
-#     #         return None
-#     #     else:
-#     #         return urlsList
-#     # else:
-#     #     return None
+    if len(urlsList)>0:
+        if len(urlsList)==1 and urlsList[0]=="":
+            return None
+        else:
+            return urlsList
+    else:
+        return None
 
 def get_urls_backend(sku:str):
     try:
@@ -357,6 +357,9 @@ def download_sku(pw_page,sku):
     pw_page.goto(urlProducto)
     #urls_images=get_urls(pw_page)
     urls_images=get_urls_backend(sku)
+    # print(urls_images)
+    # print("_----------")
+    # print(urls_images2)
     print("\nPagina cargada en el producto "+sku)
     classificaction=get_classificaction(pw_page)
     try:

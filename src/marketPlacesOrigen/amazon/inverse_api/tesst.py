@@ -44,6 +44,8 @@ def get_amazon_html(product_sku:str):
     response = requests.get(f'https://www.amazon.com/dp/{product_sku}', cookies=cookies, headers=headers)
     print(response.status_code)
     amazon_html=HTMLParser(response.text)
+    # with open("amazon_html.html","w",encoding="utf-8") as f:
+    #     f.write(response.text)
     return amazon_html
 
 
@@ -58,12 +60,14 @@ def get_url_images(amazon_html):
     url_images=[]
     for script in amazon_html.css("script"):
         if "ImageBlockATF" in script.text():
+            # with open("script.html","w",encoding="utf-8") as f:
+            #     f.write(script.text())
             #print(script.text())
             match = re.search(r" 'colorImages': ({.*?}),\n", script.text(), re.DOTALL)
             if match:
                 #print(match.group(1))
-                data = json.loads(match.group(1).replace("'", '"'))  # Replace single quotes with double
-                url_images=[hiRe["large"] for hiRe in data["initial"]]
+                data = json.loads(match.group(1).replace("'", '"'))["initial"]  # Replace single quotes with double
+                url_images=[imgLink["hiRes"] if imgLink["hiRes"] is not None else imgLink["large"] for imgLink in data]
                 if len(url_images)>0:
                     print("Se obtuvieron "+str(len(url_images)) +" links de imágenes")
                     return url_images
