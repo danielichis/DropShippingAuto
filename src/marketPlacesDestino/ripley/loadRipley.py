@@ -384,7 +384,11 @@ class LoaderRipley:
                     locator["options_id"]=id_ul
                     locator["options"]=options
                     #select first option 
-                    locator["options"][0]["locator"].click()
+                    try:
+                        locator["options"][0]["locator"].click()
+                    except:
+                        print("No se pude hacer click en primer elemento de la lista")
+                        self.page.keyboard.press("Enter")
                     #update locator with combobox locator
                     locator["locator"]=combobox_locator
                     #2ND click to close the combobox
@@ -742,9 +746,11 @@ class LoaderRipley:
                     #print("Generando valor para porque está vacío:"+textField)
                     #valueField=self.generate_dinamic_answer(textField)
                     valueField="No especificado"
-            
-            field["locator"].fill(valueField)
-            print("Se llenó :" + field["name"])#+"-"+valueField)
+            try:
+                field["locator"].fill(valueField)
+                print("Se llenó :" + field["name"])#+"-"+valueField)
+            except:
+                print("No se llenó campo "+field["name"])
         print("Campos sin opciones llenados")
 
     def fill_nonfillable_fields(self):
