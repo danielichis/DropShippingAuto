@@ -15,7 +15,8 @@ from DropShippingAuto.src.marketPlacesDestino.real_plaza.smartSelects import get
 from utils.imgHandling.imgHandling import image_file_to_binary
 import json
 import time
-homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
+#homeRealPlaza="https://inretail.mysellercenter.com/#/dashboard"
+homeRealPlaza="https://sellercenter.intercorpretail.pe/login"
 import re
 
 
@@ -40,24 +41,55 @@ class LoaderRealPlaza:
         self.browser = self.p.chromium.launch_persistent_context(user_dir,headless=False,slow_mo=50)
         self.page=self.browser.new_page()
 
+############NEW LOGIN
     def handle_login_real_plaza(self):
-        self.cookies=self.page.context.cookies()
-        if self.page.url.find("https://inretail.mysellercenter.com/#/dashboard")!=-1:
+        self.cookies=self.page.context.cookies()    
+
+        if self.page.url.find("https://sellercenter.intercorpretail.pe/home")!=-1:
             print("Ya se encuentra logueado")
             self.token= self.page.evaluate("() => JSON.parse(sessionStorage['vue-session-key'])['token']")
             return
-        self.page.locator("form[name='userLogin'] button").click()
-        if self.page.url.find("https://irmarketplace.us.auth0.com/login?state")!=-1:
+        #page.locator("form[name='userLogin'] button").click()
+        if self.page.url.find("https://sellercenter.intercorpretail.pe/login")!=-1:
             print("Se encuentra en la página de autenticación")
-            self.page.locator("input[name='email']").fill("mkpinter@unaluka.com")
+            self.page.locator("input[name='username']").fill("mkpinter@unaluka.com")
             self.page.locator("input[name='password']").fill("Inretail123*")
             self.page.wait_for_load_state("networkidle")
             print("Haciendo clik para loguearse")
-            with self.page.expect_response("https://irmarketplace.us.auth0.com/oauth/token") as response_info:
-                self.page.locator("g[id='Login']").click()
+            with self.page.expect_response("https://prd.api.sellercenter.pe/sellercenter/security/v1/login") as response_info:
+                self.page.get_by_test_id("button").click()
             response = response_info.value
-            tokenLogin=response.json()["access_token"]
+            tokenLogin=response.json()["data"]['accessToken']
+            tokenDuration=response.json()["data"]['expiresIn']
             self.token=tokenLogin
+            # login_dict={
+            #     "token":tokenLogin,
+            #     "cookies":cookies,
+            #     "duration":tokenDuration
+            # }
+            # return login_dict
+
+######
+
+
+    # def handle_login_real_plaza(self):
+    #     self.cookies=self.page.context.cookies()
+    #     if self.page.url.find("https://inretail.mysellercenter.com/#/dashboard")!=-1:
+    #         print("Ya se encuentra logueado")
+    #         self.token= self.page.evaluate("() => JSON.parse(sessionStorage['vue-session-key'])['token']")
+    #         return
+    #     self.page.locator("form[name='userLogin'] button").click()
+    #     if self.page.url.find("https://irmarketplace.us.auth0.com/login?state")!=-1:
+    #         print("Se encuentra en la página de autenticación")
+    #         self.page.locator("input[name='email']").fill("mkpinter@unaluka.com")
+    #         self.page.locator("input[name='password']").fill("Inretail123*")
+    #         self.page.wait_for_load_state("networkidle")
+    #         print("Haciendo clik para loguearse")
+    #         with self.page.expect_response("https://irmarketplace.us.auth0.com/oauth/token") as response_info:
+    #             self.page.locator("g[id='Login']").click()
+    #         response = response_info.value
+    #         tokenLogin=response.json()["access_token"]
+    #         self.token=tokenLogin
 
     def sear_category(self,category:str):
         urlEndpoint=f"https://inretail.mysellercenter.com/sellercenter/api/v1/categories/?sortOrder=asc&sortBy=name.keyword&from=0&size=10&text=laptops"
